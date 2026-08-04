@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo - Meio de resposta - Nova Solicitação</title>
+<style>
+  :root{
+    --sidebar:#1e2a38;
+    --page-bg:#eef1f4;
+    --card:#ffffff;
+    --border:#dee2e6;
+    --field-bg:#eef1f4;
+    --text:#212529;
+    --muted:#6c757d;
+    --link:#0d6efd;
+    --primary:#0d6efd;
+    --primary-dark:#0b5ed7;
+    --danger:#dc3545;
+    --danger-bg:#f8d7da;
+    --accent:#0d6efd;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--page-bg);
+    color:var(--text);
+    font-size:14px;
+  }
+  .app{display:flex;min-height:100vh;}
+  .sidebar{
+    width:250px;
+    background:var(--sidebar);
+    color:#c7d0d9;
+    flex-shrink:0;
+  }
+  .sidebar .brand{
+    padding:18px 20px;
+    color:#fff;
+    font-weight:700;
+    font-size:17px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .sidebar .item{
+    padding:12px 20px;
+    font-size:14px;
+    cursor:default;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#c7d0d9;
+  }
+  .sidebar .item.active{
+    background:rgba(255,255,255,0.06);
+    color:#fff;
+  }
+  .main{flex:1;min-width:0;}
+  .topbar{
+    background:#fff;
+    border-bottom:1px solid var(--border);
+    padding:14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .topbar .user{color:var(--text);font-size:14px;display:flex;align-items:center;gap:6px;}
+  .content{padding:24px 32px;max-width:900px;}
+  .page-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .page-title{font-size:26px;font-weight:700;margin:0;color:#1c2b39;}
+  .breadcrumb{color:var(--muted);font-size:13px;}
+  .breadcrumb a{color:var(--link);text-decoration:none;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:24px 28px 28px;
+  }
+  .field{margin-bottom:18px;}
+  .field label{
+    display:block;
+    font-weight:700;
+    margin-bottom:6px;
+    font-size:14px;
+    color:var(--text);
+  }
+  .field label .req{color:var(--danger);margin-left:2px;}
+  select, input[type=text], textarea{
+    width:100%;
+    padding:8px 12px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    background:var(--field-bg);
+    font-size:14px;
+    font-family:inherit;
+    color:var(--text);
+    height:38px;
+  }
+  select:focus, input:focus, textarea:focus{
+    outline:none;
+    border-color:#86b7fe;
+    box-shadow:0 0 0 3px rgba(13,110,253,0.15);
+  }
+  textarea{resize:vertical;min-height:90px;height:auto;}
+  .hint{font-size:12px;color:var(--muted);margin-top:4px;}
+  .section-title{font-size:18px;font-weight:700;margin:6px 0 16px;color:var(--text);}
+  .row2{display:grid;grid-template-columns:2fr 1fr 1.3fr;gap:16px;}
+  .row2b{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;}
+  .cep-wrap{display:flex;gap:0;}
+  .cep-icon{
+    width:38px;height:38px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    background:#e9ecef;border:1px solid var(--border);border-right:none;
+    border-radius:4px 0 0 4px;color:var(--muted);
+  }
+  .cep-wrap input{border-radius:0 4px 4px 0;}
+  .select2-fake{
+    position:relative;
+  }
+  .select2-fake input{
+    padding-right:32px;
+    cursor:pointer;
+  }
+  .select2-fake .caret{
+    position:absolute;right:12px;top:50%;transform:translateY(-50%);
+    color:var(--muted);pointer-events:none;font-size:12px;
+  }
+  .new-field{
+    border:1px dashed var(--primary);
+    border-radius:6px;
+    padding:16px 18px 18px;
+    background:#eef5ff;
+    margin-bottom:18px;
+  }
+  .new-field .tag{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    color:#0b5ed7;
+    background:#dbe9fe;
+    padding:2px 8px;
+    border-radius:10px;
+    margin-bottom:8px;
+  }
+  .sub-field{margin-top:14px;}
+  input[readonly]{
+    background:#e9ecef;
+    color:var(--muted);
+    cursor:not-allowed;
+  }
+  .lock-icon{
+    width:14px;height:14px;flex-shrink:0;color:var(--muted);margin-right:6px;
+  }
+  .error-box{
+    display:none;
+    background:var(--danger-bg);
+    color:#842029;
+    border:1px solid #f1aeb5;
+    border-radius:4px;
+    padding:8px 10px;
+    font-size:12px;
+    margin-top:8px;
+  }
+  .error-box.show{display:block;}
+  .field-error{color:var(--danger);font-size:12px;margin-top:4px;display:none;}
+  .field-error.show{display:block;}
+  .actions{
+    margin-top:24px;
+    display:flex;
+    gap:10px;
+  }
+  button{
+    font-family:inherit;
+    font-size:14px;
+    font-weight:500;
+    padding:8px 20px;
+    border-radius:4px;
+    cursor:pointer;
+    border:1px solid var(--border);
+    background:#fff;
+    color:var(--text);
+    height:38px;
+  }
+  button.primary{
+    background:var(--primary);
+    border-color:var(--primary);
+    color:#fff;
+  }
+  button.primary:hover{background:var(--primary-dark);}
+  .toast{
+    display:none;
+    margin-top:16px;
+    padding:10px 14px;
+    border-radius:4px;
+    font-size:13px;
+  }
+  .toast.success{display:block;background:#d1e7dd;color:#0f5132;border:1px solid #a3cfbb;}
+  .toast.error{display:block;background:var(--danger-bg);color:#842029;border:1px solid #f1aeb5;}
+  .banner{
+    background:#fff3cd;
+    border:1px solid #ffe69c;
+    color:#664d03;
+    padding:10px 14px;
+    border-radius:6px;
+    font-size:13px;
+    margin-bottom:20px;
+  }
+  .footer{
+    padding:16px 32px;
+    display:flex;
+    justify-content:space-between;
+    color:var(--muted);
+    font-size:12px;
+    border-top:1px solid var(--border);
+    background:#fff;
+    margin-top:24px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">Serviço ao Cidadão</div>
+    <div class="item">Dashboard</div>
+    <div class="item">Assuntos</div>
+    <div class="item">Tipos de Solicitação</div>
+    <div class="item">SubAssuntos</div>
+    <div class="item">Grupos</div>
+    <div class="item">Governos</div>
+    <div class="item">Órgaos</div>
+    <div class="item">Pedido de Informação</div>
+    <div class="item">Diretoria</div>
+    <div class="item">Formulários Dinâmicos</div>
+    <div class="item active">Solicitações</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>&#9776;</div>
+      <div class="user">Administrator</div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <h1 class="page-title">Nova Solicitação</h1>
+        <div class="breadcrumb"><a href="#">Home</a> / <a href="#">Solicitações</a> / Nova Solicitação</div>
+      </div>
+
+      <div class="banner">Protótipo navegável, construído a partir da tela real (Admin/Requests/Create) &mdash; escopo desta entrega: campo "Meio de resposta" (destacado abaixo).</div>
+
+      <div class="card">
+        <div class="field">
+          <label>Tipo de Solicitação</label>
+          <select>
+            <option>— Selecione —</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Assunto</label>
+          <select>
+            <option>— Selecione —</option>
+            <option>Iluminação pública</option>
+            <option>Poda de árvore</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>SubAssunto</label>
+          <select>
+            <option>— Selecione —</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Cidadão</label>
+          <div class="select2-fake">
+            <select id="cidadao">
+              <option value="">Digite para pesquisar um cidadão</option>
+              <option value="maria" data-email="maria.silva@email.com">Maria Silva</option>
+              <option value="joao" data-email="">João Pereira (sem e-mail cadastrado)</option>
+              <option value="ana" data-email="ana.souza@email.com">Ana Souza</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Formulário dinâmico</label>
+          <select>
+            <option>— Nenhum —</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Descrição</label>
+          <textarea placeholder="Descreva a solicitação"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Observação</label>
+          <textarea placeholder="Observação interna"></textarea>
+        </div>
+
+        <div class="new-field">
+          <span class="tag">Novo campo</span>
+          <label>Meio de resposta <span class="req">*</span></label>
+          <select id="meio">
+            <option value="">— Selecione —</option>
+            <option value="telefone">Telefone</option>
+            <option value="email">E-mail</option>
+            <option value="nenhum">Nenhum</option>
+          </select>
+          <div class="field-error" id="meio-error">O meio de resposta é obrigatório.</div>
+
+          <div class="sub-field" id="telefone-wrap" style="display:none;">
+            <label>Telefone</label>
+            <input type="text" id="telefone" placeholder="(99) 99999-9999" maxlength="15">
+            <div class="field-error" id="telefone-error">Informe um telefone válido.</div>
+            <div class="hint">Máscara aplicada automaticamente durante a digitação.</div>
+          </div>
+
+          <div class="sub-field" id="email-wrap" style="display:none;">
+            <label>E-mail do cidadão</label>
+            <input type="text" id="email" readonly>
+            <div class="hint">Preenchido a partir do cadastro do cidadão selecionado. Não editável.</div>
+            <div class="error-box" id="email-error">O cidadão selecionado não possui e-mail cadastrado. Selecione outro meio de resposta ou atualize o cadastro do cidadão.</div>
+          </div>
+        </div>
+
+        <div class="section-title">Endereço</div>
+        <div class="row2">
+          <div class="field" style="margin-bottom:0;">
+            <label>Logradouro</label>
+            <input type="text">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Número</label>
+            <input type="text">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>CEP</label>
+            <div class="cep-wrap">
+              <div class="cep-icon">&#128269;</div>
+              <input type="text">
+            </div>
+          </div>
+        </div>
+        <div class="row2b">
+          <div class="field" style="margin-bottom:0;">
+            <label>Bairro</label>
+            <input type="text">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Complemento</label>
+            <input type="text">
+          </div>
+        </div>
+        <div class="row2b">
+          <div class="field" style="margin-bottom:0;">
+            <label>Cidade</label>
+            <input type="text">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Estado</label>
+            <input type="text">
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="salvar">Salvar</button>
+          <button type="button">Voltar</button>
+        </div>
+
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>© 2026 - LConnect - Serviço ao Cidadão</span>
+      <span>v1.0</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const meioSel = document.getElementById('meio');
+  const telefoneWrap = document.getElementById('telefone-wrap');
+  const emailWrap = document.getElementById('email-wrap');
+  const telefoneInput = document.getElementById('telefone');
+  const emailInput = document.getElementById('email');
+  const emailError = document.getElementById('email-error');
+  const cidadaoSel = document.getElementById('cidadao');
+  const toast = document.getElementById('toast');
+  const meioError = document.getElementById('meio-error');
+  const telefoneError = document.getElementById('telefone-error');
+
+  function getCidadaoEmail(){
+    const opt = cidadaoSel.options[cidadaoSel.selectedIndex];
+    return opt ? opt.getAttribute('data-email') || '' : '';
+  }
+
+  function refreshEmailField(){
+    const email = getCidadaoEmail();
+    if(email){
+      emailInput.value = email;
+      emailError.classList.remove('show');
+    } else {
+      emailInput.value = '';
+      if(meioSel.value === 'email'){
+        emailError.classList.add('show');
+      }
+    }
+  }
+
+  function updateMeio(){
+    telefoneWrap.style.display = 'none';
+    emailWrap.style.display = 'none';
+    meioError.classList.remove('show');
+    telefoneError.classList.remove('show');
+    emailError.classList.remove('show');
+    telefoneInput.value = '';
+
+    if(meioSel.value === 'telefone'){
+      telefoneWrap.style.display = 'block';
+    } else if(meioSel.value === 'email'){
+      emailWrap.style.display = 'block';
+      refreshEmailField();
+    }
+  }
+
+  meioSel.addEventListener('change', updateMeio);
+  cidadaoSel.addEventListener('change', function(){
+    if(meioSel.value === 'email') refreshEmailField();
+  });
+
+  telefoneInput.addEventListener('input', function(e){
+    let v = e.target.value.replace(/\D/g,'').slice(0,11);
+    if(v.length > 10){
+      v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    } else if(v.length > 5){
+      v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else if(v.length > 2){
+      v = v.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+    } else if(v.length > 0){
+      v = v.replace(/(\d{0,2})/, '($1');
+    }
+    e.target.value = v.trim();
+    telefoneError.classList.remove('show');
+  });
+
+  document.getElementById('salvar').addEventListener('click', function(){
+    toast.className = 'toast';
+    let valid = true;
+
+    if(!meioSel.value){
+      meioError.classList.add('show');
+      valid = false;
+    }
+    if(meioSel.value === 'telefone'){
+      const digits = telefoneInput.value.replace(/\D/g,'');
+      if(digits.length < 10){
+        telefoneError.classList.add('show');
+        valid = false;
+      }
+    }
+    if(meioSel.value === 'email'){
+      const email = getCidadaoEmail();
+      if(!email){
+        emailError.classList.add('show');
+        valid = false;
+      }
+    }
+
+    if(!valid){
+      toast.textContent = 'Corrija os campos destacados antes de salvar.';
+      toast.className = 'toast error';
+      return;
+    }
+
+    let resumo = 'Meio de resposta: ' + meioSel.options[meioSel.selectedIndex].text;
+    if(meioSel.value === 'telefone') resumo += ' (' + telefoneInput.value + ')';
+    if(meioSel.value === 'email') resumo += ' (' + emailInput.value + ')';
+    toast.textContent = 'Solicitação salva com sucesso. ' + resumo;
+    toast.className = 'toast success';
+  });
+</script>
+
+</body>
+</html>
