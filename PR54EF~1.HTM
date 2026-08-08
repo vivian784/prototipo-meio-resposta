@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Nova Solicitação com Formulário integrado</title>
+<style>
+:root{--slate1:#2D3748;--slate2:#4A5568;--border:#E2E8F0;--text:#2D3748;--muted:#6C757D;--blue:#007BFF;--wrapper:#F4F6F9;--green:#28A745}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--wrapper);color:var(--text)}
+.wrapper{display:flex;min-height:100vh}
+.main-sidebar{width:250px;flex-shrink:0;background:linear-gradient(180deg,#0F1823 0%,#1A2A3A 25%,#2C3E50 50%,#1A2A3A 75%,#0F1823 100%);box-shadow:2px 0 10px rgba(0,0,0,.2);color:#fff}
+.brand{padding:16px 20px;background:rgba(255,255,255,.08);font-size:18px;font-weight:600;color:rgba(255,255,255,.92)}
+.sidebar-nav{padding:12px 10px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:2px;border-radius:8px;color:rgba(255,255,255,.75);text-decoration:none;font-size:14px}
+.sidebar-nav a.active{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}
+.content-wrapper{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;padding:9px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;font-size:14px;color:var(--muted)}
+.content-header{padding:20px 28px 0}
+.content-header h1{font-size:25px;font-weight:700;color:var(--slate1);margin:0}
+.content-header .subtitle{color:var(--muted);font-size:12.5px;margin-top:4px}
+.content{padding:18px 28px 110px;max-width:900px}
+.banner{background:#eef5ff;border:1px solid #bcdcff;border-radius:10px;padding:14px 18px;font-size:12.5px;color:#0b4a8f;margin-bottom:18px;line-height:1.5}
+.banner b{color:#07396b}
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden}
+.card-header{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:13px 20px;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:space-between}
+.card-header .step-icon{display:inline-flex;align-items:center;gap:8px}
+.card-body{padding:20px 22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+label{display:block;font-size:13px;font-weight:600;color:var(--slate2);margin:0 0 6px}
+.field{margin-bottom:14px}
+select,input[type=text],input[type=date],textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;color:var(--text)}
+textarea{min-height:70px;resize:vertical}
+.radio-row{display:flex;gap:18px;margin-top:2px}
+.radio-row label{display:flex;align-items:center;gap:6px;font-weight:500;font-size:13px;color:var(--text);margin:0}
+.help{font-size:11.5px;color:var(--muted);margin-top:4px}
+.badge{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;background:#e6f7ec;color:#1e7e34}
+.badge.empty{background:#eee;color:#888}
+.dyn-wrap{margin-top:14px;border-top:1px dashed var(--border);padding-top:14px}
+.dyn-fields{max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .3s ease,margin .3s ease}
+.dyn-fields.open{max-height:900px;opacity:1}
+.dyn-box{background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-top:2px}
+.dyn-box .dyn-title{font-size:13px;font-weight:700;color:var(--slate1);margin-bottom:2px}
+.dyn-box .dyn-desc{font-size:12px;color:var(--muted);margin-bottom:14px}
+.checkgrid{display:flex;flex-wrap:wrap;gap:10px 16px}
+.checkgrid label{display:flex;align-items:center;gap:6px;font-weight:500;font-size:12.5px;color:var(--text);margin:0}
+.accordion-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 20px;background:#fff}
+.accordion-toggle .t{font-weight:600;font-size:14px;color:var(--slate1)}
+.accordion-toggle .chev{transition:transform .25s ease;color:var(--muted)}
+.accordion-toggle.open .chev{transform:rotate(180deg)}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.accordion-body.open{max-height:500px}
+.accordion-body-inner{padding:4px 22px 20px}
+.actionbar{position:fixed;left:250px;right:0;bottom:0;background:#fff;border-top:1px solid #E2E8F0;padding:14px 28px;display:flex;justify-content:flex-end;gap:10px;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.btn{border:none;border-radius:4px;padding:10px 20px;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--muted)}
+.fine{font-size:11px;color:#8891a0}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <div class="brand">Serviço ao Cidadão</div>
+    <div class="sidebar-nav">
+      <a href="#">Dashboard</a>
+      <a href="#">Assuntos</a>
+      <a href="#">Tipos de Solicitação</a>
+      <a href="#">SubAssuntos</a>
+      <a href="#">Grupos</a>
+      <a href="#">Governos</a>
+      <a href="#">Órgaos</a>
+      <a href="#">Pedido de Informação</a>
+      <a href="#">Diretoria</a>
+      <a href="#">Formulários Dinâmicos</a>
+      <a class="active" href="#">Solicitações</a>
+    </div>
+  </aside>
+  <div class="content-wrapper">
+    <div class="topbar"><span>☰</span><span>👤 Camilly da Silva</span></div>
+    <div class="content-header">
+      <h1>Nova Solicitação</h1>
+      <div class="subtitle">Protótipo — card "Preencher Formulário" da tela Detalhes incorporado aqui</div>
+    </div>
+    <div class="content">
+
+      <div class="banner">
+        <b>O que mudou:</b> hoje o atendente escolhe o Formulário Dinâmico "às cegas" — as perguntas só aparecem depois, numa tela separada (Detalhes), atrás de um botão avulso "Preencher Formulário" com cor fora do padrão do sistema.
+        Nesta versão, ao escolher o formulário, as perguntas aparecem <b>na hora, na mesma tela</b>, prontas pra preencher — sem precisar salvar, sair e voltar. Endereço ficou como bloco fixo, e o botão Salvar ficou fixo no rodapé.
+      </div>
+
+      <span class="fine">Protótipo — tela "Nova Solicitação" · card Trello: abertura de protocolo</span>
+
+      <!-- Classificação -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-header"><span class="step-icon">① Classificação</span></div>
+        <div class="card-body">
+          <div class="grid3">
+            <div class="field">
+              <label>Tipo de Solicitação</label>
+              <select><option>— Selecione —</option><option selected>Elogio</option><option>Reclamação</option><option>Sugestão</option><option>Denúncia</option></select>
+            </div>
+            <div class="field">
+              <label>Assunto</label>
+              <select><option>— Selecione —</option><option selected>Acesso Já</option><option>Cadastro</option></select>
+            </div>
+            <div class="field">
+              <label>SubAssunto</label>
+              <select><option>— Selecione —</option><option selected>Gestão de cadastros</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cidadão -->
+      <div class="card">
+        <div class="card-header"><span class="step-icon">② Cidadão</span></div>
+        <div class="card-body">
+          <div class="field">
+            <label>Cidadão</label>
+            <input type="text" placeholder="Digite para pesquisar um cidadão" value="Vivian Regina Prudenciano do Carmo">
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label>Sigilo</label>
+              <div class="radio-row"><label><input type="radio" name="sig"> Sim</label><label><input type="radio" name="sig" checked> Não</label></div>
+            </div>
+            <div class="field">
+              <label>Anônimo</label>
+              <div class="radio-row"><label><input type="radio" name="anon"> Sim</label><label><input type="radio" name="anon" checked> Não</label></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulário dinâmico — o coração da mudança -->
+      <div class="card">
+        <div class="card-header"><span class="step-icon">③ Formulário Dinâmico</span> <span id="badge" class="badge empty">nenhum selecionado</span></div>
+        <div class="card-body">
+          <div class="field">
+            <label>Selecione o formulário (opcional)</label>
+            <select id="formSelect" onchange="toggleForm()">
+              <option value="">— Nenhum —</option>
+              <option value="indicacao">Indicação de documentos</option>
+              <option value="pragas">Formulário de Pragas</option>
+              <option value="agendamento">Central de Agendamentos</option>
+            </select>
+            <div class="help">Ao escolher um formulário, as perguntas específicas aparecem logo abaixo — dá pra preencher tudo de uma vez, sem precisar voltar depois na tela de Detalhes.</div>
+          </div>
+
+          <div class="dyn-wrap" id="dynWrap" style="display:none">
+            <div id="dynFields" class="dyn-fields"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Descrição -->
+      <div class="card">
+        <div class="card-header"><span class="step-icon">④ Detalhes da solicitação</span></div>
+        <div class="card-body">
+          <div class="field">
+            <label>Descrição</label>
+            <textarea placeholder="Descreva a solicitação">teste de vínculo</textarea>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Observação</label>
+            <textarea placeholder="Observações internas (opcional)"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Endereço (fixo) -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header"><span class="step-icon">⑤ Endereço</span> <span style="font-weight:400;font-size:12px;opacity:.75">(opcional)</span></div>
+        <div class="card-body">
+          <div class="grid3">
+            <div class="field"><label>CEP</label><input type="text" value="12247-500"></div>
+            <div class="field"><label>Logradouro</label><input type="text" value="Rua Manoel Menezes Leal"></div>
+            <div class="field"><label>Número</label><input type="text" value="200"></div>
+          </div>
+          <div class="grid3">
+            <div class="field"><label>Complemento</label><input type="text"></div>
+            <div class="field"><label>Bairro</label><input type="text" value="Residencial Galo Branco"></div>
+            <div class="field"><label>Cidade</label><input type="text" value="São José dos Campos"></div>
+          </div>
+          <div class="field" style="max-width:180px;margin-bottom:0"><label>Estado</label><input type="text" value="SP"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="actionbar">
+  <button class="btn btn-outline">Cancelar</button>
+  <button class="btn btn-primary">Salvar Solicitação</button>
+</div>
+
+<script>
+var formsData = {
+  indicacao: {
+    title: "Indicação de documentos",
+    desc: "Documentos necessários para solicitar recurso",
+    html: '\
+      <div class="grid2">\
+        <div class="field"><label>CPF</label><input type="text" placeholder="000.000.000-00"></div>\
+        <div class="field"><label>Data da autuação</label><input type="date"></div>\
+      </div>\
+      <div class="grid2">\
+        <div class="field"><label>Número do processo</label><input type="text" placeholder="Ex: 121321321321"></div>\
+        <div class="field"><label>O cidadão aceita retorno por e-mail</label><select><option>— Selecione —</option><option selected>Sim</option><option>Não</option><option>Talvez</option></select></div>\
+      </div>\
+      <div class="field">\
+        <label>Quais dias é melhor para entrar em contato</label>\
+        <div class="checkgrid">\
+          <label><input type="checkbox" checked> Segunda</label>\
+          <label><input type="checkbox" checked> Terça</label>\
+          <label><input type="checkbox" checked> Quarta</label>\
+          <label><input type="checkbox"> Quinta</label>\
+          <label><input type="checkbox"> Sexta</label>\
+          <label><input type="checkbox"> Sábado</label>\
+          <label><input type="checkbox"> Domingo</label>\
+        </div>\
+      </div>\
+      <div class="field" style="margin-bottom:0"><label>Nova pergunta de edição do formulário</label><input type="text"></div>',
+    count: 5
+  },
+  pragas: {
+    title: "Formulário de Pragas",
+    desc: "Informações sobre o local e o tipo de ocorrência",
+    html: '\
+      <div class="grid2">\
+        <div class="field"><label>Tipo de praga</label><select><option>— Selecione —</option><option>Insetos</option><option>Roedores</option><option>Outros</option></select></div>\
+        <div class="field"><label>Ponto de referência</label><input type="text" placeholder="Ex: próximo à praça central"></div>\
+      </div>\
+      <div class="field" style="margin-bottom:0"><label>Já houve visita técnica anterior?</label><div class="radio-row"><label><input type="radio" name="visita"> Sim</label><label><input type="radio" name="visita" checked> Não</label></div></div>',
+    count: 3
+  },
+  agendamento: {
+    title: "Central de Agendamentos",
+    desc: "Dados para confirmação do horário de atendimento",
+    html: '\
+      <div class="grid2">\
+        <div class="field"><label>Data preferencial</label><input type="date"></div>\
+        <div class="field"><label>Turno</label><select><option>— Selecione —</option><option>Manhã</option><option>Tarde</option></select></div>\
+      </div>\
+      <div class="field" style="margin-bottom:0"><label>Telefone para confirmação</label><input type="text" placeholder="(00) 00000-0000"></div>',
+    count: 3
+  }
+};
+
+function toggleForm(){
+  var sel = document.getElementById('formSelect').value;
+  var wrap = document.getElementById('dynWrap');
+  var fields = document.getElementById('dynFields');
+  var badge = document.getElementById('badge');
+  if(!sel){
+    wrap.style.display = 'none';
+    fields.classList.remove('open');
+    fields.innerHTML = '';
+    badge.className = 'badge empty';
+    badge.textContent = 'nenhum selecionado';
+    return;
+  }
+  var f = formsData[sel];
+  wrap.style.display = 'block';
+  fields.innerHTML = '<div class="dyn-box"><div class="dyn-title">'+f.title+'</div><div class="dyn-desc">'+f.desc+'</div>'+f.html+'</div>';
+  badge.className = 'badge';
+  badge.textContent = f.count + ' perguntas';
+  requestAnimationFrame(function(){ fields.classList.add('open'); });
+}
+
+</script>
+</body>
+</html>
