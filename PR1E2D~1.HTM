@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Relatório de Produtividade (Teleatendimento)</title>
+<style>
+:root{--slate1:#2D3748;--slate2:#4A5568;--border:#E2E8F0;--text:#2D3748;--muted:#6C757D;--blue:#007BFF;--wrapper:#F4F6F9;--green:#28A745}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--wrapper);color:var(--text)}
+.wrapper{display:flex;min-height:100vh}
+.main-sidebar{width:250px;flex-shrink:0;background:linear-gradient(180deg,#0F1823 0%,#1A2A3A 25%,#2C3E50 50%,#1A2A3A 75%,#0F1823 100%);box-shadow:2px 0 10px rgba(0,0,0,.2);color:#fff}
+.brand{padding:16px 20px;background:rgba(255,255,255,.08);font-size:18px;font-weight:600;color:rgba(255,255,255,.92)}
+.sidebar-nav{padding:12px 10px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:2px;border-radius:8px;color:rgba(255,255,255,.75);text-decoration:none;font-size:13.5px}
+.sidebar-nav a.active{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}
+.content-wrapper{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;padding:9px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;font-size:14px;color:var(--muted)}
+.content-header{padding:20px 28px 0}
+.content-header h1{font-size:25px;font-weight:700;color:var(--slate1);margin:0}
+.content-header .subtitle{color:var(--muted);font-size:12.5px;margin-top:4px}
+.content{padding:18px 28px 40px;max-width:1180px}
+.banner{background:#eef5ff;border:1px solid #bcdcff;border-radius:10px;padding:14px 18px;font-size:12.5px;color:#0b4a8f;margin-bottom:18px;line-height:1.55}
+.banner b{color:#07396b}
+.fine{font-size:11px;color:#8891a0}
+
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden}
+.card-header{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:13px 20px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:10px}
+.card-body{padding:20px 22px}
+
+.filters{border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:16px;background:#fbfcfe}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:14px}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--slate2);margin:0 0 6px}
+select,input[type=date],input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;color:var(--text)}
+.filters-actions{display:flex;gap:10px;align-items:center}
+.btn{border:none;border-radius:4px;padding:9px 18px;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--muted)}
+.btn-export{background:#fff;border:1px solid #bfe6c9;color:#1e7e34}
+
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+.search{width:220px}
+
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:760px}
+thead th{background:#F4F6F9;color:var(--slate2);font-weight:700;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);font-size:11.5px;text-transform:uppercase;letter-spacing:.02em;white-space:normal}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:#fafbfd}
+tbody tr:hover{background:#eef5ff}
+.num{text-align:center;font-weight:600;color:var(--muted)}
+.num.hasval{color:var(--blue)}
+.row-total td{font-weight:700;color:var(--slate1);background:#F4F6F9!important}
+
+.tablefoot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12.5px;color:var(--muted);flex-wrap:wrap;gap:10px}
+.pagination{display:flex;gap:6px}
+.pagination button{border:1px solid var(--border);background:#fff;border-radius:6px;padding:6px 12px;font-size:12.5px;color:var(--text);cursor:pointer}
+.pagination button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <div class="brand">Serviço ao Cidadão</div>
+    <div class="sidebar-nav">
+      <a href="#">Dashboard</a>
+      <a href="#">Assuntos</a>
+      <a href="#">Tipos de Solicitação</a>
+      <a href="#">SubAssuntos</a>
+      <a href="#">Grupos</a>
+      <a href="#">Governos</a>
+      <a href="#">Órgaos</a>
+      <a href="#">Pedido de Informação</a>
+      <a href="#">Diretoria</a>
+      <a href="#">Formulários Dinâmicos</a>
+      <a href="#">Solicitações</a>
+      <a href="#">Tipo Não Atendimento</a>
+      <a class="active" href="#">Teleatendimento</a>
+    </div>
+  </aside>
+  <div class="content-wrapper">
+    <div class="topbar"><span>☰</span><span>Home / Teleatendimento</span></div>
+    <div class="content-header">
+      <h1>Teleatendimento</h1>
+      <div class="subtitle">Análise de dados para tomada de decisões informadas</div>
+    </div>
+    <div class="content">
+
+      <div class="banner">
+        <b>O que mudou:</b> mantive todos os campos e colunas do modelo que você enviou — só apliquei o padrão visual do sistema (mesmo usado em Solicitações): filtros dentro de um card com borda, cabeçalho da tabela cinza claro, linhas com hover e zebra, paginação numerada e botão "Exportar Excel" no estilo outline-verde já usado nas outras telas. Também tirei o botão "+ Nova Solicitação" do topo — ele não faz sentido numa tela de relatório; se for intencional, me avisa que eu devolvo.
+      </div>
+      <span class="fine">Protótipo — tela "Teleatendimento" · Relatório de Produtividade</span>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">📈 Relatório de Produtividade</div>
+        <div class="card-body">
+
+          <div class="filters">
+            <div class="grid3">
+              <div class="field">
+                <label>Data inicial</label>
+                <input type="date">
+              </div>
+              <div class="field">
+                <label>Data final</label>
+                <input type="date">
+              </div>
+              <div class="field">
+                <label>Teleatendente</label>
+                <select><option>Todos</option><option>Claudio Generoso</option><option>Vivian Carmo</option><option>Carla Guimaraes</option><option>Clayton</option></select>
+              </div>
+            </div>
+            <div class="filters-actions">
+              <button class="btn btn-primary">Filtrar</button>
+              <button class="btn btn-outline">Limpar filtros</button>
+              <button class="btn btn-export">⬇ Exportar Excel</button>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <span></span>
+            <div class="field search" style="margin-bottom:0">
+              <input type="text" placeholder="Buscar registros">
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Teleatendente</th>
+                  <th>Conclusão — Resposta Aceita</th>
+                  <th>Resposta não Aceita</th>
+                  <th>Tentativa de contato sem sucesso</th>
+                  <th>Solicitação</th>
+                  <th>Informação</th>
+                  <th>Consulta de Andamento</th>
+                  <th>Não Atendimento</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SISTEMA</td>
+                  <td class="num hasval">5</td><td class="num hasval">4</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td>
+                </tr>
+                <tr>
+                  <td>CLAUDIO GENEROSO</td>
+                  <td class="num">0</td><td class="num hasval">1</td><td class="num">0</td><td class="num hasval">33</td><td class="num hasval">4</td><td class="num">0</td><td class="num">0</td>
+                </tr>
+                <tr>
+                  <td>VIVIAN CARMO</td>
+                  <td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hasval">20</td><td class="num hasval">17</td><td class="num">0</td><td class="num">0</td>
+                </tr>
+                <tr>
+                  <td>CARLA GUIMARAES</td>
+                  <td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hasval">2</td><td class="num hasval">1</td><td class="num hasval">1</td><td class="num hasval">1</td>
+                </tr>
+                <tr>
+                  <td>CLAYTON</td>
+                  <td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="tablefoot">
+            <span>Mostrando de 1 até 5 de 10 registros</span>
+            <div class="pagination">
+              <button>Anterior</button>
+              <button class="active">1</button>
+              <button>2</button>
+              <button>Próximo</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>
