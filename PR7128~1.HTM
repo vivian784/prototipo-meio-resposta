@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Cobrança em Nível</title>
+<style>
+:root{--slate1:#2D3748;--slate2:#4A5568;--border:#E2E8F0;--text:#2D3748;--muted:#6C757D;--blue:#007BFF;--wrapper:#F4F6F9;--green:#28A745;--red:#DC3545}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--wrapper);color:var(--text)}
+.wrapper{display:flex;min-height:100vh}
+.main-sidebar{width:250px;flex-shrink:0;background:linear-gradient(180deg,#0F1823 0%,#1A2A3A 25%,#2C3E50 50%,#1A2A3A 75%,#0F1823 100%);box-shadow:2px 0 10px rgba(0,0,0,.2);color:#fff}
+.brand{padding:16px 20px;background:rgba(255,255,255,.08);font-size:18px;font-weight:600;color:rgba(255,255,255,.92)}
+.sidebar-nav{padding:12px 10px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:2px;border-radius:8px;color:rgba(255,255,255,.75);text-decoration:none;font-size:13.5px}
+.sidebar-nav a.active{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}
+.content-wrapper{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;padding:9px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;font-size:14px;color:var(--muted)}
+.content{padding:22px 28px 40px;max-width:1080px}
+.banner{background:#eef5ff;border:1px solid #bcdcff;border-radius:10px;padding:14px 18px;font-size:12.5px;color:#0b4a8f;margin-bottom:18px;line-height:1.55}
+.banner b{color:#07396b}
+.fine{font-size:11px;color:#8891a0;margin-bottom:10px;display:block}
+
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);overflow:hidden}
+.card-header{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:13px 20px;font-weight:600;font-size:14px}
+.card-body{padding:22px}
+
+label{display:block;font-size:12.5px;font-weight:600;color:var(--slate2);margin:0 0 6px}
+.field{margin-bottom:16px}
+select,input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;color:var(--text)}
+.help{font-size:11.5px;color:var(--muted);margin-top:4px}
+.nivel-field{max-width:320px;margin-bottom:22px}
+.fields-row{display:grid;gap:16px;margin-bottom:8px}
+.fields-row.n2{grid-template-columns:1fr 1fr}
+.fields-row.n3{grid-template-columns:1fr 1fr 1fr}
+.fields-row.n4{grid-template-columns:1fr 1fr 1fr 1fr}
+.fields-row.n5{grid-template-columns:1fr 1fr 1fr 1fr 1fr}
+
+.btn{border:none;border-radius:4px;padding:9px 18px;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--muted)}
+.btn-secondary{background:var(--muted);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.actions-row{display:flex;gap:10px;margin-top:6px;margin-bottom:24px}
+
+.grid-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:#F4F6F9;color:var(--slate2);font-weight:700;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);font-size:11.5px;text-transform:uppercase;letter-spacing:.02em}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#eef5ff}
+.acoes{text-align:right;white-space:nowrap}
+.acoes button{border:none;background:none;cursor:pointer;font-size:14px;padding:4px 6px;border-radius:4px}
+.acoes .edit{color:var(--slate2)}
+.acoes .del{color:var(--red)}
+.empty{padding:22px;text-align:center;color:var(--muted);font-size:12.5px}
+
+.tablefoot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;margin-bottom:20px;font-size:12.5px;color:var(--muted);flex-wrap:wrap;gap:10px}
+.pagination{display:flex;gap:6px}
+.pagination button{border:1px solid var(--border);background:#fff;border-radius:6px;padding:6px 12px;font-size:12.5px;color:var(--text);cursor:pointer}
+.pagination button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.exports{display:flex;gap:8px;margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <div class="brand">Serviço ao Cidadão</div>
+    <div class="sidebar-nav">
+      <a href="#">Dashboard</a>
+      <a href="#">Assuntos</a>
+      <a href="#">Tipos de Solicitação</a>
+      <a href="#">SubAssuntos</a>
+      <a href="#">Grupos</a>
+      <a href="#">Governos</a>
+      <a href="#">Órgaos</a>
+      <a href="#">Pedido de Informação</a>
+      <a href="#">Diretoria</a>
+      <a href="#">Formulários Dinâmicos</a>
+      <a href="#">Solicitações</a>
+      <a href="#">Tipo Não Atendimento</a>
+      <a href="#">Teleatendimento</a>
+      <a class="active" href="#">Cobrança</a>
+    </div>
+  </aside>
+  <div class="content-wrapper">
+    <div class="topbar"><span>☰</span><span>Home / Cobrança / Cobrança em Nível</span></div>
+    <div class="content">
+
+      <div class="banner">
+        <b>O que mudou:</b> mantive exatamente a regra de negócio do rascunho — nível Órgão/Diretoria/Grupo com campos em cascata, validação de Número de Dias (só inteiro, mínimo 1, sem zero à esquerda) e grid acumulando os cadastros por nível, sem limite de repetições. Apliquei o padrão visual do sistema (cores, cards, tabela) no lugar da paleta genérica do rascunho. É navegável: troque o nível abaixo pra ver os campos e o grid mudarem.
+      </div>
+      <span class="fine">Protótipo — tela "Cobrança em Nível" · troque o Nível para simular Órgão / Diretoria / Grupo</span>
+
+      <div class="card">
+        <div class="card-header">Cobrança em Nível</div>
+        <div class="card-body">
+
+          <div class="field nivel-field">
+            <label>Selecione o Nível</label>
+            <select id="nivelSelect" onchange="renderNivel()">
+              <option value="">Selecione...</option>
+              <option value="orgao">Órgão</option>
+              <option value="diretoria">Diretoria</option>
+              <option value="grupo">Grupo</option>
+            </select>
+          </div>
+
+          <div id="formArea"></div>
+          <div id="addBtnArea"></div>
+
+          <div id="gridArea"></div>
+
+          <div class="actions-row">
+            <button class="btn btn-primary" onclick="salvarTudo()">Salvar</button>
+            <a href="prototipo-cobranca-usuarios-notificacao.html" class="btn btn-outline" style="display:inline-flex;align-items:center;text-decoration:none">Voltar</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+var levels = {
+  orgao: {
+    label: "Órgão",
+    fields: ["orgao","usuario","dias"],
+    columns: ["Órgão","Qtd de Dias","Usuário"],
+    rows: [
+      { orgao: "SMA - SECRETARIA MUNICIPAL DE ADMINISTRAÇÃO", dias: "24", usuario: "CRISPIM BALDUINO" },
+      { orgao: "SMDS - SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL", dias: "5", usuario: "CLAYTON" }
+    ]
+  },
+  diretoria: {
+    label: "Diretoria",
+    fields: ["orgao","diretoria","usuario","dias"],
+    columns: ["Órgão","Diretoria","Qtd de Dias","Usuário"],
+    rows: [
+      { orgao: "SMA - SECRETARIA MUNICIPAL DE ADMINISTRAÇÃO", diretoria: "DAPGP - DEPARTAMENTO DE ADMINISTRAÇÃO DO PAÇO E GESTÃO PATRIMONIAL", dias: "10", usuario: "DENISE IELPO" },
+      { orgao: "SMDS - SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL", diretoria: "CDA - COMÉRCIO DE AMBULANTES", dias: "15", usuario: "CARLA GUIMARAES" }
+    ]
+  },
+  grupo: {
+    label: "Grupo",
+    fields: ["orgao","diretoria","grupo","usuario","dias"],
+    columns: ["Órgão","Diretoria","Grupo","Qtd de Dias","Usuário"],
+    rows: [
+      { orgao: "SMA - SECRETARIA MUNICIPAL DE ADMINISTRAÇÃO", diretoria: "DAPGP - DEPARTAMENTO DE ADMINISTRAÇÃO DO PAÇO E GESTÃO PATRIMONIAL", grupo: "DGPA - DIVISÃO DE GESTÃO PATRIMONIAL E DE ALMOXARIFADO", dias: "10", usuario: "DENISE IELPO" },
+      { orgao: "SMDS - SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL", diretoria: "CDA - COMÉRCIO DE AMBULANTES", grupo: "CAC - COMÉRCIO AMBULANTE DE CARAGUÁ", dias: "15", usuario: "CARLA GUIMARAES" }
+    ]
+  }
+};
+
+var fieldMeta = {
+  orgao:     { label: "Órgãos",     type: "select", options: ["SMA - Secretaria Municipal de Administração","SMDS - Secretaria Municipal de Desenvolvimento Social"] },
+  diretoria: { label: "Diretorias", type: "select", options: ["DAPGP - Departamento de Administração do Paço e Gestão Patrimonial","CDA - Comércio de Ambulantes"] },
+  grupo:     { label: "Grupos",     type: "select", options: ["DGPA - Divisão de Gestão Patrimonial e de Almoxarifado","CAC - Comércio Ambulante de Caraguá"] },
+  usuario:   { label: "Usuário",    type: "select", options: ["Denise Ielpo","Carla Guimaraes","Crispim Balduino","Clayton"] },
+  dias:      { label: "Número de Dias", type: "dias" }
+};
+
+function renderNivel(){
+  var sel = document.getElementById('nivelSelect').value;
+  var formArea = document.getElementById('formArea');
+  var addBtnArea = document.getElementById('addBtnArea');
+  var gridArea = document.getElementById('gridArea');
+  if(!sel){
+    formArea.innerHTML = '';
+    addBtnArea.innerHTML = '';
+    gridArea.innerHTML = '';
+    return;
+  }
+  var cfg = levels[sel];
+  var rowClass = 'n' + cfg.fields.length;
+  var html = '<div class="fields-row ' + rowClass + '">';
+  cfg.fields.forEach(function(f){
+    var meta = fieldMeta[f];
+    if(meta.type === 'select'){
+      html += '<div class="field"><label>' + meta.label + '</label><select id="f_' + f + '"><option>Selecione...</option>' +
+        meta.options.map(function(o){ return '<option>' + o + '</option>'; }).join('') + '</select></div>';
+    } else {
+      html += '<div class="field"><label>' + meta.label + '</label><input type="text" id="f_' + f + '" inputmode="numeric" placeholder="Ex: 15" oninput="sanitizeDias(this)">' +
+        '<div class="help">Somente números inteiros, mínimo 1 (sem zero à esquerda, sem espaços ou letras)</div></div>';
+    }
+  });
+  html += '</div>';
+  formArea.innerHTML = html;
+  addBtnArea.innerHTML = '<div class="actions-row" style="margin-top:-4px"><button class="btn btn-secondary btn-sm" onclick="adicionarLinha()">+ Adicionar</button></div>';
+  renderGrid(sel);
+}
+
+function sanitizeDias(el){
+  var v = el.value.replace(/\D/g,'');
+  v = v.replace(/^0+(?=\d)/,'');
+  el.value = v;
+}
+
+function renderGrid(sel){
+  var cfg = levels[sel];
+  var gridArea = document.getElementById('gridArea');
+  var html = '<div class="exports">' +
+    '<button class="btn btn-outline btn-sm">CSV</button>' +
+    '<button class="btn btn-outline btn-sm">Excel</button>' +
+    '<button class="btn btn-outline btn-sm">PDF</button>' +
+    '</div>';
+  html += '<div class="grid-wrap"><table><thead><tr>';
+  cfg.columns.forEach(function(c){ html += '<th>' + c + '</th>'; });
+  html += '<th class="acoes">Ações</th></tr></thead><tbody>';
+  if(cfg.rows.length === 0){
+    html += '<tr><td colspan="' + (cfg.columns.length + 1) + '"><div class="empty">Nenhum cadastro para este nível ainda.</div></td></tr>';
+  } else {
+    cfg.rows.forEach(function(row, idx){
+      html += '<tr>';
+      // exibe na mesma ordem das colunas: campos de cascata, depois dias, depois usuário
+      var displayOrder = cfg.fields.filter(function(f){ return f !== 'dias' && f !== 'usuario'; }).concat(['dias','usuario']);
+      displayOrder.forEach(function(f){ html += '<td>' + (row[f] || '') + '</td>'; });
+      html += '<td class="acoes"><button class="edit" title="Editar">✏️</button><button class="del" title="Excluir" onclick="removerLinha(\'' + sel + '\',' + idx + ')">🗑️</button></td>';
+      html += '</tr>';
+    });
+  }
+  html += '</tbody></table></div>';
+  html += '<div class="tablefoot"><span>Mostrando de 1 até ' + cfg.rows.length + ' de ' + cfg.rows.length + ' registros</span>' +
+    '<div class="pagination"><button>Anterior</button><button class="active">1</button><button>Seguinte</button></div></div>';
+  gridArea.innerHTML = html;
+}
+
+function removerLinha(sel, idx){
+  levels[sel].rows.splice(idx, 1);
+  renderGrid(sel);
+}
+
+function adicionarLinha(){
+  var sel = document.getElementById('nivelSelect').value;
+  if(!sel){ alert('Selecione o Nível antes de adicionar.'); return; }
+  var cfg = levels[sel];
+  var novo = {};
+  var valido = true;
+  cfg.fields.forEach(function(f){
+    var el = document.getElementById('f_' + f);
+    var v = el.value.trim();
+    if(f === 'dias'){
+      if(!v || parseInt(v,10) < 1){ valido = false; }
+    } else {
+      if(!v || v === 'Selecione...'){ valido = false; }
+    }
+    novo[f] = v;
+  });
+  if(!valido){ alert('Preencha todos os campos. Número de Dias deve ser um inteiro maior ou igual a 1.'); return; }
+  cfg.rows.push(novo);
+  renderNivel();
+  document.getElementById('nivelSelect').value = sel;
+}
+
+function salvarTudo(){
+  var sel = document.getElementById('nivelSelect').value;
+  if(!sel){ alert('Selecione um nível e adicione ao menos um cadastro antes de salvar.'); return; }
+  var total = levels[sel].rows.length;
+  alert('Cadastros de cobrança (' + levels[sel].label + ') salvos com sucesso — ' + total + ' registro(s) no grid.');
+}
+</script>
+</body>
+</html>
