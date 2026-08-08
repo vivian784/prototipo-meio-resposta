@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Detalhes do Pedido de Informação (redesenho)</title>
+<style>
+:root{--slate1:#2D3748;--slate2:#4A5568;--border:#E2E8F0;--text:#2D3748;--muted:#6C757D;--blue:#007BFF;--wrapper:#F4F6F9;--green:#28A745;--red:#DC3545;--yellow:#FFC107}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--wrapper);color:var(--text)}
+.wrapper{display:flex;min-height:100vh}
+.main-sidebar{width:250px;flex-shrink:0;background:linear-gradient(180deg,#0F1823 0%,#1A2A3A 25%,#2C3E50 50%,#1A2A3A 75%,#0F1823 100%);box-shadow:2px 0 10px rgba(0,0,0,.2);color:#fff}
+.brand{padding:16px 20px;background:rgba(255,255,255,.08);font-size:18px;font-weight:600;color:rgba(255,255,255,.92)}
+.sidebar-nav{padding:12px 10px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:2px;border-radius:8px;color:rgba(255,255,255,.75);text-decoration:none;font-size:14px}
+.sidebar-nav a.active{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}
+.content-wrapper{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;padding:9px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;font-size:14px;color:var(--muted)}
+.content-header{padding:20px 28px 0}
+.content-header h1{font-size:25px;font-weight:700;color:var(--slate1);margin:0}
+.content-header .subtitle{color:var(--muted);font-size:12.5px;margin-top:4px}
+.content{padding:18px 28px 110px;max-width:980px}
+.banner{background:#eef5ff;border:1px solid #bcdcff;border-radius:10px;padding:14px 18px;font-size:12.5px;color:#0b4a8f;margin-bottom:18px;line-height:1.55}
+.banner b{color:#07396b}
+.fine{font-size:11px;color:#8891a0}
+
+/* Faixa resumo */
+.summary{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);padding:18px 22px;margin-top:14px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.summary .num{font-size:22px;font-weight:700;color:var(--slate1)}
+.summary .num small{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px}
+.pill-recebida{background:#e8eef7;color:#3a5a9c}
+.pill-analise{background:#fff3cd;color:#8A6D00}
+.pill-execucao{background:#dbeafe;color:#1d4ed8}
+.pill-respondido{background:#e6f7ec;color:#1e7e34}
+.pill-cancelado{background:#fde2e2;color:#a12626}
+.summary .meta{font-size:12.5px;color:var(--muted)}
+
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden}
+.card-header{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:13px 20px;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:20px 22px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.readpair{margin-bottom:14px}
+.readpair .k{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.readpair .v{font-size:13.5px;color:var(--text)}
+
+/* Subseções estáticas dentro de Informações do pedido */
+.subhead{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 12px;padding-top:16px;border-top:1px solid var(--border)}
+.qa{border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12.5px}
+.qa .q{font-weight:700;color:var(--slate2)}
+.qa .a{color:var(--text);margin-top:2px}
+
+/* Timeline */
+.timeline{position:relative;padding-left:22px}
+.timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--border)}
+.tl-item{position:relative;padding-bottom:16px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:'';position:absolute;left:-22px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 0 0 1px var(--blue)}
+.tl-item .status{font-weight:700;font-size:12.5px;color:var(--slate1)}
+.tl-item .txt{font-size:12.5px;color:var(--text);margin-top:1px}
+.tl-item .who{font-size:11px;color:var(--muted);margin-top:2px}
+
+.actionbar{position:fixed;left:250px;right:0;bottom:0;background:#fff;border-top:1px solid #E2E8F0;padding:14px 28px;display:flex;justify-content:flex-end;gap:10px;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.btn{border:none;border-radius:4px;padding:9px 18px;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <div class="brand">Serviço ao Cidadão</div>
+    <div class="sidebar-nav">
+      <a href="#">Dashboard</a>
+      <a href="#">Assuntos</a>
+      <a href="#">Tipos de Solicitação</a>
+      <a href="#">SubAssuntos</a>
+      <a href="#">Grupos</a>
+      <a href="#">Governos</a>
+      <a href="#">Órgaos</a>
+      <a class="active" href="#">Pedido de Informação</a>
+      <a href="#">Diretoria</a>
+      <a href="#">Formulários Dinâmicos</a>
+      <a href="#">Solicitações</a>
+    </div>
+  </aside>
+  <div class="content-wrapper">
+    <div class="topbar"><span>☰</span><span>👤 Administrator</span></div>
+    <div class="content-header">
+      <h1>Detalhes do Pedido de Informação</h1>
+      <div class="subtitle">Protótipo — mesmo pedido nº 81, sem o botão/card "Preencher Formulário" (essa etapa agora acontece na criação)</div>
+    </div>
+    <div class="content">
+
+      <div class="banner">
+        <b>O que mudou:</b> removi o botão "Preencher Formulário" (cor fora do padrão e ação duplicada — isso agora acontece direto na tela Novo Pedido de Informação). Reuni tudo o que é consulta em <b>Informações do pedido</b> — dados básicos, respostas do formulário e endereço, logo abaixo. Removi também "Observação (histórico)" e o botão "Adicionar ao histórico", que não têm mais função aqui. <b>Histórico</b> fecha a tela, por ser cronológico.
+      </div>
+      <span class="fine">Protótipo — tela "Detalhes do Pedido de Informação" · pedido nº 81</span>
+
+      <!-- Faixa resumo -->
+      <div class="summary">
+        <div class="num"><small>Pedido nº</small>81</div>
+        <span class="pill pill-recebida">● Recebida</span>
+        <div class="meta">Criado em 29/07/2026 22:42 · Acesso Já / Informações sobre transporte adaptado</div>
+      </div>
+
+      <!-- Informações do pedido -->
+      <div class="card">
+        <div class="card-header">Informações do pedido</div>
+        <div class="card-body">
+          <div class="readpair"><div class="k">Assunto-SubAssunto</div><div class="v">Acesso Já / Informações sobre transporte adaptado</div></div>
+          <div class="readpair" style="margin-bottom:0"><div class="k">Descrição</div><div class="v">teste de informação</div></div>
+
+          <div class="subhead">Respostas do formulário <span style="text-transform:none;font-weight:400;letter-spacing:0">(preenchido na abertura — só consulta)</span></div>
+          <div class="qa"><div class="q">CPF</div><div class="a">Sem resposta</div></div>
+          <div class="qa"><div class="q">Data da autuação</div><div class="a">Sem resposta</div></div>
+          <div class="qa"><div class="q">Número do processo</div><div class="a">Sem resposta</div></div>
+          <div class="qa"><div class="q">O cidadão aceita retorno por e-mail</div><div class="a">Sem resposta</div></div>
+          <div class="qa" style="margin-bottom:0"><div class="q">Quais dias é melhor para entrar em contato</div><div class="a">Sem resposta</div></div>
+
+          <div class="subhead">Endereço</div>
+          <div class="grid3">
+            <div class="readpair"><div class="k">CEP</div><div class="v">12245-200</div></div>
+            <div class="readpair"><div class="k">Logradouro</div><div class="v">Rua Brigadeiro Osvaldo Nascimento Leal</div></div>
+            <div class="readpair"><div class="k">Número</div><div class="v">300</div></div>
+          </div>
+          <div class="grid3">
+            <div class="readpair"><div class="k">Complemento</div><div class="v">Não informado</div></div>
+            <div class="readpair"><div class="k">Bairro</div><div class="v">Jardim São Dimas</div></div>
+            <div class="readpair"><div class="k">Cidade</div><div class="v">São José dos Campos</div></div>
+          </div>
+          <div class="readpair" style="max-width:180px;margin-bottom:0"><div class="k">Estado</div><div class="v">SP</div></div>
+        </div>
+      </div>
+
+      <!-- Histórico (por último, é cronológico) -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header">Histórico</div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="tl-item"><div class="status">Recebida — Pedido de informação criada</div><div class="who">Por: Camilly da Silva · 29/07/2026 22:42</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="actionbar">
+  <button class="btn btn-outline">Voltar</button>
+</div>
+
+</body>
+</html>
