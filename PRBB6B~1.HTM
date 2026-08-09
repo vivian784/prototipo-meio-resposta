@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Detalhes da Solicitação (redesenho)</title>
+<style>
+:root{--slate1:#2D3748;--slate2:#4A5568;--border:#E2E8F0;--text:#2D3748;--muted:#6C757D;--blue:#007BFF;--wrapper:#F4F6F9;--green:#28A745;--red:#DC3545;--yellow:#FFC107}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--wrapper);color:var(--text)}
+.wrapper{display:flex;min-height:100vh}
+.main-sidebar{width:250px;flex-shrink:0;background:linear-gradient(180deg,#0F1823 0%,#1A2A3A 25%,#2C3E50 50%,#1A2A3A 75%,#0F1823 100%);box-shadow:2px 0 10px rgba(0,0,0,.2);color:#fff}
+.brand{padding:16px 20px;background:rgba(255,255,255,.08);font-size:18px;font-weight:600;color:rgba(255,255,255,.92)}
+.sidebar-nav{padding:12px 10px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:2px;border-radius:8px;color:rgba(255,255,255,.75);text-decoration:none;font-size:14px}
+.sidebar-nav a.active{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}
+.content-wrapper{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;padding:9px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;font-size:14px;color:var(--muted)}
+.content-header{padding:20px 28px 0}
+.content-header h1{font-size:25px;font-weight:700;color:var(--slate1);margin:0}
+.content-header .subtitle{color:var(--muted);font-size:12.5px;margin-top:4px}
+.content{padding:18px 28px 110px;max-width:980px}
+.banner{background:#eef5ff;border:1px solid #bcdcff;border-radius:10px;padding:14px 18px;font-size:12.5px;color:#0b4a8f;margin-bottom:18px;line-height:1.55}
+.banner b{color:#07396b}
+.fine{font-size:11px;color:#8891a0}
+
+/* Faixa resumo */
+.summary{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);padding:18px 22px;margin-top:14px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.summary .num{font-size:22px;font-weight:700;color:var(--slate1)}
+.summary .num small{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px}
+.pill-recebida{background:#e8eef7;color:#3a5a9c}
+.pill-analise{background:#fff3cd;color:#8A6D00}
+.pill-execucao{background:#dbeafe;color:#1d4ed8}
+.pill-respondido{background:#e6f7ec;color:#1e7e34}
+.pill-cancelado{background:#fde2e2;color:#a12626}
+.summary .meta{font-size:12.5px;color:var(--muted)}
+.summary .actions{display:flex;gap:8px}
+
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden}
+.card-header{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:13px 20px;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:20px 22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+label{display:block;font-size:13px;font-weight:600;color:var(--slate2);margin:0 0 6px}
+.field{margin-bottom:14px}
+select,input[type=text],input[type=date],textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;color:var(--text)}
+textarea{min-height:70px;resize:vertical}
+.readpair{margin-bottom:14px}
+.readpair .k{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.readpair .v{font-size:13.5px;color:var(--text)}
+
+/* Ações do atendimento — destaque */
+.card.highlight .card-header{background:linear-gradient(135deg,#0b5ed7 0%,#3d8bfd 100%)}
+.notice{font-size:11.5px;border-radius:6px;padding:8px 10px;margin-bottom:8px;display:flex;gap:6px;align-items:flex-start}
+.notice.public{background:#eef5ff;color:#0b4a8f}
+.notice.internal{background:#fff8e6;color:#8A6D00}
+
+/* Timeline */
+.timeline{position:relative;padding-left:22px}
+.timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--border)}
+.tl-item{position:relative;padding-bottom:16px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:'';position:absolute;left:-22px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 0 0 1px var(--blue)}
+.tl-item .status{font-weight:700;font-size:12.5px;color:var(--slate1)}
+.tl-item .txt{font-size:12.5px;color:var(--text);margin-top:1px}
+.tl-item .who{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* Subseções estáticas dentro de Informações da solicitação */
+.subhead{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 12px;padding-top:16px;border-top:1px solid var(--border)}
+.qa{border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12.5px}
+.qa .q{font-weight:700;color:var(--slate2)}
+.qa .a{color:var(--text);margin-top:2px}
+
+.actionbar{position:fixed;left:250px;right:0;bottom:0;background:#fff;border-top:1px solid #E2E8F0;padding:14px 28px;display:flex;justify-content:flex-end;gap:10px;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.btn{border:none;border-radius:4px;padding:9px 18px;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--muted)}
+.btn-outline-red{background:#fff;border:1px solid #f3c2c2;color:#c0392b;font-size:12.5px;padding:7px 14px}
+.btn-outline-blue{background:#fff;border:1px solid #bcdcff;color:#0b5ed7;font-size:12.5px;padding:7px 14px}
+
+/* Badges Urgente/Sigiloso */
+.badges-row{display:flex;gap:8px;margin-bottom:16px}
+.badge-flag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:4px 11px;border-radius:12px;background:#fde2e2;color:#a12626;letter-spacing:.02em}
+
+/* Bloco de edição inline (Solicitar alteração) */
+.edit-hint{font-size:11px;color:var(--muted);margin:-6px 0 16px}
+.radio-row{display:flex;gap:18px;margin-top:2px}
+.radio-row label{display:flex;align-items:center;gap:6px;font-weight:500;font-size:13px;color:var(--text);margin:0}
+.sigilo-block{display:none;margin-top:4px}
+.sigilo-block.show{display:block}
+.dyn-wrap{margin-top:4px;border-top:1px dashed var(--border);padding-top:14px}
+.dyn-fields{max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .3s ease}
+.dyn-fields.open{max-height:900px;opacity:1}
+.dyn-box{background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-top:2px}
+.dyn-box .dyn-title{font-size:13px;font-weight:700;color:var(--slate1);margin-bottom:2px}
+.dyn-box .dyn-desc{font-size:12px;color:var(--muted);margin-bottom:14px}
+.checkgrid{display:flex;flex-wrap:wrap;gap:10px 16px}
+.checkgrid label{display:flex;align-items:center;gap:6px;font-weight:500;font-size:12.5px;color:var(--text);margin:0}
+.edit-actions{display:flex;gap:10px;margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <div class="brand">Serviço ao Cidadão</div>
+    <div class="sidebar-nav">
+      <a href="#">Dashboard</a>
+      <a href="#">Assuntos</a>
+      <a href="#">Tipos de Solicitação</a>
+      <a href="#">SubAssuntos</a>
+      <a href="#">Grupos</a>
+      <a href="#">Governos</a>
+      <a href="#">Órgaos</a>
+      <a href="#">Pedido de Informação</a>
+      <a href="#">Diretoria</a>
+      <a href="#">Formulários Dinâmicos</a>
+      <a class="active" href="#">Solicitações</a>
+    </div>
+  </aside>
+  <div class="content-wrapper">
+    <div class="topbar"><span>☰</span><span>👤 Administrator</span></div>
+    <div class="content-header">
+      <h1>Detalhes da Solicitação</h1>
+      <div class="subtitle">Protótipo — mesmo protocolo 1412211, sem o botão/card "Preencher Formulário" (essa etapa agora acontece na criação)</div>
+    </div>
+    <div class="content">
+
+      <div class="banner">
+        <b>O que mudou:</b> removi o botão "Preencher Formulário" (cor fora do padrão e ação duplicada — isso agora acontece direto na tela Nova Solicitação). Reorganizei por função, tudo estático (sem blocos recolhíveis): <b>Informações da solicitação</b> reúne todo o consulta-apenas — dados básicos, respostas do formulário antigo e endereço, por serem dados ligados entre si; <b>Ações do atendimento</b> é o que o servidor realmente faz aqui — status, grupo, resposta ao cidadão; <b>Anexos</b> fica logo abaixo, por fazer parte do atendimento; e <b>Histórico</b> fecha a tela, por ser cronológico. Adicionei também as notas <b>URGENTE</b>/<b>SIGILOSO</b> dentro de "Informações da solicitação", e os botões <b>Retirar sigilo</b> e <b>Solicitar alteração</b> ao lado de "Solicitar cancelamento" — "Solicitar alteração" habilita, dentro do próprio card, todos os campos usados no cadastro (Assunto, SubAssunto, Cidadão, Tipo de Solicitação, Formulário Dinâmico, Descrição, Endereço e Sigilo/Anônimo quando o Assunto permitir). "Salvar alterações" fixo no rodapé.
+      </div>
+      <span class="fine">Protótipo — tela "Detalhes da Solicitação" · protocolo 1412211</span>
+
+      <!-- Faixa resumo -->
+      <div class="summary">
+        <div class="num"><small>Protocolo</small>1412211</div>
+        <span class="pill pill-respondido">● Respondido</span>
+        <div class="meta">Criado em 30/07/2026 00:15 · Vivian Regina Prudenciano do Carmo · Acesso Já / Gestão de cadastros</div>
+        <div class="actions">
+          <button class="btn-outline-red">Solicitar cancelamento</button>
+          <button class="btn-outline-red" id="btnRetirarSigilo">Retirar sigilo</button>
+          <button class="btn-outline-blue" onclick="toggleAlteracao()">Solicitar alteração</button>
+        </div>
+      </div>
+
+      <!-- Informações da solicitação (agora reúne dados básicos + respostas do formulário + endereço) -->
+      <div class="card">
+        <div class="card-header">Informações da solicitação</div>
+        <div class="card-body">
+
+          <div class="badges-row">
+            <span class="badge-flag">🔴 URGENTE</span>
+            <span class="badge-flag">🔒 SIGILOSO</span>
+          </div>
+
+          <!-- Estado padrão: somente consulta -->
+          <div id="infoView">
+            <div class="grid3">
+              <div class="readpair"><div class="k">Cidadão</div><div class="v">Vivian Regina Prudenciano do Carmo</div></div>
+              <div class="readpair"><div class="k">Grupo</div><div class="v">Limpeza e Manutenção de Áreas Públicas</div></div>
+              <div class="readpair"><div class="k">Tipo de Solicitação</div><div class="v">Não informado</div></div>
+            </div>
+            <div class="readpair" style="margin-bottom:0"><div class="k">Descrição</div><div class="v">teste de vínculo</div></div>
+
+            <div class="subhead">Respostas do formulário <span style="text-transform:none;font-weight:400;letter-spacing:0">(preenchido na abertura — só consulta)</span></div>
+            <div class="qa"><div class="q">CPF</div><div class="a">teste1</div></div>
+            <div class="qa"><div class="q">Data da autuação</div><div class="a">12/31/2025</div></div>
+            <div class="qa"><div class="q">Número do processo</div><div class="a">121321321321</div></div>
+            <div class="qa"><div class="q">O cidadão aceita retorno por e-mail</div><div class="a">Sim</div></div>
+            <div class="qa" style="margin-bottom:0"><div class="q">Quais dias é melhor para entrar em contato</div><div class="a">Segunda, Terça, Quarta</div></div>
+
+            <div class="subhead">Endereço</div>
+            <div class="grid3">
+              <div class="readpair"><div class="k">CEP</div><div class="v">12247-500</div></div>
+              <div class="readpair"><div class="k">Logradouro</div><div class="v">Rua Manoel Menezes Leal</div></div>
+              <div class="readpair"><div class="k">Número</div><div class="v">200</div></div>
+            </div>
+            <div class="grid3">
+              <div class="readpair"><div class="k">Complemento</div><div class="v">Não informado</div></div>
+              <div class="readpair"><div class="k">Bairro</div><div class="v">Residencial Galo Branco</div></div>
+              <div class="readpair"><div class="k">Cidade</div><div class="v">São José dos Campos</div></div>
+            </div>
+            <div class="readpair" style="max-width:180px;margin-bottom:0"><div class="k">Estado</div><div class="v">SP</div></div>
+          </div>
+
+          <!-- Estado "Solicitar alteração": todos os campos do cadastro habilitados -->
+          <div id="infoEdit" style="display:none">
+            <div class="edit-hint">✏️ Modo de alteração — os campos abaixo são os mesmos usados no cadastro da solicitação.</div>
+
+            <div class="grid3">
+              <div class="field">
+                <label>Assunto</label>
+                <select id="editAssunto" onchange="checkSigiloVisibility()">
+                  <option>Acesso Já</option>
+                  <option>Cadastro</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>SubAssunto</label>
+                <select><option selected>Gestão de cadastros</option></select>
+              </div>
+              <div class="field">
+                <label>Tipo de Solicitação</label>
+                <select><option>— Selecione —</option><option selected>Elogio</option><option>Reclamação</option><option>Sugestão</option><option>Denúncia</option></select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Cidadão</label>
+              <input type="text" value="Vivian Regina Prudenciano do Carmo">
+            </div>
+
+            <div class="field">
+              <label>Formulário Dinâmico</label>
+              <select id="editFormSelect" onchange="toggleEditForm()">
+                <option value="">— Nenhum —</option>
+                <option value="indicacao" selected>Indicação de documentos</option>
+                <option value="pragas">Formulário de Pragas</option>
+                <option value="agendamento">Central de Agendamentos</option>
+              </select>
+              <div class="dyn-wrap"><div id="editDynFields" class="dyn-fields"></div></div>
+            </div>
+
+            <div class="field">
+              <label>Descrição</label>
+              <textarea>teste de vínculo</textarea>
+            </div>
+
+            <div class="subhead">Endereço</div>
+            <div class="grid3">
+              <div class="field"><label>CEP</label><input type="text" value="12247-500"></div>
+              <div class="field"><label>Logradouro</label><input type="text" value="Rua Manoel Menezes Leal"></div>
+              <div class="field"><label>Número</label><input type="text" value="200"></div>
+            </div>
+            <div class="grid3">
+              <div class="field"><label>Complemento</label><input type="text"></div>
+              <div class="field"><label>Bairro</label><input type="text" value="Residencial Galo Branco"></div>
+              <div class="field"><label>Cidade</label><input type="text" value="São José dos Campos"></div>
+            </div>
+            <div class="field" style="max-width:180px"><label>Estado</label><input type="text" value="SP"></div>
+
+            <div class="subhead">Sigilo e Anonimato</div>
+            <div class="edit-hint" style="margin-top:-6px">Disponível apenas para os Assuntos que permitem sigilo/anonimato.</div>
+            <div id="sigiloBlock" class="sigilo-block">
+              <div class="grid2">
+                <div class="field">
+                  <label>Sigilo</label>
+                  <div class="radio-row"><label><input type="radio" name="sigEdit" checked> Sim</label><label><input type="radio" name="sigEdit"> Não</label></div>
+                </div>
+                <div class="field">
+                  <label>Anônimo</label>
+                  <div class="radio-row"><label><input type="radio" name="anonEdit"> Sim</label><label><input type="radio" name="anonEdit" checked> Não</label></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="edit-actions">
+              <button class="btn btn-primary">Salvar alteração</button>
+              <button class="btn btn-outline" onclick="toggleAlteracao()">Cancelar</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Ações do atendimento (destaque) -->
+      <div class="card highlight">
+        <div class="card-header">Ações do atendimento</div>
+        <div class="card-body">
+          <div class="grid2">
+            <div class="field">
+              <label>Status</label>
+              <select>
+                <option>Recebida</option>
+                <option>Em análise</option>
+                <option>Em execução</option>
+                <option selected>Concluído</option>
+                <option>Cancelado</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Reatribuir grupo</label>
+              <select><option selected>Limpeza e Manutenção de Áreas Públicas</option><option>Educação</option><option>Saúde</option><option>Urbanismo</option></select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Resposta para o cidadão</label>
+            <div class="notice public">🌐 Visível para o cidadão no acompanhamento do protocolo</div>
+            <textarea placeholder="Escreva a resposta que o cidadão vai ver">teste 3</textarea>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Observação (histórico interno)</label>
+            <div class="notice internal">🔒 Uso interno — o cidadão não vê isso</div>
+            <textarea placeholder="Anotação interna para a equipe"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anexos (estático, logo abaixo de Ações do atendimento) -->
+      <div class="card">
+        <div class="card-header">Anexos <span style="font-weight:400;font-size:12px;opacity:.75">(nenhum anexo)</span></div>
+        <div class="card-body">
+          <div class="field" style="margin-bottom:8px"><input type="text" placeholder="Escolher arquivo (máx. 8 MB)"></div>
+          <button class="btn btn-primary" style="padding:8px 16px;font-size:12.5px">Enviar anexo</button>
+        </div>
+      </div>
+
+      <!-- Histórico (por último, é cronológico) -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header">Histórico</div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="tl-item"><div class="status">Recebida — teste 3</div><div class="who">Por: Administrator · 07/08/2026 17:10</div></div>
+            <div class="tl-item"><div class="status">Recebida — teste</div><div class="who">Por: Administrator · 07/08/2026 17:04</div></div>
+            <div class="tl-item"><div class="status">Recebida — Solicitação criada sem vínculo após revisão das sugestões.</div><div class="who">Por: Camilly da Silva · 30/07/2026 00:15</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="actionbar">
+  <button class="btn btn-outline">Voltar</button>
+  <button class="btn btn-primary">Salvar alterações</button>
+</div>
+
+<script>
+// Assuntos que permitem Sigilo/Anônimo nesta demo (regra vem do cadastro de Assunto)
+var assuntosComSigilo = ["Acesso Já"];
+
+var editFormsData = {
+  indicacao: {
+    title: "Indicação de documentos",
+    desc: "Documentos necessários para solicitar recurso",
+    html: '\
+      <div class="grid2">\
+        <div class="field"><label>CPF</label><input type="text" value="teste1"></div>\
+        <div class="field"><label>Data da autuação</label><input type="date" value="2025-12-31"></div>\
+      </div>\
+      <div class="grid2">\
+        <div class="field"><label>Número do processo</label><input type="text" value="121321321321"></div>\
+        <div class="field"><label>O cidadão aceita retorno por e-mail</label><select><option>— Selecione —</option><option selected>Sim</option><option>Não</option><option>Talvez</option></select></div>\
+      </div>\
+      <div class="field" style="margin-bottom:0">\
+        <label>Quais dias é melhor para entrar em contato</label>\
+        <div class="checkgrid">\
+          <label><input type="checkbox" checked> Segunda</label>\
+          <label><input type="checkbox" checked> Terça</label>\
+          <label><input type="checkbox" checked> Quarta</label>\
+          <label><input type="checkbox"> Quinta</label>\
+          <label><input type="checkbox"> Sexta</label>\
+          <label><input type="checkbox"> Sábado</label>\
+          <label><input type="checkbox"> Domingo</label>\
+        </div>\
+      </div>',
+    count: 5
+  },
+  pragas: {
+    title: "Formulário de Pragas",
+    desc: "Informações sobre o local e o tipo de ocorrência",
+    html: '\
+      <div class="grid2">\
+        <div class="field"><label>Tipo de praga</label><select><option>— Selecione —</option><option>Insetos</option><option>Roedores</option><option>Outros</option></select></div>\
+        <div class="field"><label>Ponto de referência</label><input type="text" placeholder="Ex: próximo à praça central"></div>\
+      </div>\
+      <div class="field" style="margin-bottom:0"><label>Já houve visita técnica anterior?</label><div class="radio-row"><label><input type="radio" name="visitaEdit"> Sim</label><label><input type="radio" name="visitaEdit" checked> Não</label></div></div>',
+    count: 3
+  },
+  agendamento: {
+    title: "Central de Agendamentos",
+    desc: "Dados para confirmação do horário de atendimento",
+    html: '\
+      <div class="grid2">\
+        <div class="field"><label>Data preferencial</label><input type="date"></div>\
+        <div class="field"><label>Turno</label><select><option>— Selecione —</option><option>Manhã</option><option>Tarde</option></select></div>\
+      </div>\
+      <div class="field" style="margin-bottom:0"><label>Telefone para confirmação</label><input type="text" placeholder="(00) 00000-0000"></div>',
+    count: 3
+  }
+};
+
+function toggleAlteracao(){
+  var view = document.getElementById('infoView');
+  var edit = document.getElementById('infoEdit');
+  var editing = edit.style.display !== 'none';
+  if(editing){
+    edit.style.display = 'none';
+    view.style.display = 'block';
+  } else {
+    view.style.display = 'none';
+    edit.style.display = 'block';
+    checkSigiloVisibility();
+    toggleEditForm();
+  }
+}
+
+function toggleEditForm(){
+  var sel = document.getElementById('editFormSelect').value;
+  var fields = document.getElementById('editDynFields');
+  if(!sel){
+    fields.classList.remove('open');
+    fields.innerHTML = '';
+    return;
+  }
+  var f = editFormsData[sel];
+  fields.innerHTML = '<div class="dyn-box"><div class="dyn-title">'+f.title+'</div><div class="dyn-desc">'+f.desc+'</div>'+f.html+'</div>';
+  requestAnimationFrame(function(){ fields.classList.add('open'); });
+}
+
+function checkSigiloVisibility(){
+  var assunto = document.getElementById('editAssunto').value;
+  var block = document.getElementById('sigiloBlock');
+  if(assuntosComSigilo.indexOf(assunto) > -1){
+    block.classList.add('show');
+  } else {
+    block.classList.remove('show');
+  }
+}
+</script>
+</body>
+</html>
