@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Alterações no Protocolo</title>
+<style>
+:root{--slate1:#2D3748;--slate2:#4A5568;--border:#E2E8F0;--text:#2D3748;--muted:#6C757D;--blue:#007BFF;--wrapper:#F4F6F9;--green:#28A745;--red:#DC3545}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--wrapper);color:var(--text)}
+.wrapper{display:flex;min-height:100vh}
+.main-sidebar{width:250px;flex-shrink:0;background:linear-gradient(180deg,#0F1823 0%,#1A2A3A 25%,#2C3E50 50%,#1A2A3A 75%,#0F1823 100%);box-shadow:2px 0 10px rgba(0,0,0,.2);color:#fff}
+.brand{padding:16px 20px;background:rgba(255,255,255,.08);font-size:18px;font-weight:600;color:rgba(255,255,255,.92)}
+.sidebar-nav{padding:12px 10px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:2px;border-radius:8px;color:rgba(255,255,255,.75);text-decoration:none;font-size:13.5px}
+.sidebar-nav a.active{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}
+.content-wrapper{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;padding:9px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;font-size:14px;color:var(--muted)}
+.content-header{padding:20px 28px 0}
+.content-header h1{font-size:25px;font-weight:700;color:var(--slate1);margin:0}
+.content-header .subtitle{color:var(--muted);font-size:12.5px;margin-top:4px}
+.content{padding:18px 28px 40px;max-width:1080px}
+.banner{background:#eef5ff;border:1px solid #bcdcff;border-radius:10px;padding:14px 18px;font-size:12.5px;color:#0b4a8f;margin-bottom:18px;line-height:1.55}
+.banner b{color:#07396b}
+.fine{font-size:11px;color:#8891a0;margin-bottom:10px;display:block}
+
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden}
+.card-header{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:13px 20px;font-weight:600;font-size:14px}
+.card-body{padding:20px 22px}
+
+.filters{border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:16px;background:#fbfcfe}
+.grid5{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:14px}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--slate2);margin:0 0 6px}
+select,input[type=text],input[type=date]{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;color:var(--text)}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:#F4F6F9;color:var(--slate2);font-weight:700;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);font-size:11.5px;text-transform:uppercase;letter-spacing:.02em}
+tbody td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#eef5ff}
+.table-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+
+.btn{border:none;border-radius:4px;padding:9px 18px;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--muted)}
+.btn-link{background:none;border:none;color:var(--blue);font-weight:600;font-size:12.5px;cursor:pointer;padding:0}
+
+.tablefoot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12.5px;color:var(--muted);flex-wrap:wrap;gap:10px}
+.pagination{display:flex;gap:6px}
+.pagination button{border:1px solid var(--border);background:#fff;border-radius:6px;padding:6px 12px;font-size:12.5px;color:var(--text);cursor:pointer}
+.pagination button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* Detalhe */
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--blue);text-decoration:none;font-size:13px;font-weight:600;margin-bottom:14px;cursor:pointer;border:none;background:none;padding:0}
+.summary{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);padding:18px 22px;margin-bottom:18px}
+.summary .grid5{margin-bottom:0}
+.summary .k{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.summary .v{font-size:13.5px;color:var(--text);font-weight:600}
+.citizen-note{font-size:11.5px;color:var(--muted);margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.citizen-note b{color:var(--slate2)}
+
+.radiogroup{display:flex;gap:16px}
+.radiogroup label{display:flex;align-items:center;gap:5px;font-weight:600;font-size:12.5px;margin:0;cursor:pointer}
+.radiogroup input{cursor:pointer}
+.orig{color:var(--muted)}
+.novo{color:#0b4a8f;font-weight:600}
+
+.hist-item{border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12.5px}
+.hist-item:last-child{margin-bottom:0}
+.hist-item .aprovada{color:#1e7e34;font-weight:700}
+.hist-item .recusada{color:#a12626;font-weight:700}
+.hist-empty{font-size:12.5px;color:var(--muted);padding:6px 2px}
+
+.actions-row{display:flex;gap:10px;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <div class="brand">Serviço ao Cidadão</div>
+    <div class="sidebar-nav">
+      <a href="#">Dashboard</a>
+      <a href="#">Assuntos</a>
+      <a href="#">Tipos de Solicitação</a>
+      <a href="#">SubAssuntos</a>
+      <a href="#">Grupos</a>
+      <a href="#">Governos</a>
+      <a href="#">Órgaos</a>
+      <a href="#">Pedido de Informação</a>
+      <a href="#">Diretoria</a>
+      <a href="#">Formulários Dinâmicos</a>
+      <a href="#">Solicitações</a>
+      <a href="#">Tipo Não Atendimento</a>
+      <a href="#">Teleatendimento</a>
+      <a class="active" href="#">Alterações no Protocolo</a>
+    </div>
+  </aside>
+  <div class="content-wrapper">
+    <div class="topbar"><span>☰</span><span>👤 Vivian Carmo (Supervisão)</span></div>
+    <div class="content-header">
+      <h1>Alterações no Protocolo</h1>
+      <div class="subtitle">Solicitações de alteração feitas pelo atendente, aguardando aprovação da supervisão</div>
+    </div>
+    <div class="content">
+
+      <div class="banner" id="banner">
+        <b>O que mudou:</b> apliquei o mesmo padrão visual do sistema (filtros em card com borda, tabela com cabeçalho cinza claro e hover, paginação numerada) no lugar da paleta genérica do manual. Mantive a regra de negócio como descrita: cada campo alterado é aprovado ou recusado individualmente (Sim/Não). O munícipe só aparece na tela se o atendente tiver solicitado troca do Cidadão vinculado ao protocolo — nesse caso, "Cidadão" entra como mais uma linha na tabela de decisão, igual aos demais campos (ver exemplo no protocolo 3028945). Ao salvar, o histórico registra quem solicitou, quem aprovou/recusou e quando.
+      </div>
+      <span class="fine">Protótipo — tela "Alterações no Protocolo" · navegável (clique em "Analisar" numa linha)</span>
+
+      <!-- ===================== LISTA ===================== -->
+      <div id="listView">
+        <div class="card">
+          <div class="card-header">Protocolos Alterados</div>
+          <div class="card-body">
+
+            <div class="filters">
+              <div class="grid5">
+                <div class="field"><label>Protocolo</label><input type="text" placeholder="Número"></div>
+                <div class="field"><label>Data</label><input type="date"></div>
+                <div class="field"><label>Usuário</label><select><option>Todos</option><option>Cíntia de Oliveira Santos</option><option>Relatorios</option></select></div>
+                <div class="field"><label>Assunto</label><select><option>Todos</option><option>Transporte Adaptado</option><option>Abordagem Social</option></select></div>
+                <div class="field"><label>Subdivisão</label><select><option>Todas</option><option>Cancelamento</option><option>Conduta da Ronda Social</option></select></div>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr>
+                    <td>3028806</td><td>01/04/2019</td><td>Cíntia de Oliveira Santos</td><td>Transporte Adaptado</td><td>Cancelamento</td>
+                    <td><button class="btn btn-outline btn-sm" onclick="abrirProtocolo('3028806')">Analisar</button></td>
+                  </tr>
+                  <tr>
+                    <td>3028945</td><td>05/08/2019</td><td>Relatorios</td><td>Abordagem Social</td><td>Conduta da Ronda Social</td>
+                    <td><button class="btn btn-outline btn-sm" onclick="abrirProtocolo('3028945')">Analisar</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="tablefoot">
+              <span>Mostrando de 1 até 2 de 2 registros</span>
+              <div class="pagination"><button>Anterior</button><button class="active">1</button><button>Seguinte</button></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== DETALHE ===================== -->
+      <div id="detailView" style="display:none">
+        <button class="back-link" onclick="voltarLista()">← Voltar para a lista</button>
+
+        <div class="summary">
+          <div class="grid5" style="grid-template-columns:1fr 1fr 1fr 1fr">
+            <div><div class="k">Protocolo</div><div class="v" id="dProtocolo">—</div></div>
+            <div><div class="k">Data</div><div class="v" id="dData">—</div></div>
+            <div><div class="k">Assunto</div><div class="v" id="dAssunto">—</div></div>
+            <div><div class="k">Subdivisão</div><div class="v" id="dSubdivisao">—</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Alterações solicitadas</div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Campo</th><th>Original</th><th>Novo</th><th>Aprovar</th></tr>
+                </thead>
+                <tbody id="camposBody"></tbody>
+              </table>
+            </div>
+            <div class="tablefoot">
+              <span id="camposFoot">Mostrando de 1 até 5 de 5 registros</span>
+            </div>
+
+            <div class="actions-row">
+              <button class="btn btn-primary" onclick="salvarDecisoes()">Salvar</button>
+              <button class="btn btn-outline" onclick="voltarLista()">Voltar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header">Histórico de aprovações</div>
+          <div class="card-body">
+            <div id="histList"><div class="hist-empty">Nenhuma decisão registrada ainda.</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+var protocolos = {
+  "3028806": {
+    protocolo: "3028806", data: "01/04/2019", usuario: "Cíntia de Oliveira Santos",
+    assunto: "Transporte Adaptado", subdivisao: "Cancelamento",
+    campos: [
+      { nome: "Meio de resposta", original: "Telefone", novo: "Nenhum", decisao: "nao" },
+      { nome: "Tipo de solicitação", original: "Reclamação", novo: "Sugestão", decisao: "sim" },
+      { nome: "Sigilo", original: "Não", novo: "Sim", decisao: "sim" },
+      { nome: "Grupo", original: "Central de Atendimento", novo: "Transporte Adaptado", decisao: "sim" },
+      { nome: "Descrição", original: "Atendimento telefônico", novo: "Atendimento presencial confirmado", decisao: "nao" }
+    ]
+  },
+  "3028945": {
+    protocolo: "3028945", data: "05/08/2019", usuario: "Relatorios",
+    assunto: "Abordagem Social", subdivisao: "Conduta da Ronda Social",
+    campos: [
+      { nome: "Subdivisão", original: "Conduta da Ronda Social", novo: "Conduta da Ronda Social - Reincidência", decisao: "sim" },
+      { nome: "Cidadão", original: "Não vinculado", novo: "Fernanda Souza Lima", decisao: "sim" },
+      { nome: "Observação", original: "—", novo: "Encaminhado à Corregedoria", decisao: "sim" }
+    ]
+  }
+};
+
+function abrirProtocolo(id){
+  var p = protocolos[id];
+  document.getElementById('listView').style.display = 'none';
+  document.getElementById('detailView').style.display = 'block';
+
+  document.getElementById('dProtocolo').textContent = p.protocolo;
+  document.getElementById('dData').textContent = p.data;
+  document.getElementById('dAssunto').textContent = p.assunto;
+  document.getElementById('dSubdivisao').textContent = p.subdivisao;
+
+  var body = document.getElementById('camposBody');
+  body.innerHTML = '';
+  p.campos.forEach(function(c, idx){
+    var groupName = 'campo_' + idx;
+    var simChecked = c.decisao === 'sim' ? 'checked' : '';
+    var naoChecked = c.decisao === 'nao' ? 'checked' : '';
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>' + c.nome + '</td>' +
+      '<td class="orig">' + c.original + '</td>' +
+      '<td class="novo">' + c.novo + '</td>' +
+      '<td><div class="radiogroup">' +
+        '<label><input type="radio" name="' + groupName + '" value="sim" ' + simChecked + '> Sim</label>' +
+        '<label><input type="radio" name="' + groupName + '" value="nao" ' + naoChecked + '> Não</label>' +
+      '</div></td>';
+    body.appendChild(tr);
+  });
+  document.getElementById('camposFoot').textContent = 'Mostrando de 1 até ' + p.campos.length + ' de ' + p.campos.length + ' registros';
+
+  document.getElementById('histList').innerHTML = '<div class="hist-empty">Nenhuma decisão registrada ainda.</div>';
+  window.protocoloAtual = p;
+}
+
+function voltarLista(){
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('listView').style.display = 'block';
+}
+
+function salvarDecisoes(){
+  var p = window.protocoloAtual;
+  if(!p) return;
+  var aprovador = 'Vivian Carmo';
+  var agora = new Date();
+  var dataHora = String(agora.getDate()).padStart(2,'0') + '/' + String(agora.getMonth()+1).padStart(2,'0') + '/' + agora.getFullYear() + ' ' + String(agora.getHours()).padStart(2,'0') + ':' + String(agora.getMinutes()).padStart(2,'0');
+
+  var linhas = [];
+  p.campos.forEach(function(c, idx){
+    var checked = document.querySelector('input[name="campo_' + idx + '"]:checked');
+    var decisao = checked ? checked.value : c.decisao;
+    var statusTxt = decisao === 'sim'
+      ? '<span class="aprovada">Alteração aprovada</span>'
+      : '<span class="recusada">Alteração recusada</span>';
+    linhas.push('<div class="hist-item">' + p.usuario + ' solicitou alteração do Campo ' + c.nome + '. ' + statusTxt + ' por ' + aprovador + ' - ' + dataHora + '</div>');
+  });
+
+  document.getElementById('histList').innerHTML = linhas.join('');
+  alert('Decisões salvas. Protocolo ' + p.protocolo + ' atualizado conforme os campos aprovados.');
+  voltarLista();
+}
+</script>
+</body>
+</html>
