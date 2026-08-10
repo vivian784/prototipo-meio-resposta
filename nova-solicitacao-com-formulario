@@ -85,8 +85,8 @@ textarea{min-height:70px;resize:vertical}
     <div class="content">
 
       <div class="banner">
-        <b>O que mudou:</b> hoje o atendente escolhe o Formulário Dinâmico "às cegas" — as perguntas só aparecem depois, numa tela separada (Detalhes), atrás de um botão avulso "Preencher Formulário" com cor fora do padrão do sistema.
-        Nesta versão, ao escolher o formulário, as perguntas aparecem <b>na hora, na mesma tela</b>, prontas pra preencher — sem precisar salvar, sair e voltar. Endereço ficou como bloco fixo, e o botão Salvar ficou fixo no rodapé.
+        <b>O que mudou:</b> hoje o atendente escolhe o Formulário Dinâmico "às cegas" numa lista solta, e as perguntas só aparecem depois, numa tela separada (Detalhes), atrás de um botão avulso "Preencher Formulário" com cor fora do padrão do sistema.
+        Nesta versão, o Formulário Dinâmico <b>deixa de ser uma lista pra escolher manualmente</b>: assim que o atendente seleciona o SubAssunto, o sistema já identifica o formulário vinculado a ele e exibe as perguntas <b>na hora, na mesma tela</b>, prontas pra preencher — sem escolha manual e sem precisar salvar, sair e voltar. Endereço ficou como bloco fixo, e o botão Salvar ficou fixo no rodapé.
       </div>
 
       <span class="fine">Protótipo — tela "Nova Solicitação" · card Trello: abertura de protocolo</span>
@@ -106,7 +106,14 @@ textarea{min-height:70px;resize:vertical}
             </div>
             <div class="field">
               <label>SubAssunto</label>
-              <select><option>— Selecione —</option><option selected>Gestão de cadastros</option></select>
+              <select id="subassuntoSelect" onchange="onSubAssuntoChange()">
+                <option value="">— Selecione —</option>
+                <option value="cadastros" selected>Gestão de cadastros</option>
+                <option value="limpeza">Limpeza e organização</option>
+                <option value="agendamentos">Agendamento de visita técnica</option>
+                <option value="consulta">Consulta simples de protocolo</option>
+              </select>
+              <div class="help">O formulário vinculado a este SubAssunto (se houver) já aparece carregado logo abaixo — sem escolha manual.</div>
             </div>
           </div>
         </div>
@@ -135,18 +142,9 @@ textarea{min-height:70px;resize:vertical}
 
       <!-- Formulário dinâmico — o coração da mudança -->
       <div class="card">
-        <div class="card-header"><span class="step-icon">③ Formulário Dinâmico</span> <span id="badge" class="badge empty">nenhum selecionado</span></div>
+        <div class="card-header"><span class="step-icon">③ Formulário Dinâmico</span> <span id="badge" class="badge empty">nenhum vinculado</span></div>
         <div class="card-body">
-          <div class="field">
-            <label>Selecione o formulário (opcional)</label>
-            <select id="formSelect" onchange="toggleForm()">
-              <option value="">— Nenhum —</option>
-              <option value="indicacao">Indicação de documentos</option>
-              <option value="pragas">Formulário de Pragas</option>
-              <option value="agendamento">Central de Agendamentos</option>
-            </select>
-            <div class="help">Ao escolher um formulário, as perguntas específicas aparecem logo abaixo — dá pra preencher tudo de uma vez, sem precisar voltar depois na tela de Detalhes.</div>
-          </div>
+          <div id="formLinkInfo" class="field" style="margin-bottom:0"></div>
 
           <div class="dyn-wrap" id="dynWrap" style="display:none">
             <div id="dynFields" class="dyn-fields"></div>
@@ -249,26 +247,55 @@ var formsData = {
   }
 };
 
-function toggleForm(){
-  var sel = document.getElementById('formSelect').value;
+// Vínculo automático: cada SubAssunto já tem (ou não) um Formulário Dinâmico configurado.
+// O atendente não escolhe mais o formulário numa lista solta — o sistema resolve isso
+// sozinho a partir do SubAssunto selecionado.
+var subassuntoFormMap = {
+  cadastros: 'indicacao',
+  limpeza: 'pragas',
+  agendamentos: 'agendamento',
+  consulta: null
+};
+
+function onSubAssuntoChange(){
+  var subVal = document.getElementById('subassuntoSelect').value;
+  var formKey = subassuntoFormMap.hasOwnProperty(subVal) ? subassuntoFormMap[subVal] : null;
+  renderLinkedForm(formKey);
+}
+
+function renderLinkedForm(formKey){
   var wrap = document.getElementById('dynWrap');
   var fields = document.getElementById('dynFields');
   var badge = document.getElementById('badge');
-  if(!sel){
+  var info = document.getElementById('formLinkInfo');
+
+  if(!formKey){
+    info.innerHTML = '<div class="help" style="margin-top:0">Nenhum formulário dinâmico vinculado a este Assunto/SubAssunto.</div>';
     wrap.style.display = 'none';
     fields.classList.remove('open');
     fields.innerHTML = '';
     badge.className = 'badge empty';
-    badge.textContent = 'nenhum selecionado';
+    badge.textContent = 'nenhum vinculado';
     return;
   }
-  var f = formsData[sel];
+
+  var f = formsData[formKey];
+  info.innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;background:#F8FAFC;font-size:13px;color:var(--text)">'+
+      '<span style="color:var(--green)">🔗</span> <b>'+f.title+'</b>'+
+      '<span style="margin-left:auto;font-size:11px;color:var(--muted)">vinculado automaticamente ao SubAssunto</span>'+
+    '</div>'+
+    '<div class="help">Selecionado pelo sistema — sem escolha manual. Pra trocar de formulário, altere o Assunto/SubAssunto.</div>';
+
   wrap.style.display = 'block';
   fields.innerHTML = '<div class="dyn-box"><div class="dyn-title">'+f.title+'</div><div class="dyn-desc">'+f.desc+'</div>'+f.html+'</div>';
   badge.className = 'badge';
   badge.textContent = f.count + ' perguntas';
   requestAnimationFrame(function(){ fields.classList.add('open'); });
 }
+
+// Carrega o vínculo já na abertura da tela, refletindo o SubAssunto pré-selecionado
+document.addEventListener('DOMContentLoaded', onSubAssuntoChange);
 
 </script>
 </body>
