@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Cadastro de Munícipe (RN10 Pessoa Física + RN11 Pessoa Jurídica)</title>
+<style>
+:root{--slate1:#2D3748;--slate2:#4A5568;--border:#E2E8F0;--text:#2D3748;--muted:#6C757D;--blue:#007BFF;--wrapper:#F4F6F9;--req:#C0392B;--green:#28A745;--red:#DC3545}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--wrapper);color:var(--text)}
+.wrapper{display:flex;min-height:100vh}
+.main-sidebar{width:250px;flex-shrink:0;background:linear-gradient(180deg,#0F1823 0%,#1A2A3A 25%,#2C3E50 50%,#1A2A3A 75%,#0F1823 100%);box-shadow:2px 0 10px rgba(0,0,0,.2);color:#fff}
+.brand{padding:16px 20px;background:rgba(255,255,255,.08);font-size:18px;font-weight:600;color:rgba(255,255,255,.92)}
+.sidebar-nav{padding:12px 10px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:2px;border-radius:8px;color:rgba(255,255,255,.75);text-decoration:none;font-size:14px}
+.sidebar-nav a.active{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}
+.content-wrapper{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;padding:9px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;font-size:14px;color:var(--muted)}
+.content-header{padding:20px 28px 0;display:flex;justify-content:space-between;align-items:flex-start}
+.content-header h1{font-size:25px;font-weight:700;color:var(--slate1);margin:0}
+.content-header .subtitle{color:var(--muted);font-size:12.5px;margin-top:4px}
+.breadcrumb{font-size:13px;color:var(--muted)}
+.breadcrumb a{color:var(--blue);text-decoration:none}
+.content{padding:18px 28px 28px;max-width:1000px}
+.banner{background:#eef5ff;border:1px solid #bcdcff;border-radius:10px;padding:14px 18px;font-size:12.5px;color:#0b4a8f;margin-bottom:14px;line-height:1.55}
+.banner b{color:#07396b}
+.fine{font-size:11px;color:#8891a0;margin-bottom:10px;display:block}
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:20px;overflow:hidden}
+.card-header{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:14.5px}
+.card-body{padding:20px 22px}
+label{display:block;font-size:13px;font-weight:600;color:var(--slate2);margin:12px 0 5px}
+.req{color:var(--req);margin-left:2px}
+.tip{cursor:help;color:var(--muted);margin-left:4px;font-size:12px;border-bottom:1px dotted var(--muted)}
+input,select{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:#fff}
+input:disabled,select:disabled{background:#F4F6F9;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+.sec{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 4px;padding-top:14px;border-top:1px solid var(--border)}
+.sec:first-child{margin-top:0;padding-top:0;border-top:none}
+.chk{display:flex;align-items:center;gap:6px;margin-top:26px;font-size:13px;color:var(--slate2)}
+.chk input{width:auto}
+.btn{border:none;border-radius:4px;padding:8px 18px;font-size:13.5px;cursor:pointer}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-modern{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;font-weight:600;padding:8px 18px;border-radius:6px}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 12px;border-radius:6px;cursor:pointer}
+.btn-secondary{background:var(--muted);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.card-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px}
+.card-footer .btn-primary{border-radius:6px;padding:8px 22px;font-size:13.5px;font-weight:600}
+.card-footer .btn-back{background:#fff;border:1px solid var(--border);color:var(--slate2);border-radius:6px;padding:8px 22px;font-size:13.5px;cursor:pointer}
+.input-group{display:flex}
+.input-group-text{background:#E9ECEF;border:1px solid var(--border);border-right:none;border-radius:6px 0 0 6px;padding:0 12px;display:flex;align-items:center;cursor:pointer;color:var(--slate2)}
+.input-group input{border-radius:0 6px 6px 0}
+.err-hint{background:#fbe7e9;color:#b02a37;font-size:12px;padding:8px 10px;border-radius:6px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;color:#8891a0;font-size:11px;text-transform:uppercase;font-weight:700;padding:9px 6px;border-bottom:2px solid #F0F1F5}
+tbody td{padding:9px 6px;border-bottom:1px solid #F0F1F5}
+a.link{color:var(--blue);text-decoration:none;font-size:12.5px}
+.avatar{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:9px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-right:6px}
+.modal-preview{border:1px dashed var(--border);border-radius:8px;padding:14px;margin-top:10px;background:#FAFBFD}
+.tipo-row{display:flex;gap:28px;align-items:flex-end;margin-bottom:6px}
+.tipo-col{flex:1;max-width:260px}
+.ativo-col{display:flex;flex-direction:column;padding-bottom:7px}
+.switch{position:relative;display:inline-block;width:44px;height:24px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ADB5BD;transition:.2s;border-radius:24px}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:#fff;transition:.2s;border-radius:50%}
+.switch input:checked + .slider{background-color:var(--green)}
+.switch input:checked + .slider:before{transform:translateX(20px)}
+.tel-add-row{display:grid;grid-template-columns:1fr 1.4fr auto auto;gap:12px;align-items:end}
+.tel-add-row .chk{margin-top:0}
+.icon-btn-add{width:36px;height:36px;border:none;border-radius:6px;background:var(--green);color:#fff;font-size:18px;font-weight:700;cursor:pointer;line-height:1}
+.icon-btn-remove{width:26px;height:26px;border:none;border-radius:6px;background:var(--red);color:#fff;font-size:14px;cursor:pointer;line-height:1}
+.mini-table{margin-top:10px}
+.mini-table td.vazio{text-align:center;color:var(--muted);padding:12px;font-size:12.5px}
+input.invalid,select.invalid{border-color:var(--req)!important;box-shadow:0 0 0 1px rgba(192,57,43,.15)}
+.alert-erros{background:#f8d7da;border:1px solid #f5c6cb;border-radius:8px;padding:14px 16px;margin-bottom:16px;display:none}
+.alert-erros.show{display:block}
+.alert-erros-titulo{color:#721c24;font-size:13px;font-weight:600;margin-bottom:10px}
+.alert-erros-lista{display:flex;flex-wrap:wrap;gap:8px 18px}
+.alert-erros-lista span{color:#721c24;font-size:12.5px;display:inline-flex;align-items:center;gap:5px}
+.alert-erros-lista span::before{content:"⛔";font-size:11px}
+.toast-wrap{position:fixed;top:16px;right:16px;z-index:9999;width:300px}
+.toast{background:var(--green);color:#fff;border-radius:6px;padding:13px 15px;font-size:13.5px;box-shadow:0 4px 14px rgba(0,0,0,.18);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(-8px);transition:opacity .25s ease,transform .25s ease;margin-bottom:8px}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* Lista */
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:12px}
+.exports{display:flex;gap:8px}
+.search-divider{border:none;border-top:1px solid var(--border);margin:0 0 16px}
+.pessoa-search{display:flex;gap:20px;align-items:flex-end;margin-bottom:16px}
+.pessoa-search-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:14px 24px}
+.pessoa-search-btn{width:42px;height:42px;flex-shrink:0;border:none;border-radius:6px;background:#E9ECEF;color:var(--slate2);font-size:16px;cursor:pointer}
+.table-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.status-text{color:var(--slate2);font-size:13px}
+.acoes{text-align:right;white-space:nowrap}
+.acoes .btn{margin-left:6px}
+.tablefoot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12.5px;color:var(--muted);flex-wrap:wrap;gap:10px}
+.pagination{display:flex;gap:6px}
+.pagination button{border:1px solid var(--border);background:#fff;border-radius:6px;padding:6px 12px;font-size:12.5px;color:var(--text);cursor:pointer}
+.pagination button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <div class="brand">Serviço ao Cidadão</div>
+    <div class="sidebar-nav">
+      <a href="#">Dashboard</a>
+      <a class="active" href="#">Cidadãos</a>
+      <a href="#">Solicitações</a>
+    </div>
+  </aside>
+  <div class="content-wrapper">
+    <div class="topbar"><span>☰</span><span>👤 Administrator</span></div>
+
+    <!-- ===================== LISTA ===================== -->
+    <div id="listView">
+      <div class="content-header">
+        <div>
+          <h1>Pessoas</h1>
+          <div class="subtitle">Cadastro de Pessoas Físicas e Jurídicas vinculadas às Solicitações</div>
+        </div>
+        <div class="breadcrumb"><a href="#">Home</a> / Pessoas</div>
+      </div>
+      <div class="content">
+
+        <div class="banner">
+          <b>O que é:</b> cadastro único de Pessoa, com o campo <b>Tipo de Pessoa</b> definindo dinamicamente quais campos aparecem — ao selecionar <b>Física</b>, exibe CPF, Gênero, RG etc.; ao selecionar <b>Jurídica</b>, exibe CNPJ, Razão Social, Pessoas Autorizadas etc.
+        </div>
+        <span class="fine">Protótipo único — cards Trello RN10 (0047) e RN11 (0048) · navegável (cadastrar, editar, excluir, alternar Física/Jurídica)</span>
+
+        <div class="card" style="margin-top:14px">
+          <div class="card-header">
+            <span>☰ Lista de Pessoas</span>
+            <button class="btn btn-modern" onclick="abrirNovo()">+ Nova Pessoa</button>
+          </div>
+          <div class="card-body">
+
+            <div class="toolbar">
+              <div class="exports">
+                <button class="btn btn-outline btn-sm">CSV</button>
+                <button class="btn btn-outline btn-sm">Excel</button>
+                <button class="btn btn-outline btn-sm">PDF</button>
+              </div>
+            </div>
+            <hr class="search-divider">
+
+            <div class="pessoa-search">
+              <div class="pessoa-search-grid">
+                <div><label style="margin-top:0">Nome da Pessoa</label><input id="buscaNome" oninput="renderLista()"></div>
+                <div><label style="margin-top:0">CPF</label><input id="buscaCpf" oninput="renderLista()"></div>
+                <div><label style="margin-top:0">Razão Social</label><input id="buscaRazaoSocial" oninput="renderLista()"></div>
+                <div><label style="margin-top:0">CNPJ</label><input id="buscaCnpj" oninput="renderLista()"></div>
+              </div>
+              <button class="pessoa-search-btn" onclick="renderLista()" title="Buscar">🔍</button>
+            </div>
+            <hr class="search-divider">
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Nome / Razão Social</th><th>Documento</th><th>Tipo</th><th>Protocolos</th><th>Status</th><th class="acoes">Ações</th></tr>
+                </thead>
+                <tbody id="corpoTabela"></tbody>
+              </table>
+            </div>
+
+            <div class="tablefoot">
+              <span id="rodapeTexto">Mostrando 0 registros</span>
+              <div class="pagination"><button>Anterior</button><button class="active">1</button><button>Seguinte</button></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================== FORMULÁRIO (RN10 + RN11) ===================== -->
+    <div id="formView" style="display:none">
+      <div class="content-header">
+        <div><h1 id="tituloPagina">Nova Pessoa</h1><div class="subtitle">RN10 (Pessoa Física) + RN11 (Pessoa Jurídica) — campos trocam conforme o Tipo de Pessoa</div></div>
+        <div class="breadcrumb"><a href="#" onclick="voltar();return false;">Home</a> / <a href="#" onclick="voltar();return false;">Pessoas</a> / <span id="breadcrumbAtual">Nova Pessoa</span></div>
+      </div>
+      <div class="content">
+        <span class="fine">Protótipo único — cards Trello RN10 (0047) e RN11 (0048)</span>
+        <div style="margin-top:14px">
+          <div class="card">
+            <div class="card-header"><span id="tituloCard">Novo cadastro — Pessoa Física</span></div>
+            <div class="card-body">
+
+              <div class="alert-erros" id="alertErros">
+                <div class="alert-erros-titulo">Os seguintes campos obrigatórios não foram preenchidos:</div>
+                <div class="alert-erros-lista" id="alertErrosLista"></div>
+              </div>
+
+              <div class="tipo-row">
+                <div class="tipo-col">
+                  <label>Tipo de Pessoa <span class="req">*</span></label>
+                  <select id="tipoPessoa" onchange="alternarTipo()">
+                    <option value="Fisica" selected>Física</option>
+                    <option value="Juridica">Jurídica</option>
+                  </select>
+                </div>
+                <div class="ativo-col">
+                  <label class="tip" title="Inativa (preserva histórico)">Ativo <span style="font-size:11px">ⓘ</span></label>
+                  <label class="switch">
+                    <input type="checkbox" id="pessoaAtivo" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="err-hint" id="pessoaBloqueioHint" style="display:none;background:#fff3cd;color:#8A6D00;max-width:480px">🔒 Este cadastro tem protocolo(s) vinculados — exclusão bloqueada por LGPD. Só é possível inativar.</div>
+
+              <!-- ===================== BLOCO PESSOA FÍSICA (RN10) ===================== -->
+              <div id="blocoFisica">
+                <div class="row3">
+                  <div><label>CPF <span class="req">*</span></label><input id="fis_cpf" placeholder="000.000.000-00"></div>
+                  <div><label>Data de Nascimento</label><input id="fis_dataNascimento" placeholder="dd/mm/aaaa"></div>
+                  <div><label>Gênero <span class="req">*</span></label><select id="fis_genero"><option value="" selected>Selecione</option><option>Masculino</option><option>Feminino</option></select></div>
+                </div>
+                <div class="err-hint" id="fis_dupHint" style="display:none">⚠ CPF já cadastrado — verifique duplicidade antes de salvar (chave de duplicidade = CPF).</div>
+                <div class="row2" style="margin-top:12px">
+                  <div><label>Nome <span class="req">*</span></label><input id="fis_nome" placeholder="Nome padronizado automaticamente (Title Case + trim)"></div>
+                  <div><label>Nome da Mãe</label><input id="fis_nomeMae" placeholder="Nome completo"></div>
+                </div>
+                <div class="row2">
+                  <div><label>Nome Social</label><input id="fis_nomeSocial" placeholder="Opcional"></div>
+                  <div><label>E-mail <span class="tip" title="Obrigatório se meio de resposta é e-mail">ⓘ</span></label><input id="fis_email" placeholder="nome@dominio.com"></div>
+                </div>
+                <div class="row3">
+                  <div><label>RG</label><input id="fis_rg" placeholder="Sem pontos ou traços"></div>
+                  <div><label>Órgão (emissor do RG)</label><input id="fis_orgaoEmissor" placeholder="Ex.: SSP"></div>
+                  <div><label>Data Emissão (do RG)</label><input id="fis_dataEmissao" placeholder="dd/mm/aaaa"></div>
+                </div>
+                <div class="tel-add-row">
+                  <div><label>Telefone <span class="tip" title="Obrigatório se meio de resposta é telefone">ⓘ</span></label><input id="fis_telNumero" placeholder="(12) 90000-0000"></div>
+                  <div><label>Observações do Telefone</label><input id="fis_telObs" placeholder="Opcional"></div>
+                  <div class="chk"><input type="checkbox" id="fis_telPref"> Preferencial</div>
+                  <button class="icon-btn-add" onclick="adicionarTelefone('fis')" title="Adicionar telefone">+</button>
+                </div>
+                <table class="mini-table">
+                  <tr><th>Telefone</th><th>Observações</th><th>Preferencial</th><th></th></tr>
+                  <tbody id="fis_telBody"></tbody>
+                </table>
+
+                <div class="sec">Endereço</div>
+                <div class="row3">
+                  <div>
+                    <label>CEP <span class="req">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text" onclick="buscarCep('fis')" title="Pesquisar CEP">🔍</span>
+                      <input id="fis_cep" placeholder="00000-000">
+                    </div>
+                  </div>
+                  <div><label>Logradouro <span class="req">*</span></label><input id="fis_logradouro" placeholder="preenchido pela busca do CEP"></div>
+                  <div><label>Número <span class="req">*</span></label><input id="fis_numero" placeholder="Ex.: 123"></div>
+                </div>
+                <div class="row3" style="margin-top:12px">
+                  <div><label>Complemento</label><input id="fis_complemento" placeholder="Opcional"></div>
+                  <div><label>Bairro <span class="req">*</span></label><input id="fis_bairro" placeholder="preenchido pela busca do CEP"></div>
+                  <div><label>Cidade <span class="req">*</span></label><input id="fis_cidade" placeholder="preenchido pela busca do CEP"></div>
+                </div>
+                <div class="row3" style="margin-top:12px">
+                  <div><label>UF <span class="req">*</span></label><input id="fis_uf" disabled placeholder="preenchido pela busca do CEP"></div>
+                  <div><label>Região <span class="req">*</span></label><input id="fis_regiao" disabled placeholder="preenchida pela busca do CEP"></div>
+                  <div><label>Ponto de Referência</label><input id="fis_pontoRef" placeholder="Opcional"></div>
+                </div>
+              </div>
+
+              <!-- ===================== BLOCO PESSOA JURÍDICA (RN11) ===================== -->
+              <div id="blocoJuridica" style="display:none">
+                <div class="row2">
+                  <div><label>CNPJ <span class="req">*</span></label><input id="jur_cnpj" placeholder="00.000.000/0000-00"></div>
+                  <div><label>Razão Social <span class="req">*</span></label><input id="jur_razaoSocial" placeholder="Nome empresarial completo"></div>
+                </div>
+                <div class="err-hint" id="jur_dupHint" style="display:none">⚠ CNPJ já cadastrado — sistema impede cadastro duplicado (chave de duplicidade = CNPJ).</div>
+                <div class="row2" style="margin-top:12px">
+                  <div><label>Nome Fantasia</label><input id="jur_nomeFantasia" placeholder="Opcional"></div>
+                  <div><label>Ramo de Atividade</label><select id="jur_ramoAtividade"><option value="">Opcional</option><option>Comércio varejista</option><option>Serviços</option></select></div>
+                </div>
+                <div class="row3">
+                  <div><label>Inscrição Estadual</label><input id="jur_inscricaoEstadual" placeholder="Opcional"></div>
+                  <div><label>Inscrição Municipal</label><input id="jur_inscricaoMunicipal" placeholder="Opcional"></div>
+                  <div><label>Site</label><input id="jur_site" placeholder="Opcional"></div>
+                </div>
+                <div class="sec">Contato</div>
+                <label>E-mail <span class="tip" title="Obrigatório se meio de resposta é e-mail">ⓘ</span></label>
+                <input id="jur_email" placeholder="nome@dominio.com">
+                <div class="tel-add-row" style="margin-top:12px">
+                  <div><label>Telefone <span class="tip" title="Obrigatório se meio de resposta é telefone">ⓘ</span></label><input id="jur_telNumero" placeholder="(12) 90000-0000"></div>
+                  <div><label>Observações do Telefone</label><input id="jur_telObs" placeholder="Opcional"></div>
+                  <div class="chk"><input type="checkbox" id="jur_telPref"> Preferencial</div>
+                  <button class="icon-btn-add" onclick="adicionarTelefone('jur')" title="Adicionar telefone">+</button>
+                </div>
+                <table class="mini-table">
+                  <tr><th>Telefone</th><th>Observações</th><th>Preferencial</th><th></th></tr>
+                  <tbody id="jur_telBody"></tbody>
+                </table>
+
+                <div class="sec">Pessoas Autorizadas <span class="req">*</span></div>
+                <table>
+                  <tr><th>ID</th><th>CPF</th><th>Nome</th><th></th></tr>
+                  <tbody id="jur_paBody">
+                    <tr><td>1042</td><td>123.456.789-00</td><td><span class="avatar">CS</span>Carlos Silva</td><td><a class="link">Remover</a></td></tr>
+                    <tr><td>1087</td><td>987.654.321-00</td><td><span class="avatar">MT</span>Marta Tavares</td><td><a class="link">Remover</a></td></tr>
+                  </tbody>
+                </table>
+                <div style="font-size:11.5px;color:var(--muted);margin-top:10px">Pelo menos um autorizado é obrigatório para abrir novo protocolo. Autorizado consulta somente as PJs às quais está vinculado. Inclusão/remoção fica auditada.</div>
+                <button class="btn-outline" style="margin-top:8px">+ Adicionar</button>
+
+                <div class="modal-preview">
+                  <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Modal "+ Adicionar" — buscar Pessoa Autorizada</div>
+                  <div class="row3">
+                    <div><label style="margin-top:0">Nome</label><input placeholder="Buscar por nome"></div>
+                    <div><label style="margin-top:0">CPF</label><input placeholder="Buscar por CPF"></div>
+                    <div style="align-self:end"><button class="btn-outline" style="width:100%">🔍 Lookup</button></div>
+                  </div>
+                  <table style="margin-top:10px">
+                    <tr><th></th><th>ID</th><th>CPF</th><th>Nome da Pessoa</th></tr>
+                    <tr><td><input type="checkbox"></td><td>1103</td><td>456.789.123-00</td><td>Roberto Nunes</td></tr>
+                    <tr><td><input type="checkbox" checked></td><td>1104</td><td>321.654.987-00</td><td>Ana Beatriz Lima</td></tr>
+                  </table>
+                  <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:8px">
+                    <button class="btn-outline">Cancelar</button>
+                    <button class="btn-modern">Incluir pessoa</button>
+                  </div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:6px">"Incluir pessoa" só habilita com um cidadão selecionado na grid. A PF precisa já ter cadastro no sistema — não é possível digitar livremente.</div>
+                </div>
+
+                <div class="sec">Endereço</div>
+                <div class="row3">
+                  <div>
+                    <label>CEP <span class="req">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text" onclick="buscarCep('jur')" title="Pesquisar CEP">🔍</span>
+                      <input id="jur_cep" placeholder="00000-000">
+                    </div>
+                  </div>
+                  <div><label>Logradouro <span class="req">*</span></label><input id="jur_logradouro" placeholder="preenchido pela busca do CEP"></div>
+                  <div><label>Número <span class="req">*</span></label><input id="jur_numero" placeholder="Ex.: 500"></div>
+                </div>
+                <div class="row3" style="margin-top:12px">
+                  <div><label>Complemento</label><input id="jur_complemento" placeholder="Opcional"></div>
+                  <div><label>Bairro <span class="req">*</span></label><input id="jur_bairro" placeholder="preenchido pela busca do CEP"></div>
+                  <div><label>Cidade <span class="req">*</span></label><input id="jur_cidade" placeholder="preenchido pela busca do CEP"></div>
+                </div>
+                <div class="row3" style="margin-top:12px">
+                  <div><label>UF <span class="req">*</span></label><input id="jur_uf" disabled placeholder="preenchido pela busca do CEP"></div>
+                  <div><label>Região <span class="req">*</span></label><input id="jur_regiao" disabled placeholder="preenchida pela busca do CEP"></div>
+                  <div><label>Ponto de Referência</label><input id="jur_pontoRef" placeholder="Opcional"></div>
+                </div>
+              </div>
+
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-primary" onclick="salvarCadastro()">Salvar</button>
+              <button class="btn-back" onclick="voltar()">Voltar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ===================== DADOS ===================== */
+var pessoas = [
+  {
+    tipo: 'Fisica', ativo: true, protocolosVinculados: 2,
+    cpf: '123.456.789-00', dataNascimento: '', genero: 'Feminino', nome: 'Maria da Silva Souza',
+    nomeMae: '', nomeSocial: '', email: 'maria.souza@exemplo.com', rg: '', orgaoEmissor: '', dataEmissao: '',
+    telefones: [{ numero: '(11) 98888-7777', obs: '', pref: true }],
+    endereco: { cep: '01415-000', logradouro: 'Rua das Flores', numero: '100', complemento: '', bairro: 'Jardim Paulista', cidade: 'São Paulo', uf: 'SP', regiao: 'Zona Sul', pontoRef: '' }
+  },
+  {
+    tipo: 'Juridica', ativo: true, protocolosVinculados: 0,
+    cnpj: '12.345.678/0001-90', razaoSocial: 'Comércio ABC Ltda', nomeFantasia: 'ABC Store', ramoAtividade: '', inscricaoEstadual: '', inscricaoMunicipal: '', site: '', email: 'contato@abc.com.br', situacao: 'Ativa',
+    telefones: [],
+    endereco: { cep: '01310-100', logradouro: 'Av. Paulista', numero: '1000', complemento: '502', bairro: 'Bela Vista', cidade: 'São Paulo', uf: 'SP', regiao: 'Bela Vista', pontoRef: '' }
+  }
+];
+var idxEditando = null;
+var telefones = { fis: [], jur: [] };
+
+function normalizar(str){
+  return (str || '').normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '').replace(/['’]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+function documentoDe(p){ return p.tipo === 'Fisica' ? p.cpf : p.cnpj; }
+function nomeDe(p){ return p.tipo === 'Fisica' ? p.nome : p.razaoSocial; }
+
+/* ===================== LISTA ===================== */
+function renderLista(){
+  var buscaNome = normalizar(document.getElementById('buscaNome').value || '');
+  var buscaCpf = normalizar(document.getElementById('buscaCpf').value || '');
+  var buscaRazao = normalizar(document.getElementById('buscaRazaoSocial').value || '');
+  var buscaCnpj = normalizar(document.getElementById('buscaCnpj').value || '');
+  var body = document.getElementById('corpoTabela');
+  body.innerHTML = '';
+
+  var visiveis = pessoas.map(function(p, i){ return { p: p, i: i }; }).filter(function(x){
+    var p = x.p;
+    if(!buscaNome && !buscaCpf && !buscaRazao && !buscaCnpj) return true;
+    var bate = false;
+    if(buscaNome && p.tipo === 'Fisica' && normalizar(p.nome).indexOf(buscaNome) > -1) bate = true;
+    if(buscaCpf && p.tipo === 'Fisica' && normalizar(p.cpf).indexOf(buscaCpf) > -1) bate = true;
+    if(buscaRazao && p.tipo === 'Juridica' && normalizar(p.razaoSocial).indexOf(buscaRazao) > -1) bate = true;
+    if(buscaCnpj && p.tipo === 'Juridica' && normalizar(p.cnpj).indexOf(buscaCnpj) > -1) bate = true;
+    return bate;
+  });
+
+  if(!visiveis.length){
+    body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px">Nenhum registro encontrado</td></tr>';
+  } else {
+    visiveis.forEach(function(x){
+      var p = x.p, i = x.i;
+      var qtdProt = p.protocolosVinculados || 0;
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + nomeDe(p) + '</td>' +
+        '<td><span style="color:var(--blue);cursor:pointer" onclick="abrirEditar(' + i + ')">' + (documentoDe(p) || '—') + '</span></td>' +
+        '<td>' + (p.tipo === 'Fisica' ? 'Física' : 'Jurídica') + '</td>' +
+        '<td class="status-text">' + qtdProt + (qtdProt > 0 ? ' 🔒' : '') + '</td>' +
+        '<td class="status-text">' + (p.ativo ? 'Ativo' : 'Inativo') + '</td>' +
+        '<td class="acoes">' +
+          '<button class="btn btn-secondary btn-sm" onclick="abrirEditar(' + i + ')">Editar</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="excluirPessoa(' + i + ')">Excluir</button>' +
+        '</td>';
+      body.appendChild(tr);
+    });
+  }
+  document.getElementById('rodapeTexto').textContent = 'Mostrando ' + visiveis.length + ' de ' + pessoas.length + ' registros';
+}
+
+function excluirPessoa(i){
+  var p = pessoas[i];
+  var doc = p.tipo === 'Fisica' ? 'CPF' : 'CNPJ';
+  if(p.protocolosVinculados > 0){
+    if(!confirm('"' + nomeDe(p) + '" possui ' + p.protocolosVinculados + ' protocolo(s) vinculado(s) ao ' + doc + '. Por regra de LGPD, a exclusão definitiva é bloqueada — o cadastro será inativado, preservando o histórico. Continuar?')) return;
+    p.ativo = false;
+    if(p.tipo === 'Fisica') p.situacao = 'Inativa (preserva histórico)'; else p.situacao = 'Inativa (preserva histórico)';
+    renderLista();
+    mostrarToast('Exclusão bloqueada (LGPD): cadastro inativado, histórico preservado.');
+    return;
+  }
+  if(!confirm('Confirma a exclusão definitiva de "' + nomeDe(p) + '"? Sem protocolo vinculado ao ' + doc + ', o cadastro será removido sem manter histórico.')) return;
+  pessoas.splice(i, 1);
+  renderLista();
+  mostrarToast('Pessoa excluída definitivamente, sem manter histórico.');
+}
+
+/* ===================== NAVEGAÇÃO LISTA ⇄ FORMULÁRIO ===================== */
+function abrirNovo(){
+  idxEditando = null;
+  limparFormulario();
+  document.getElementById('tituloPagina').textContent = 'Nova Pessoa';
+  document.getElementById('breadcrumbAtual').textContent = 'Nova Pessoa';
+  document.getElementById('tipoPessoa').value = 'Fisica';
+  alternarTipo();
+  document.getElementById('listView').style.display = 'none';
+  document.getElementById('formView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function abrirEditar(i){
+  idxEditando = i;
+  limparFormulario();
+  var p = pessoas[i];
+  document.getElementById('tituloPagina').textContent = 'Editar Pessoa';
+  document.getElementById('breadcrumbAtual').textContent = 'Editar Pessoa';
+  document.getElementById('tipoPessoa').value = p.tipo;
+  document.getElementById('pessoaAtivo').checked = p.ativo !== false;
+  document.getElementById('pessoaBloqueioHint').style.display = (p.protocolosVinculados > 0) ? 'block' : 'none';
+
+  if(p.tipo === 'Fisica'){
+    document.getElementById('fis_cpf').value = p.cpf || '';
+    document.getElementById('fis_dataNascimento').value = p.dataNascimento || '';
+    document.getElementById('fis_genero').value = p.genero || '';
+    document.getElementById('fis_nome').value = p.nome || '';
+    document.getElementById('fis_nomeMae').value = p.nomeMae || '';
+    document.getElementById('fis_nomeSocial').value = p.nomeSocial || '';
+    document.getElementById('fis_email').value = p.email || '';
+    document.getElementById('fis_rg').value = p.rg || '';
+    document.getElementById('fis_orgaoEmissor').value = p.orgaoEmissor || '';
+    document.getElementById('fis_dataEmissao').value = p.dataEmissao || '';
+    telefones.fis = (p.telefones || []).slice();
+    var e = p.endereco || {};
+    document.getElementById('fis_cep').value = e.cep || '';
+    document.getElementById('fis_logradouro').value = e.logradouro || '';
+    document.getElementById('fis_numero').value = e.numero || '';
+    document.getElementById('fis_complemento').value = e.complemento || '';
+    document.getElementById('fis_bairro').value = e.bairro || '';
+    document.getElementById('fis_cidade').value = e.cidade || '';
+    document.getElementById('fis_uf').value = e.uf || '';
+    document.getElementById('fis_regiao').value = e.regiao || '';
+    document.getElementById('fis_pontoRef').value = e.pontoRef || '';
+  } else {
+    document.getElementById('jur_cnpj').value = p.cnpj || '';
+    document.getElementById('jur_razaoSocial').value = p.razaoSocial || '';
+    document.getElementById('jur_nomeFantasia').value = p.nomeFantasia || '';
+    document.getElementById('jur_ramoAtividade').value = p.ramoAtividade || '';
+    document.getElementById('jur_inscricaoEstadual').value = p.inscricaoEstadual || '';
+    document.getElementById('jur_inscricaoMunicipal').value = p.inscricaoMunicipal || '';
+    document.getElementById('jur_site').value = p.site || '';
+    document.getElementById('jur_email').value = p.email || '';
+    telefones.jur = (p.telefones || []).slice();
+    var ej = p.endereco || {};
+    document.getElementById('jur_cep').value = ej.cep || '';
+    document.getElementById('jur_logradouro').value = ej.logradouro || '';
+    document.getElementById('jur_numero').value = ej.numero || '';
+    document.getElementById('jur_complemento').value = ej.complemento || '';
+    document.getElementById('jur_bairro').value = ej.bairro || '';
+    document.getElementById('jur_cidade').value = ej.cidade || '';
+    document.getElementById('jur_uf').value = ej.uf || '';
+    document.getElementById('jur_regiao').value = ej.regiao || '';
+    document.getElementById('jur_pontoRef').value = ej.pontoRef || '';
+  }
+  renderTelefones('fis');
+  renderTelefones('jur');
+  alternarTipo();
+  document.getElementById('listView').style.display = 'none';
+  document.getElementById('formView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function voltar(){
+  document.getElementById('formView').style.display = 'none';
+  document.getElementById('listView').style.display = 'block';
+  renderLista();
+}
+
+function limparFormulario(){
+  limparErros();
+  ['fis_cpf','fis_dataNascimento','fis_nome','fis_nomeMae','fis_nomeSocial','fis_email','fis_rg','fis_orgaoEmissor','fis_dataEmissao',
+   'fis_cep','fis_logradouro','fis_numero','fis_complemento','fis_bairro','fis_cidade','fis_uf','fis_regiao','fis_pontoRef',
+   'jur_cnpj','jur_razaoSocial','jur_nomeFantasia','jur_inscricaoEstadual','jur_inscricaoMunicipal','jur_site','jur_email',
+   'jur_cep','jur_logradouro','jur_numero','jur_complemento','jur_bairro','jur_cidade','jur_uf','jur_regiao','jur_pontoRef'
+  ].forEach(function(id){ document.getElementById(id).value = ''; });
+  document.getElementById('fis_genero').value = '';
+  document.getElementById('jur_ramoAtividade').value = '';
+  document.getElementById('pessoaAtivo').checked = true;
+  document.getElementById('pessoaBloqueioHint').style.display = 'none';
+  document.getElementById('fis_dupHint').style.display = 'none';
+  document.getElementById('jur_dupHint').style.display = 'none';
+  telefones = { fis: [], jur: [] };
+  renderTelefones('fis');
+  renderTelefones('jur');
+}
+
+/* ===================== TOGGLE FÍSICA / JURÍDICA ===================== */
+function alternarTipo(){
+  var tipo = document.getElementById('tipoPessoa').value;
+  document.getElementById('blocoFisica').style.display = tipo === 'Fisica' ? 'block' : 'none';
+  document.getElementById('blocoJuridica').style.display = tipo === 'Juridica' ? 'block' : 'none';
+  document.getElementById('tituloCard').textContent = tipo === 'Fisica' ? 'Novo cadastro — Pessoa Física' : 'Novo cadastro — Pessoa Jurídica';
+}
+
+/* ===================== BUSCA DE CEP ===================== */
+function buscarCep(prefixo){
+  var dados = { logradouro: 'Rua das Gaivotas', bairro: 'Centro', cidade: 'Caraguatatuba', uf: 'SP', regiao: 'Litoral Norte' };
+  document.getElementById(prefixo + '_logradouro').value = dados.logradouro;
+  document.getElementById(prefixo + '_bairro').value = dados.bairro;
+  document.getElementById(prefixo + '_cidade').value = dados.cidade;
+  document.getElementById(prefixo + '_uf').value = dados.uf;
+  document.getElementById(prefixo + '_regiao').value = dados.regiao;
+}
+
+/* ===================== TELEFONES ===================== */
+function adicionarTelefone(prefixo){
+  var numero = document.getElementById(prefixo + '_telNumero').value.trim();
+  var obs = document.getElementById(prefixo + '_telObs').value.trim();
+  var pref = document.getElementById(prefixo + '_telPref').checked;
+  if(!numero){
+    document.getElementById(prefixo + '_telNumero').focus();
+    return;
+  }
+  telefones[prefixo].push({ numero: numero, obs: obs, pref: pref });
+  document.getElementById(prefixo + '_telNumero').value = '';
+  document.getElementById(prefixo + '_telObs').value = '';
+  document.getElementById(prefixo + '_telPref').checked = false;
+  renderTelefones(prefixo);
+}
+function removerTelefone(prefixo, idx){
+  telefones[prefixo].splice(idx, 1);
+  renderTelefones(prefixo);
+}
+function renderTelefones(prefixo){
+  var body = document.getElementById(prefixo + '_telBody');
+  var lista = telefones[prefixo];
+  if(!lista.length){
+    body.innerHTML = '<tr><td class="vazio" colspan="4">Nenhum telefone adicionado</td></tr>';
+    return;
+  }
+  body.innerHTML = lista.map(function(t, idx){
+    return '<tr><td>' + t.numero + '</td><td>' + (t.obs || '—') + '</td><td>' + (t.pref ? 'Sim' : 'Não') + '</td>' +
+      '<td><button class="icon-btn-remove" onclick="removerTelefone(\'' + prefixo + '\',' + idx + ')" title="Remover">−</button></td></tr>';
+  }).join('');
+}
+
+/* ===================== SALVAR / VALIDAÇÃO ===================== */
+function limparErros(){
+  document.getElementById('alertErros').classList.remove('show');
+  document.querySelectorAll('.invalid').forEach(function(el){ el.classList.remove('invalid'); });
+}
+
+function coletarErros(){
+  var tipo = document.getElementById('tipoPessoa').value;
+  var campos = tipo === 'Fisica'
+    ? [['fis_cpf','CPF'],['fis_genero','Gênero'],['fis_nome','Nome'],['fis_cep','CEP'],['fis_logradouro','Logradouro'],['fis_numero','Número'],['fis_bairro','Bairro'],['fis_cidade','Cidade'],['fis_uf','UF'],['fis_regiao','Região']]
+    : [['jur_cnpj','CNPJ'],['jur_razaoSocial','Razão Social'],['jur_cep','CEP'],['jur_logradouro','Logradouro'],['jur_numero','Número'],['jur_bairro','Bairro'],['jur_cidade','Cidade'],['jur_uf','UF'],['jur_regiao','Região']];
+  var erros = campos.filter(function(c){ return !document.getElementById(c[0]).value.trim(); }).map(function(c){ return { id: c[0], label: c[1] }; });
+
+  if(tipo === 'Fisica'){
+    var cpf = document.getElementById('fis_cpf').value.trim();
+    var dup = pessoas.some(function(p, i){ return p.tipo === 'Fisica' && p.cpf === cpf && i !== idxEditando; });
+    document.getElementById('fis_dupHint').style.display = dup ? 'block' : 'none';
+    if(dup) erros.push({ id: 'fis_cpf', label: 'CPF (duplicado)' });
+  } else {
+    var cnpj = document.getElementById('jur_cnpj').value.trim();
+    var dupJ = pessoas.some(function(p, i){ return p.tipo === 'Juridica' && p.cnpj === cnpj && i !== idxEditando; });
+    document.getElementById('jur_dupHint').style.display = dupJ ? 'block' : 'none';
+    if(dupJ) erros.push({ id: 'jur_cnpj', label: 'CNPJ (duplicado)' });
+  }
+  return erros;
+}
+
+function exibirErros(erros){
+  var lista = document.getElementById('alertErrosLista');
+  lista.innerHTML = erros.map(function(e){ return '<span>' + e.label + '</span>'; }).join('');
+  document.getElementById('alertErros').classList.add('show');
+  erros.forEach(function(e){ document.getElementById(e.id).classList.add('invalid'); });
+  document.getElementById('alertErros').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function salvarCadastro(){
+  limparErros();
+  var erros = coletarErros();
+  if(erros.length){
+    exibirErros(erros);
+    return;
+  }
+
+  var tipo = document.getElementById('tipoPessoa').value;
+  var protocolosExistentes = idxEditando !== null ? (pessoas[idxEditando].protocolosVinculados || 0) : 0;
+  var ativo = document.getElementById('pessoaAtivo').checked;
+  var registro = { tipo: tipo, protocolosVinculados: protocolosExistentes, ativo: ativo, situacao: ativo ? 'Ativa' : 'Inativa (preserva histórico)' };
+
+  if(tipo === 'Fisica'){
+    registro.cpf = document.getElementById('fis_cpf').value.trim();
+    registro.dataNascimento = document.getElementById('fis_dataNascimento').value.trim();
+    registro.genero = document.getElementById('fis_genero').value;
+    registro.nome = document.getElementById('fis_nome').value.trim();
+    registro.nomeMae = document.getElementById('fis_nomeMae').value.trim();
+    registro.nomeSocial = document.getElementById('fis_nomeSocial').value.trim();
+    registro.email = document.getElementById('fis_email').value.trim();
+    registro.rg = document.getElementById('fis_rg').value.trim();
+    registro.orgaoEmissor = document.getElementById('fis_orgaoEmissor').value.trim();
+    registro.dataEmissao = document.getElementById('fis_dataEmissao').value.trim();
+    registro.telefones = telefones.fis.slice();
+    registro.endereco = {
+      cep: document.getElementById('fis_cep').value.trim(), logradouro: document.getElementById('fis_logradouro').value.trim(),
+      numero: document.getElementById('fis_numero').value.trim(), complemento: document.getElementById('fis_complemento').value.trim(),
+      bairro: document.getElementById('fis_bairro').value.trim(), cidade: document.getElementById('fis_cidade').value.trim(),
+      uf: document.getElementById('fis_uf').value.trim(), regiao: document.getElementById('fis_regiao').value.trim(),
+      pontoRef: document.getElementById('fis_pontoRef').value.trim()
+    };
+  } else {
+    registro.cnpj = document.getElementById('jur_cnpj').value.trim();
+    registro.razaoSocial = document.getElementById('jur_razaoSocial').value.trim();
+    registro.nomeFantasia = document.getElementById('jur_nomeFantasia').value.trim();
+    registro.ramoAtividade = document.getElementById('jur_ramoAtividade').value;
+    registro.inscricaoEstadual = document.getElementById('jur_inscricaoEstadual').value.trim();
+    registro.inscricaoMunicipal = document.getElementById('jur_inscricaoMunicipal').value.trim();
+    registro.site = document.getElementById('jur_site').value.trim();
+    registro.email = document.getElementById('jur_email').value.trim();
+    registro.telefones = telefones.jur.slice();
+    registro.endereco = {
+      cep: document.getElementById('jur_cep').value.trim(), logradouro: document.getElementById('jur_logradouro').value.trim(),
+      numero: document.getElementById('jur_numero').value.trim(), complemento: document.getElementById('jur_complemento').value.trim(),
+      bairro: document.getElementById('jur_bairro').value.trim(), cidade: document.getElementById('jur_cidade').value.trim(),
+      uf: document.getElementById('jur_uf').value.trim(), regiao: document.getElementById('jur_regiao').value.trim(),
+      pontoRef: document.getElementById('jur_pontoRef').value.trim()
+    };
+  }
+
+  if(idxEditando === null){
+    pessoas.push(registro);
+    mostrarToast(tipo === 'Fisica' ? 'Pessoa Física cadastrada com sucesso.' : 'Pessoa Jurídica cadastrada com sucesso.');
+  } else {
+    pessoas[idxEditando] = registro;
+    mostrarToast('Cadastro atualizado com sucesso.');
+  }
+  voltar();
+}
+
+/* ===================== TOAST ===================== */
+function mostrarToast(msg){
+  var wrap = document.getElementById('toastWrap');
+  var el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = '<span>✓</span><span>' + msg + '</span>';
+  wrap.appendChild(el);
+  requestAnimationFrame(function(){ el.classList.add('show'); });
+  setTimeout(function(){
+    el.classList.remove('show');
+    setTimeout(function(){ if(el.parentElement) wrap.removeChild(el); }, 300);
+  }, 3200);
+}
+
+renderLista();
+</script>
+</body>
+</html>
