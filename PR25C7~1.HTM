@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Grupos (usuários vinculados)</title>
+<style>
+:root{--slate1:#2D3748;--slate2:#4A5568;--border:#E2E8F0;--text:#2D3748;--muted:#6C757D;--blue:#007BFF;--wrapper:#F4F6F9;--req:#C0392B;--green:#28A745;--red:#DC3545}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--wrapper);color:var(--text)}
+.wrapper{display:flex;min-height:100vh}
+.main-sidebar{width:250px;flex-shrink:0;background:linear-gradient(180deg,#0F1823 0%,#1A2A3A 25%,#2C3E50 50%,#1A2A3A 75%,#0F1823 100%);box-shadow:2px 0 10px rgba(0,0,0,.2);color:#fff}
+.brand{padding:16px 20px;background:rgba(255,255,255,.08);font-size:18px;font-weight:600;color:rgba(255,255,255,.92)}
+.sidebar-nav{padding:12px 10px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:2px;border-radius:8px;color:rgba(255,255,255,.75);text-decoration:none;font-size:14px}
+.sidebar-nav a.active{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}
+.content-wrapper{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:#fff;padding:9px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;font-size:14px;color:var(--muted)}
+.content-header{padding:20px 28px 0;display:flex;justify-content:space-between;align-items:flex-start}
+.content-header h1{font-size:25px;font-weight:700;color:var(--slate1);margin:0}
+.content-header .subtitle{color:var(--muted);font-size:12.5px;margin-top:4px}
+.breadcrumb{font-size:13px;color:var(--muted)}
+.breadcrumb a{color:var(--blue);text-decoration:none}
+.content{padding:18px 28px 28px;max-width:1000px}
+.banner{background:#eef5ff;border:1px solid #bcdcff;border-radius:10px;padding:14px 18px;font-size:12.5px;color:#0b4a8f;margin-bottom:14px;line-height:1.55}
+.banner b{color:#07396b}
+.fine{font-size:11px;color:#8891a0;margin-bottom:10px;display:block}
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:20px;overflow:hidden}
+.card-header{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:14.5px}
+.card-body{padding:20px 22px}
+label{display:block;font-size:13px;font-weight:600;color:var(--slate2);margin:12px 0 5px}
+.req{color:var(--req);margin-left:2px}
+input,select{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:#fff}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.sec{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 4px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{border:none;border-radius:4px;padding:8px 18px;font-size:13.5px;cursor:pointer}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-modern{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;font-weight:600;padding:8px 18px;border-radius:6px}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 12px;border-radius:6px;cursor:pointer}
+.btn-secondary{background:var(--muted);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.card-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px}
+.card-footer .btn-primary{border-radius:6px;padding:8px 22px;font-size:13.5px;font-weight:600}
+.card-footer .btn-back{background:#fff;border:1px solid var(--border);color:var(--slate2);border-radius:6px;padding:8px 22px;font-size:13.5px;cursor:pointer}
+.err-hint{background:#fbe7e9;color:#b02a37;font-size:12px;padding:8px 10px;border-radius:6px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;color:#8891a0;font-size:11px;text-transform:uppercase;font-weight:700;padding:9px 6px;border-bottom:2px solid #F0F1F5}
+tbody td{padding:9px 6px;border-bottom:1px solid #F0F1F5}
+a.link{color:var(--blue);text-decoration:none;font-size:12.5px;cursor:pointer}
+.avatar{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:9px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;margin-right:6px}
+.mini-table{margin-top:10px}
+.mini-table td.vazio{text-align:center;color:var(--muted);padding:12px;font-size:12.5px}
+.icon-btn-remove{width:26px;height:26px;border:none;border-radius:6px;background:var(--red);color:#fff;font-size:14px;cursor:pointer;line-height:1}
+input.invalid,select.invalid{border-color:var(--req)!important;box-shadow:0 0 0 1px rgba(192,57,43,.15)}
+.alert-erros{background:#f8d7da;border:1px solid #f5c6cb;border-radius:8px;padding:14px 16px;margin-bottom:16px;display:none}
+.alert-erros.show{display:block}
+.alert-erros-titulo{color:#721c24;font-size:13px;font-weight:600;margin-bottom:10px}
+.alert-erros-lista{display:flex;flex-wrap:wrap;gap:8px 18px}
+.alert-erros-lista span{color:#721c24;font-size:12.5px;display:inline-flex;align-items:center;gap:5px}
+.alert-erros-lista span::before{content:"⛔";font-size:11px}
+.toast-wrap{position:fixed;top:16px;right:16px;z-index:9999;width:300px}
+.toast{background:var(--green);color:#fff;border-radius:6px;padding:13px 15px;font-size:13.5px;box-shadow:0 4px 14px rgba(0,0,0,.18);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(-8px);transition:opacity .25s ease,transform .25s ease;margin-bottom:8px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:12px}
+.exports{display:flex;gap:8px;align-items:center}
+.search-divider{border:none;border-top:1px solid var(--border);margin:0 0 16px}
+.pessoa-search{display:flex;gap:20px;align-items:flex-end;margin-bottom:16px}
+.pessoa-search-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:14px 24px}
+.pessoa-search-btn{width:42px;height:42px;flex-shrink:0;border:none;border-radius:6px;background:#E9ECEF;color:var(--slate2);font-size:16px;cursor:pointer}
+.table-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.status-text{color:var(--slate2);font-size:13px}
+.acoes{text-align:right;white-space:nowrap}
+.acoes .btn{margin-left:6px}
+.badge{font-size:10.5px;padding:2px 8px;border-radius:10px;font-weight:700}
+.badge.on{background:#e6f4ea;color:#1e7e34}
+.badge.off{background:#f0f1f5;color:#6C757D}
+
+/* Modal usuário */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,24,35,.45);display:none;align-items:flex-start;justify-content:center;padding:60px 16px;z-index:1000}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:10px;width:100%;max-width:620px;box-shadow:0 10px 40px rgba(0,0,0,.25);overflow:hidden}
+.modal-head{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:14px 20px;font-weight:600;font-size:14.5px;display:flex;justify-content:space-between;align-items:center}
+.modal-head span.x{cursor:pointer;font-size:16px;opacity:.85}
+.modal-body{padding:18px 20px}
+.modal-results{max-height:280px;overflow-y:auto;margin-top:10px;border:1px solid var(--border);border-radius:8px}
+.modal-results table{margin:0}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.chk-cell{width:34px;text-align:center}
+.fine-note{font-size:11px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <div class="brand">Serviço ao Cidadão</div>
+    <div class="sidebar-nav">
+      <a href="#">📊 Dashboard</a>
+      <a href="#">📖 Assuntos</a>
+      <a href="#">🏷️ Tipos de Solicitação</a>
+      <a href="#">🔖 SubAssuntos</a>
+      <a class="active" href="#">📚 Grupos</a>
+      <a href="#">🏛️ Governos</a>
+      <a href="#">🏢 Órgãos</a>
+      <a href="#">📇 Pedido de Informação</a>
+      <a href="#">🏗️ Diretoria</a>
+      <a href="#">📋 Formulários Dinâmicos</a>
+    </div>
+  </aside>
+  <div class="content-wrapper">
+    <div class="topbar"><span>☰</span><span>👤 Administrator</span></div>
+
+    <!-- ===================== LISTA ===================== -->
+    <div id="listView">
+      <div class="content-header">
+        <div>
+          <h1>Grupos</h1>
+          <div class="subtitle">Grupos vinculados a Diretorias, com usuários responsáveis pelo atendimento</div>
+        </div>
+        <div class="breadcrumb"><a href="#">Home</a> / Grupo</div>
+      </div>
+      <div class="content">
+
+        <div class="banner">
+          <b>O que é novo:</b> cada Grupo agora tem uma seção de <b>Usuários vinculados</b>, gerenciada direto no formulário de Criar/Editar — sem sair da tela para adicionar cada pessoa. As alterações ficam em memória e só são gravadas quando você clica em <b>Salvar</b>.
+        </div>
+        <span class="fine">Protótipo — vínculo Usuário × Grupo, com adicionar/remover em lote e exportação com usuários concatenados</span>
+
+        <div class="card" style="margin-top:14px">
+          <div class="card-header">
+            <span>☰ Lista de Grupos</span>
+            <button class="btn btn-modern" onclick="abrirNovoGrupo()">+ Novo Grupo</button>
+          </div>
+          <div class="card-body">
+
+            <div class="toolbar">
+              <div class="exports">
+                <button class="btn btn-outline btn-sm">CSV</button>
+                <button class="btn btn-outline btn-sm">Excel</button>
+                <button class="btn btn-outline btn-sm">PDF</button>
+              </div>
+            </div>
+            <span class="fine-note">A exportação traz a coluna "Usuários" com os nomes vinculados ao grupo, concatenados por vírgula (ex.: "Ana Beatriz Lima, Carlos Eduardo Silva").</span>
+            <hr class="search-divider" style="margin-top:14px">
+
+            <div class="pessoa-search">
+              <div class="pessoa-search-grid">
+                <div><label style="margin-top:0">Nome do Grupo</label><input id="buscaNomeGrupo" oninput="renderListaGrupos()"></div>
+                <div><label style="margin-top:0">Sigla</label><input id="buscaSiglaGrupo" oninput="renderListaGrupos()"></div>
+              </div>
+              <button class="pessoa-search-btn" onclick="renderListaGrupos()" title="Buscar">🔍</button>
+            </div>
+            <hr class="search-divider">
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Nome</th><th>Sigla</th><th>Diretoria</th><th>Usuários</th><th>Status</th><th class="acoes">Ações</th></tr>
+                </thead>
+                <tbody id="corpoTabelaGrupos"></tbody>
+              </table>
+            </div>
+
+            <div class="tablefoot" style="margin-top:14px;font-size:12.5px;color:var(--muted)">
+              <span id="rodapeTextoGrupos">Mostrando 0 registros</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================== FORMULÁRIO (CRIAR/EDITAR) ===================== -->
+    <div id="formView" style="display:none">
+      <div class="content-header">
+        <div><h1 id="tituloPagina">Novo Grupo</h1><div class="subtitle">Grupo / Diretoria / Usuários vinculados</div></div>
+        <div class="breadcrumb"><a href="#" onclick="voltarGrupo();return false;">Home</a> / <a href="#" onclick="voltarGrupo();return false;">Grupo</a> / <span id="breadcrumbAtual">Novo Grupo</span></div>
+      </div>
+      <div class="content">
+        <span class="fine">Protótipo — adicionar/remover usuários fica em memória; só grava ao clicar em Salvar</span>
+        <div style="margin-top:14px">
+          <div class="card">
+            <div class="card-body">
+
+              <div class="alert-erros" id="alertErros">
+                <div class="alert-erros-titulo">Os seguintes campos obrigatórios não foram preenchidos:</div>
+                <div class="alert-erros-lista" id="alertErrosLista"></div>
+              </div>
+
+              <label>Nome <span class="req">*</span></label>
+              <input id="grp_nome" placeholder="Ex.: ADMINISTRACAO/OUTROS">
+
+              <label>Sigla <span class="req">*</span></label>
+              <input id="grp_sigla" placeholder="Ex.: ADM">
+
+              <div class="row2">
+                <div>
+                  <label>Diretoria <span class="req">*</span></label>
+                  <select id="grp_diretoria">
+                    <option value="" selected>— Selecione —</option>
+                    <option>Diretoria de Administração e Finanças</option>
+                    <option>Diretoria de Obras e Serviços</option>
+                    <option>Diretoria de Meio Ambiente</option>
+                    <option>Diretoria de Atendimento ao Cidadão</option>
+                    <option>Diretoria de Tecnologia</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Status</label>
+                  <select id="grp_status">
+                    <option>Ativo</option>
+                    <option>Inativo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="sec">Usuários vinculados</div>
+              <table class="mini-table">
+                <tr><th>Nome</th><th>Perfil</th><th></th></tr>
+                <tbody id="grp_usuariosBody"></tbody>
+              </table>
+              <div style="font-size:11.5px;color:var(--muted);margin-top:10px">Adicionar ou remover usuários aqui não altera o banco imediatamente — as mudanças só são gravadas ao clicar em Salvar, no rodapé da tela.</div>
+              <button class="btn-outline" style="margin-top:8px" onclick="abrirModalUsuario()">+ Adicionar usuário</button>
+
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-primary" onclick="salvarGrupo()">Salvar</button>
+              <button class="btn-back" onclick="voltarGrupo()">Voltar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== MODAL BUSCAR/ADICIONAR USUÁRIO ===================== -->
+<div class="modal-overlay" id="modalUsuario">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span>Adicionar usuário ao grupo</span>
+      <span class="x" onclick="fecharModalUsuario()" title="Fechar">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="row2">
+        <div><label style="margin-top:0">Nome</label><input id="modal_buscaNome" oninput="renderResultadosModal()" placeholder="Buscar por nome"></div>
+        <div><label style="margin-top:0">Perfil</label><input id="modal_buscaPerfil" oninput="renderResultadosModal()" placeholder="Buscar por perfil"></div>
+      </div>
+      <div class="modal-results">
+        <table>
+          <tr><th class="chk-cell"></th><th>Nome</th><th>Perfil</th></tr>
+          <tbody id="modal_resultados"></tbody>
+        </table>
+      </div>
+      <div class="fine-note">Marque um ou mais usuários e clique em "Incluir selecionados". Usuários já vinculados aparecem pré-marcados.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" onclick="fecharModalUsuario()">Cancelar</button>
+      <button class="btn-modern" onclick="incluirSelecionados()">Incluir selecionados</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ===================== DADOS ===================== */
+var usuariosDisponiveis = [
+  { id: 1, nome: 'Ana Beatriz Lima', perfil: 'Atendente' },
+  { id: 2, nome: 'Carlos Eduardo Silva', perfil: 'Supervisor' },
+  { id: 3, nome: 'Marta Tavares Souza', perfil: 'Atendente' },
+  { id: 4, nome: 'Roberto Nunes Ferreira', perfil: 'Administrador' },
+  { id: 5, nome: 'Juliana Costa Ramos', perfil: 'Atendente' },
+  { id: 6, nome: 'Pedro Henrique Alves', perfil: 'Supervisor' },
+  { id: 7, nome: 'Fernanda Dias Martins', perfil: 'Atendente' }
+];
+
+var grupos = [
+  { nome: 'ADMINISTRACAO/OUTROS', sigla: 'ADM', diretoria: 'Diretoria de Administração e Finanças', status: 'Ativo', usuarios: [1, 2] },
+  { nome: 'OBRAS E INFRAESTRUTURA', sigla: 'OBR', diretoria: 'Diretoria de Obras e Serviços', status: 'Ativo', usuarios: [3] },
+  { nome: 'MEIO AMBIENTE', sigla: 'MAM', diretoria: 'Diretoria de Meio Ambiente', status: 'Inativo', usuarios: [] }
+];
+
+var idxEditando = null;
+var usuariosVinculadosAtual = []; // array de IDs, estado em memória do formulário
+
+function normalizar(str){
+  return (str || '').normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]', 'g'), '').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+function getUsuario(id){ return usuariosDisponiveis.find(function(u){ return u.id === id; }); }
+function nomesUsuarios(ids){ return ids.map(function(id){ var u = getUsuario(id); return u ? u.nome : '—'; }).join(', '); }
+
+/* ===================== LISTA DE GRUPOS ===================== */
+function renderListaGrupos(){
+  var buscaNome = normalizar(document.getElementById('buscaNomeGrupo').value || '');
+  var buscaSigla = normalizar(document.getElementById('buscaSiglaGrupo').value || '');
+  var body = document.getElementById('corpoTabelaGrupos');
+  body.innerHTML = '';
+
+  var visiveis = grupos.map(function(g, i){ return { g: g, i: i }; }).filter(function(x){
+    var g = x.g;
+    if(!buscaNome && !buscaSigla) return true;
+    var bate = true;
+    if(buscaNome && normalizar(g.nome).indexOf(buscaNome) === -1) bate = false;
+    if(buscaSigla && normalizar(g.sigla).indexOf(buscaSigla) === -1) bate = false;
+    return bate;
+  });
+
+  if(!visiveis.length){
+    body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px">Nenhum registro encontrado</td></tr>';
+  } else {
+    visiveis.forEach(function(x){
+      var g = x.g, i = x.i;
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><span style="color:var(--blue);cursor:pointer" onclick="abrirEditarGrupo(' + i + ')">' + g.nome + '</span></td>' +
+        '<td>' + g.sigla + '</td>' +
+        '<td>' + g.diretoria + '</td>' +
+        '<td>' + (g.usuarios.length ? '<span class="badge on">' + g.usuarios.length + ' vinculado(s)</span>' : '<span class="badge off">Nenhum</span>') + '</td>' +
+        '<td class="status-text">' + g.status + '</td>' +
+        '<td class="acoes">' +
+          '<button class="btn btn-secondary btn-sm" onclick="abrirEditarGrupo(' + i + ')">Editar</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="excluirGrupo(' + i + ')">Excluir</button>' +
+        '</td>';
+      body.appendChild(tr);
+    });
+  }
+  document.getElementById('rodapeTextoGrupos').textContent = 'Mostrando ' + visiveis.length + ' de ' + grupos.length + ' registros';
+}
+
+function excluirGrupo(i){
+  if(!confirm('Confirma a exclusão do grupo "' + grupos[i].nome + '"?')) return;
+  grupos.splice(i, 1);
+  renderListaGrupos();
+  mostrarToast('Grupo excluído com sucesso.');
+}
+
+/* ===================== NAVEGAÇÃO LISTA ⇄ FORMULÁRIO ===================== */
+function abrirNovoGrupo(){
+  idxEditando = null;
+  limparFormularioGrupo();
+  document.getElementById('tituloPagina').textContent = 'Novo Grupo';
+  document.getElementById('breadcrumbAtual').textContent = 'Novo Grupo';
+  document.getElementById('listView').style.display = 'none';
+  document.getElementById('formView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function abrirEditarGrupo(i){
+  idxEditando = i;
+  limparFormularioGrupo();
+  var g = grupos[i];
+  document.getElementById('tituloPagina').textContent = 'Editar Grupo';
+  document.getElementById('breadcrumbAtual').textContent = 'Editar Grupo';
+  document.getElementById('grp_nome').value = g.nome || '';
+  document.getElementById('grp_sigla').value = g.sigla || '';
+  document.getElementById('grp_diretoria').value = g.diretoria || '';
+  document.getElementById('grp_status').value = g.status || 'Ativo';
+  usuariosVinculadosAtual = (g.usuarios || []).slice();
+  renderUsuariosVinculados();
+  document.getElementById('listView').style.display = 'none';
+  document.getElementById('formView').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function voltarGrupo(){
+  document.getElementById('formView').style.display = 'none';
+  document.getElementById('listView').style.display = 'block';
+  renderListaGrupos();
+}
+
+function limparFormularioGrupo(){
+  limparErros();
+  document.getElementById('grp_nome').value = '';
+  document.getElementById('grp_sigla').value = '';
+  document.getElementById('grp_diretoria').value = '';
+  document.getElementById('grp_status').value = 'Ativo';
+  usuariosVinculadosAtual = [];
+  renderUsuariosVinculados();
+}
+
+/* ===================== USUÁRIOS VINCULADOS (em memória até Salvar) ===================== */
+function renderUsuariosVinculados(){
+  var body = document.getElementById('grp_usuariosBody');
+  if(!usuariosVinculadosAtual.length){
+    body.innerHTML = '<tr><td class="vazio" colspan="3">Nenhum usuário vinculado</td></tr>';
+    return;
+  }
+  body.innerHTML = usuariosVinculadosAtual.map(function(id){
+    var u = getUsuario(id);
+    if(!u) return '';
+    return '<tr><td><span class="avatar">' + u.nome.split(' ').map(function(p){ return p[0]; }).slice(0,2).join('') + '</span>' + u.nome + '</td>' +
+      '<td>' + u.perfil + '</td>' +
+      '<td><button class="icon-btn-remove" onclick="removerUsuarioVinculado(' + id + ')" title="Remover">−</button></td></tr>';
+  }).join('');
+}
+
+function removerUsuarioVinculado(id){
+  usuariosVinculadosAtual = usuariosVinculadosAtual.filter(function(x){ return x !== id; });
+  renderUsuariosVinculados();
+}
+
+/* ===================== MODAL ADICIONAR USUÁRIO ===================== */
+function abrirModalUsuario(){
+  document.getElementById('modal_buscaNome').value = '';
+  document.getElementById('modal_buscaPerfil').value = '';
+  renderResultadosModal();
+  document.getElementById('modalUsuario').classList.add('show');
+}
+function fecharModalUsuario(){
+  document.getElementById('modalUsuario').classList.remove('show');
+}
+function renderResultadosModal(){
+  var buscaNome = normalizar(document.getElementById('modal_buscaNome').value || '');
+  var buscaPerfil = normalizar(document.getElementById('modal_buscaPerfil').value || '');
+  var body = document.getElementById('modal_resultados');
+  var filtrados = usuariosDisponiveis.filter(function(u){
+    var bate = true;
+    if(buscaNome && normalizar(u.nome).indexOf(buscaNome) === -1) bate = false;
+    if(buscaPerfil && normalizar(u.perfil).indexOf(buscaPerfil) === -1) bate = false;
+    return bate;
+  });
+  if(!filtrados.length){
+    body.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:14px">Nenhum usuário encontrado</td></tr>';
+    return;
+  }
+  body.innerHTML = filtrados.map(function(u){
+    var jaVinculado = usuariosVinculadosAtual.indexOf(u.id) > -1;
+    return '<tr><td class="chk-cell"><input type="checkbox" data-uid="' + u.id + '"' + (jaVinculado ? ' checked' : '') + '></td>' +
+      '<td>' + u.nome + '</td><td>' + u.perfil + '</td></tr>';
+  }).join('');
+}
+function incluirSelecionados(){
+  var marcados = Array.prototype.slice.call(document.querySelectorAll('#modal_resultados input[type=checkbox]:checked')).map(function(el){ return parseInt(el.getAttribute('data-uid'), 10); });
+  marcados.forEach(function(id){
+    if(usuariosVinculadosAtual.indexOf(id) === -1) usuariosVinculadosAtual.push(id);
+  });
+  renderUsuariosVinculados();
+  fecharModalUsuario();
+}
+
+/* ===================== SALVAR / VALIDAÇÃO ===================== */
+function limparErros(){
+  document.getElementById('alertErros').classList.remove('show');
+  document.querySelectorAll('.invalid').forEach(function(el){ el.classList.remove('invalid'); });
+}
+function coletarErros(){
+  var campos = [['grp_nome','Nome'],['grp_sigla','Sigla'],['grp_diretoria','Diretoria']];
+  return campos.filter(function(c){ return !document.getElementById(c[0]).value.trim(); }).map(function(c){ return { id: c[0], label: c[1] }; });
+}
+function exibirErros(erros){
+  var lista = document.getElementById('alertErrosLista');
+  lista.innerHTML = erros.map(function(e){ return '<span>' + e.label + '</span>'; }).join('');
+  document.getElementById('alertErros').classList.add('show');
+  erros.forEach(function(e){ document.getElementById(e.id).classList.add('invalid'); });
+  document.getElementById('alertErros').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function salvarGrupo(){
+  limparErros();
+  var erros = coletarErros();
+  if(erros.length){
+    exibirErros(erros);
+    return;
+  }
+
+  var registro = {
+    nome: document.getElementById('grp_nome').value.trim(),
+    sigla: document.getElementById('grp_sigla').value.trim(),
+    diretoria: document.getElementById('grp_diretoria').value,
+    status: document.getElementById('grp_status').value,
+    usuarios: usuariosVinculadosAtual.slice()
+  };
+
+  if(idxEditando === null){
+    grupos.push(registro);
+    mostrarToast('Grupo cadastrado com sucesso.');
+  } else {
+    grupos[idxEditando] = registro;
+    mostrarToast('Grupo atualizado com sucesso.');
+  }
+  voltarGrupo();
+}
+
+/* ===================== TOAST ===================== */
+function mostrarToast(msg){
+  var wrap = document.getElementById('toastWrap');
+  var el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = '<span>✓</span><span>' + msg + '</span>';
+  wrap.appendChild(el);
+  requestAnimationFrame(function(){ el.classList.add('show'); });
+  setTimeout(function(){
+    el.classList.remove('show');
+    setTimeout(function(){ if(el.parentElement) wrap.removeChild(el); }, 300);
+  }, 3200);
+}
+
+renderListaGrupos();
+</script>
+</body>
+</html>
