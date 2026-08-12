@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Card 0026 — Testes Completos (Portal do Cidadão)</title>
+<style>
+:root{--slate1:#2D3748;--slate2:#4A5568;--border:#E2E8F0;--text:#2D3748;--muted:#6C757D;--blue:#007BFF;--wrapper:#F4F6F9;--green:#28A745;--red:#DC3545;--orange:#FD7E14}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--wrapper);color:var(--text)}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 24px 80px}
+h1{font-size:24px;color:var(--slate1);margin:0 0 4px}
+.subtitle{color:var(--muted);font-size:13px;margin-bottom:20px}
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden}
+.card-header{background:linear-gradient(135deg,var(--slate1) 0%,var(--slate2) 100%);color:#fff;padding:12px 20px;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.card-header .pill{font-size:11px;background:rgba(255,255,255,.15);padding:3px 10px;border-radius:12px}
+.card-body{padding:18px 22px}
+.banner{background:#eef5ff;border:1px solid #bcdcff;border-radius:10px;padding:14px 18px;font-size:12.5px;color:#0b4a8f;margin-bottom:18px;line-height:1.6}
+.banner b{color:#07396b}
+
+.summary{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.summary .box{flex:1;min-width:140px;background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);padding:16px 18px;text-align:center}
+.summary .box .n{font-size:26px;font-weight:700}
+.summary .box .l{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
+.summary .box.passou .n{color:var(--green)}
+.summary .box.falhou .n{color:var(--red)}
+.summary .box.bloqueado .n{color:var(--orange)}
+.summary .box.nao-testado .n{color:var(--muted)}
+.hint-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 24px;flex-wrap:wrap}
+.hint-row .fine{font-size:11.5px;color:#8891a0}
+.reset-btn{font-size:11.5px;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:16px;padding:5px 12px;cursor:pointer;white-space:nowrap}
+
+.toc{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);padding:18px 22px;margin-bottom:26px}
+.toc h2{margin:0 0 10px;font-size:14px;color:var(--slate1)}
+.toc .group-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px}
+.toc .group-label:first-child{margin-top:0}
+.toc a{display:block;color:var(--blue);text-decoration:none;padding:3px 0;font-size:13px}
+.toc a:hover{text-decoration:underline}
+
+.section-divider{display:flex;align-items:center;gap:14px;margin:34px 0 16px}
+.section-divider h2{font-size:16px;color:var(--slate1);margin:0;white-space:nowrap}
+.section-divider .line{flex:1;height:1px;background:var(--border)}
+
+.scenario{border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:12px}
+.scenario:last-child{margin-bottom:0}
+.scenario.edited{border-color:#bcdcff;box-shadow:0 0 0 1px #bcdcff inset}
+.sc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.sc-title{font-weight:700;font-size:13.5px;color:var(--slate1)}
+.sc-desc{font-size:13px;line-height:1.7;color:var(--text)}
+.obs{margin-top:8px;font-size:12px;color:var(--muted);background:#F8FAFC;border-left:3px solid var(--border);padding:6px 10px;border-radius:4px}
+.evidence{margin-top:8px;font-family:'Courier New',monospace;font-size:11.5px;background:#fff8f8;border:1px solid #f5bcbc;border-radius:6px;padding:8px 10px;color:#7a1717}
+.evidence-img{margin-top:10px}
+.evidence-img img{max-width:100%;border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);display:block}
+.evidence-img .cap{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* Gherkin */
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:0}
+.legend span{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.kw-dado{background:#e0edff;color:#0b4a8f}
+.kw-quando{background:#fff3cd;color:#8A6D00}
+.kw-entao{background:#e6f7ec;color:#1e7e34}
+.kw-e{background:#f1e6fb;color:#5b2a99}
+.gherkin{font-size:13px;line-height:1.85}
+.gherkin b.g-dado{color:#0b4a8f}
+.gherkin b.g-quando{color:#8A6D00}
+.gherkin b.g-entao{color:#1e7e34}
+.gherkin .g-e{color:var(--muted)}
+.type-pill{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:12px;background:#eef5ff;color:#0b4a8f;border:1px solid #bcdcff;margin-left:6px;vertical-align:middle}
+
+.status-group{display:flex;gap:5px;flex-wrap:wrap}
+.status-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;border:1px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;transition:transform .08s ease}
+.status-btn:hover{transform:translateY(-1px)}
+.status-btn.active[data-s="passou"]{background:#e6f7ec;color:#1e7e34;border-color:#bfe8cc}
+.status-btn.active[data-s="falhou"]{background:#fde2e2;color:#a12626;border-color:#f5bcbc}
+.status-btn.active[data-s="bloqueado"]{background:#fff0dd;color:#a15c00;border-color:#ffdca8}
+.status-btn.active[data-s="nao-testado"]{background:#eceff1;color:#546069;border-color:#d7dcdf}
+.edited-tag{font-size:10px;color:#0b5ed7;font-weight:700;margin-left:6px}
+
+.fine{font-size:11px;color:#8891a0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Card 0026 — Testes Completos</h1>
+  <div class="subtitle">[Portal do Cidadão] Redesign responsivo e identidade parametrizável por município · <a href="https://trello.com/c/xJbn1dPh" target="_blank">trello.com/c/xJbn1dPh</a> · Ambiente: DEV (Cajamar) · Atualizado em 12/08/2026</div>
+
+  <div class="banner">
+    <b>O que é este documento:</b> junta os dois testes feitos para o card 0026 num único lugar — os <b>8 cenários Gherkin originais</b> (CT01–CT08, cobrindo identidade visual parametrizável, fallback de parâmetros opcionais, acessibilidade, responsividade e aceitação) e o <b>reteste dos 7 pontos de acesso</b> do Portal do Cidadão (AC-01–AC-11: Criar conta, Login, Esqueci senha, Nova solicitação, Minhas solicitações, Meus dados, Editar perfil).
+    <br><br>
+    <b>Cruzamento importante:</b> CT07 (regressão de navegação autenticada) tinha sido marcado como <b>falhou</b> no reteste de 10/08 porque o link "Meus dados" estava quebrado. No reteste de acessos de hoje (AC-07), essa mesma tela abriu e funcionou normalmente — ou seja, esse ponto específico parece corrigido. CT01 continua não testável neste ambiente (só há configuração de Cajamar em DEV, sem Caraguatatuba para comparar).
+    <br><br>
+    <b>Bugs confirmados até agora:</b> "Criar conta" quebra com erro genérico para CPFs com cadastro de cidadão pré-existente (intermitente); tela de login vaza JSON cru quando a senha está incorreta; "Meus dados" exibe HTML cru em campos opcionais vazios; e mostra data de criação de conta incorreta para contas criadas via "Completar cadastro".
+  </div>
+
+  <div class="summary" id="summary"></div>
+  <div class="hint-row">
+    <span class="fine">🖊 Clique nos status de cada item para marcar Passou/Falhou/Bloqueado/Não testado — fica salvo neste navegador automaticamente.</span>
+    <button class="reset-btn" onclick="resetStatuses()">↺ Restaurar minha avaliação original</button>
+  </div>
+
+  <div class="toc">
+    <h2>Índice</h2>
+    <div class="group-label">Cenários Gherkin originais</div>
+    <a href="#ct01">CT01 — Identidade visual (Caraguatatuba)</a>
+    <a href="#ct02">CT02 — Identidade visual (Cajamar)</a>
+    <a href="#ct03">CT03 — Fallback de parâmetros opcionais</a>
+    <a href="#ct04">CT04 — Acessibilidade (alt text e contraste)</a>
+    <a href="#ct05">CT05 — Compatibilidade desktop (hero image)</a>
+    <a href="#ct06">CT06 — Compatibilidade mobile</a>
+    <a href="#ct07">CT07 — Regressão de navegação autenticada</a>
+    <a href="#ct08">CT08 — Aceitação (PR #216, 139 testes)</a>
+    <div class="group-label">Reteste de acessos</div>
+    <a href="#criar-conta">1. Criar conta</a>
+    <a href="#login">2. Acessar com usuário e senha</a>
+    <a href="#esqueci-senha">3. Esqueci minha senha</a>
+    <a href="#nova-solicitacao">4. Nova solicitação</a>
+    <a href="#minhas-solicitacoes">5. Minhas solicitações</a>
+    <a href="#meus-dados">6. Meus dados</a>
+    <a href="#editar-perfil">7. Editar perfil</a>
+  </div>
+
+  <div class="section-divider"><h2>📋 Cenários Gherkin originais (CT01–CT08)</h2><div class="line"></div></div>
+  <div id="categoriasGherkin"></div>
+
+  <div class="section-divider"><h2>🔑 Reteste de acessos (AC-01–AC-11)</h2><div class="line"></div></div>
+  <div id="categoriasAcesso"></div>
+
+</div>
+
+<script>
+var STORAGE_KEY = "card-0026-testes-completos-status-overrides";
+var overrides = {};
+try{ overrides = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }catch(e){ overrides = {}; }
+
+var STATUS_LABELS = {passou:"✅ Passou", falhou:"❌ Falhou", bloqueado:"🚫 Bloqueado", "nao-testado":"⏭ Não testado"};
+var STATUS_ORDER = ["passou","falhou","bloqueado","nao-testado"];
+
+function currentStatus(s){
+  return overrides.hasOwnProperty(s.id) ? overrides[s.id] : s.status;
+}
+
+function setStatus(id, status){
+  overrides[id] = status;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
+  renderSummary();
+  renderGherkin();
+  renderAcesso();
+}
+
+function resetStatuses(){
+  if(!confirm("Isso vai apagar suas marcações e voltar para a avaliação original registrada nos testes. Continuar?")) return;
+  overrides = {};
+  localStorage.removeItem(STORAGE_KEY);
+  renderSummary();
+  renderGherkin();
+  renderAcesso();
+}
+
+function statusGroup(s){
+  var cur = currentStatus(s);
+  var isEdited = overrides.hasOwnProperty(s.id) && overrides[s.id] !== s.status;
+  var btns = STATUS_ORDER.map(function(st){
+    var active = st === cur ? " active" : "";
+    return '<button type="button" class="status-btn'+active+'" data-s="'+st+'" onclick="setStatus(\''+s.id+'\',\''+st+'\')">'+STATUS_LABELS[st]+'</button>';
+  }).join("");
+  return '<span class="status-group">'+btns+'</span>'+(isEdited? '<span class="edited-tag">editado</span>' : '');
+}
+
+function kw(word){
+  var map = {"Dado":"g-dado","Quando":"g-quando","Então":"g-entao","E":"g-e"};
+  var first = word.split(" ")[0];
+  var cls = map[first] || "g-dado";
+  if(first === "E") return '<span class="g-e"><b>E</b>'+word.slice(1)+'</span><br>';
+  var rest = word.slice(first.length);
+  return '<b class="'+cls+'">'+first+'</b>'+rest+'<br>';
+}
+function renderGherkinSteps(lines){ return lines.map(kw).join(""); }
+
+/* ===== Categoria 1: Cenários Gherkin originais do card 0026 ===== */
+var categoriasGherkin = [
+{id:"ct01", nome:"CT01 — Identidade visual (Caraguatatuba)", tipo:"Funcional / Decision Table", status:"bloqueado",
+ gherkin:["Dado que o ambiente está configurado com os parâmetros de Caraguatatuba (nome, logo, cores, hero),","Quando o Portal do Cidadão é acessado,","Então cabeçalho, hero, mensagens e cores exibem a identidade de Caraguatatuba","E a marca L.TECNO não aparece na área do munícipe."],
+ obs:"Não testável neste ambiente — DEV só está disponível com a configuração de Cajamar; não há como comparar com Caraguatatuba nesta rodada."},
+{id:"ct02", nome:"CT02 — Identidade visual (Cajamar)", tipo:"Funcional / Decision Table", status:"passou",
+ gherkin:["Dado que a mesma build está configurada com os parâmetros de Cajamar,","Quando o Portal do Cidadão é acessado,","Então a identidade exibida é a de Cajamar, sem qualquer resquício da configuração anterior."],
+ obs:"Confirmado no reteste de 10/08 — identidade de Cajamar aplicada corretamente, sem resíduo de outra configuração e sem a marca L.TECNO."},
+{id:"ct03", nome:"CT03 — Fallback de parâmetros opcionais", tipo:"Negativo / Regressão", status:"passou",
+ gherkin:["Dado que um ou mais parâmetros opcionais (ex: HeroImageUrl, HelpCenterLabel) não foram configurados,","Quando a página é carregada,","Então um valor padrão seguro (fallback neutro) é exibido","E a página não quebra."],
+ obs:"Confirmado no reteste de 10/08 — HeroImageUrl ausente não quebrou a página, fallback neutro funcionou."},
+{id:"ct04", nome:"CT04 — Acessibilidade (alt text e contraste)", tipo:"Acessibilidade", status:"bloqueado",
+ gherkin:["Dado que a página está carregada com uma configuração de município,","Quando logo e hero são inspecionados,","Então ambos possuem texto alternativo definido","E as cores mantêm contraste adequado entre texto e fundo."],
+ obs:"Parcial — o texto alternativo (alt text) foi confirmado ok no reteste de 10/08, mas o contraste de cores não foi validado com ferramenta (axe/Lighthouse não usados)."},
+{id:"ct05", nome:"CT05 — Compatibilidade desktop (hero image)", tipo:"Compatibilidade / UI", status:"bloqueado",
+ gherkin:["Dado que o portal é acessado em resolução desktop com HeroImageUrl configurado,","Quando a página carrega,","Então a imagem do hero aparece à direita, conforme o layout definido."],
+ obs:"Não testável no reteste de 10/08 — não havia HeroImageUrl configurado neste ambiente."},
+{id:"ct06", nome:"CT06 — Compatibilidade mobile", tipo:"Compatibilidade / UI", status:"bloqueado",
+ gherkin:["Dado que o portal é acessado em um dispositivo móvel,","Quando a página é carregada,","Então o layout usa uma única coluna, sem overflow horizontal ou textos cortados."],
+ obs:"Não testável no reteste de 10/08 — não foi possível redimensionar o viewport para simular mobile na sessão."},
+{id:"ct07", nome:"CT07 — Regressão de navegação autenticada", tipo:"Regressão", status:"passou",
+ gherkin:["Dado que o usuário está autenticado no portal,","Quando navega por \"Nova solicitação\", \"Minhas solicitações\", \"Meus dados\" e \"Central de Ajuda\",","Então todas as rotas funcionam normalmente, sem regressão de funcionalidade."],
+ obs:"Atualizado em 12/08: no reteste de 10/08 este item tinha FALHADO porque o link/ação \"Meus dados\" estava quebrado. No reteste de acessos de hoje (ver AC-07), a tela \"Meus dados\" abriu e funcionou normalmente com uma conta de teste válida — o problema de navegação parece corrigido. Recomendo confirmar mais uma vez com o time antes de fechar como resolvido de vez."},
+{id:"ct08", nome:"CT08 — Aceitação (PR #216, 139 testes)", tipo:"Aceitação", status:"bloqueado",
+ gherkin:["Dado que o PR #216 (SHA 0291c5b) foi publicado em DEV,","Quando os 139 testes automatizados são executados,","Então todos passam","E as capturas desktop/mobile das duas configurações de município ficam anexadas como evidência para aceite final de Vivi."],
+ obs:"Ainda pendente — depende de CT01 (ambiente Caraguatatuba), CT05/CT06 (hero desktop/mobile) serem testáveis. CT07 já pode ser considerado resolvido a partir do reteste de hoje."}
+];
+
+function renderGherkin(){
+  var el = document.getElementById('categoriasGherkin');
+  el.innerHTML = categoriasGherkin.map(function(s){
+    var isEdited = overrides.hasOwnProperty(s.id) && overrides[s.id] !== s.status;
+    var header = '<div class="card-header" id="'+s.id+'"><span>'+s.nome+'<span class="type-pill">'+s.tipo+'</span></span></div>';
+    var body = '<div class="scenario'+(isEdited?' edited':'')+'" style="border:none;padding:0;margin:0">'+
+      '<div class="sc-head">'+statusGroup(s)+'</div>'+
+      '<div class="gherkin">'+renderGherkinSteps(s.gherkin)+'</div>'+
+      (s.obs? '<div class="obs">'+s.obs+'</div>' : '')+
+      '</div>';
+    return '<div class="card">'+header+'<div class="card-body">'+body+'</div></div>';
+  }).join("");
+}
+
+/* ===== Categoria 2: Reteste de acessos ===== */
+var categoriasAcesso = [
+{id:"criar-conta", nome:"1. Criar conta", scenarios:[
+  {id:"AC-01", titulo:"Cadastro simples com CPF novo (nunca visto no sistema)", status:"falhou",
+   desc:"Preenchido o formulário completo (nome, CPF, celular, e-mail, data de nascimento, sexo, endereço via CEP, senha, aceite dos termos) em <b>/Account/Register</b> com um CPF válido e nunca usado. Testado duas vezes, com dois CPFs diferentes.",
+   obs:"Falhou nas duas tentativas: a API responde POST /Account/Register com HTTP 400 e a tela mostra apenas \"Erro no registro: Erro desconhecido\", sem indicar o campo ou a causa real. Não há como saber, do lado do cidadão, o que precisa ser corrigido.",
+   evidence:"POST /Account/Register → 400\nMensagem exibida: \"Erro no registro: Erro desconhecido\"\nReproduzido com CPF 987.654.321-00 e CPF 055.217.248-00"},
+  {id:"AC-02", titulo:"Causa raiz identificada: CPF já possui cadastro de cidadão sem conta de acesso", status:"falhou",
+   desc:"Ao tentar logar (não cadastrar) com o mesmo CPF 987.654.321-00, o sistema reconhece corretamente que já existe um cadastro de cidadão vinculado a esse CPF e oferece um modal \"Cadastro localizado\" com as opções \"Recuperar senha\" e \"Cadastrar / Completar cadastro\". Usando esse segundo botão (que leva para <b>/Account/Register?cpf=...&linkExisting=1</b>) e preenchendo o mesmo formulário, o cadastro é concluído com sucesso (POST retorna 200) e o login funciona em seguida.",
+   obs:"O problema é de rota: a tela pública \"Criar conta\" (menu \"Ainda não possui cadastro?\") não faz essa checagem antes de enviar, então qualquer CPF que já tenha um cadastro de cidadão pré-existente (comum para CPFs já conhecidos da Prefeitura) cai no erro genérico do AC-01 em vez de ser direcionado ao fluxo \"Completar cadastro\", que é o único caminho que realmente funciona para esse caso. Nota: numa rodada posterior, para capturar prints, os mesmos CPFs (987.654.321-00 e 055.217.248-00) foram testados novamente pela tela simples \"Criar conta\" e, dessa vez, o cadastro foi concluído com sucesso — sugerindo que o erro pode ser intermitente (talvez dependente de qual serviço/endpoint de checagem de cidadão respondeu a tempo) em vez de 100% determinístico. Vale o time de dev investigar timeouts/race conditions nessa checagem."}
+]},
+{id:"login", nome:"2. Acessar com usuário e senha", scenarios:[
+  {id:"AC-03", titulo:"Login com CPF e senha válidos", status:"passou",
+   desc:"Após concluir o cadastro pelo fluxo \"Completar cadastro\" (ver AC-02), login realizado em <b>/Account/Login</b> com o CPF e a senha cadastrados.",
+   obs:"Passou — redirecionou corretamente para a tela Início, exibindo \"Olá, Teste!\" e o menu completo (Início, Nova solicitação, Minhas solicitações, Meus dados)."},
+  {id:"AC-11", titulo:"Login com senha incorreta exibe o JSON cru da API", status:"falhou",
+   desc:"Tentativa de login com um CPF que possui apenas cadastro de cidadão (sem senha ainda definida para aquela combinação) — a chamada de autenticação retorna 401.",
+   obs:"Falhou — em vez de uma mensagem amigável (\"Usuário ou senha inválidos.\"), a tela \"Erro no login:\" exibe o corpo JSON bruto retornado pela API, incluindo chaves internas como statusCode, isSuccess e title. É um vazamento de detalhes de implementação para o usuário final, além de ficar visualmente quebrado.",
+   evidence:"Exibido na tela:\n{\"data\":null,\"statusCode\":401,\"isSuccess\":false,\"title\":\"Unauthorized\",\"message\":\"Usuário ou senha inválidos.\",\"description\":\"Verifique suas credenciais.\",\"warning\":null}",
+   img:"screenshot-1786563266226-2b7a0bfa.jpg", imgCap:"Tela de login exibindo o JSON cru da resposta da API em vez de uma mensagem tratada."}
+]},
+{id:"esqueci-senha", nome:"3. Esqueci minha senha", scenarios:[
+  {id:"AC-04", titulo:"Fluxo de recuperação de senha por e-mail", status:"passou",
+   desc:"Acessado \"Esqueci minha senha\" a partir da tela de login, informado um e-mail de teste e enviado o formulário em <b>/Account/ForgotPassword</b>.",
+   obs:"Passou — o sistema responde com a mensagem genérica \"Se o e-mail existir, enviamos instruções para redefinir a senha.\", sem confirmar se o e-mail existe ou não na base (boa prática de segurança)."}
+]},
+{id:"nova-solicitacao", nome:"4. Nova solicitação", scenarios:[
+  {id:"AC-05", titulo:"Abrir Nova solicitação como cidadão logado", status:"bloqueado",
+   desc:"Acessado o menu \"Nova solicitação\" já autenticado, para escolher Assunto/SubAssunto.",
+   obs:"Bloqueado pelo ambiente, não pelo código: a tela abre normalmente (rota /Requests/New funciona), mas exibe \"Nenhum subassunto disponível no momento.\" Este DEV parece não ter Assuntos/SubAssuntos parametrizados como disponíveis para o Portal do Cidadão neste momento — precisa ser confirmado com o time se é uma configuração pendente ou um recorte proposital deste ambiente."}
+]},
+{id:"minhas-solicitacoes", nome:"5. Minhas solicitações", scenarios:[
+  {id:"AC-06", titulo:"Listar solicitações do cidadão logado", status:"passou",
+   desc:"Acessado o menu \"Minhas solicitações\" com a conta de teste recém-criada (sem solicitações registradas).",
+   obs:"Passou — estado vazio tratado corretamente (\"Você ainda não possui solicitações registradas.\"), com atalho funcional \"+ Abrir nova solicitação\"."}
+]},
+{id:"meus-dados", nome:"6. Meus dados", scenarios:[
+  {id:"AC-07", titulo:"Abrir e visualizar Meus Dados", status:"passou",
+   desc:"Acessado o menu \"Meus dados\" (rota /Account/Profile) com a conta de teste logada.",
+   obs:"Passou — diferente do reteste de 10/08 (onde o link/ação \"Meus dados\" estava quebrado, CT07 do card), a tela abriu e carregou corretamente todos os dados pessoais e de endereço preenchidos no cadastro."},
+  {id:"AC-08", titulo:"Campo opcional vazio exibe HTML cru em vez de texto", status:"falhou",
+   desc:"No cadastro de teste, o campo \"Nome da mãe\" foi deixado em branco de propósito. Na tela \"Meus Dados\", o valor exibido para esse campo não é um texto simples de placeholder.",
+   obs:"Falhou — em vez de mostrar algo como \"(não informado)\" estilizado, a tela renderiza literalmente a marcação HTML como texto: <span class=\"text-muted\">(não informado)</span> aparece na tela do jeito que está escrito aqui, tags incluídas. Provavelmente uma string com HTML sendo exibida sem passar por Html.Raw (ou o inverso — escapada duas vezes). Ao preencher o campo via \"Editar perfil\" e salvar, o valor real passa a ser exibido normalmente, então o bug é específico do fallback de campo vazio.",
+   evidence:"Campo \"Nome da mãe\" (vazio) exibido em /Account/Profile como:\n<span class=\"text-muted\">(não informado)</span>",
+   img:"screenshot-1786563825646-f0e3101d.jpg", imgCap:"Tela Meus Dados de uma conta de teste com \"Nome da mãe\" vazio — a marcação HTML aparece crua."},
+  {id:"AC-09", titulo:"\"Conta criada em\" mostra data incorreta", status:"falhou",
+   desc:"A tela \"Meus Dados\" exibe um bloco \"Conta criada em\" com data e hora. A conta de teste foi criada nesta sessão, em 12/08/2026, pelo fluxo \"Completar cadastro\" (ver AC-02).",
+   obs:"Falhou — a data exibida é \"23/12/2024 14:45\", muito anterior à data real de criação da conta. Achado adicional: ao repetir o teste numa conta criada pela tela simples \"Criar conta\" (CPF 111.444.777-35), a data exibida ficou correta (12/08/2026). Ou seja, o bug parece específico do fluxo \"Completar cadastro\" — provavelmente está puxando a data de criação do cadastro de cidadão pré-existente (23/12/2024) em vez da data em que a conta de acesso foi de fato criada.",
+   evidence:"Exibido (conta via \"Completar cadastro\"): \"Conta criada em 23/12/2024 14:45\"\nEsperado: data/hora de 12/08/2026\nConta via \"Criar conta\" simples (controle): exibiu corretamente \"12/08/2026 19:36\"",
+   img:"screenshot-1786563882471-67bb8089.jpg", imgCap:"Tela Meus Dados da conta criada via \"Completar cadastro\" mostrando data de criação de 2024."}
+]},
+{id:"editar-perfil", nome:"7. Editar perfil", scenarios:[
+  {id:"AC-10", titulo:"Editar e salvar dados do perfil", status:"passou",
+   desc:"Acessado \"Editar perfil\" a partir de Meus Dados, preenchido o campo \"Nome da mãe\" (antes vazio) e salvo em <b>/Account/Edit</b>.",
+   obs:"Passou — ao salvar, o sistema retornou para \"Meus Dados\" e o novo valor (\"Maria Teste da Silva\") passou a ser exibido corretamente, confirmando que o fluxo de edição e persistência funciona."}
+]}
+];
+
+function renderAcesso(){
+  var el = document.getElementById('categoriasAcesso');
+  el.innerHTML = categoriasAcesso.map(function(c){
+    var header = '<div class="card-header" id="'+c.id+'"><span>'+c.nome+'</span><span class="pill">'+c.scenarios.length+' item(ns)</span></div>';
+    var scenarios = c.scenarios.map(function(s){
+      var isEdited = overrides.hasOwnProperty(s.id) && overrides[s.id] !== s.status;
+      return '<div class="scenario'+(isEdited?' edited':'')+'"><div class="sc-head"><span class="sc-title">'+s.id+' — '+s.titulo+'</span>'+statusGroup(s)+'</div>'+
+        '<div class="sc-desc">'+s.desc+'</div>'+
+        (s.obs? '<div class="obs">'+s.obs+'</div>' : '')+
+        (s.evidence? '<div class="evidence">'+s.evidence.replace(/\n/g,'<br>')+'</div>' : '')+
+        (s.img? '<div class="evidence-img"><img src="'+s.img+'" alt="'+(s.imgCap||'Print de evidência')+'" loading="lazy"><div class="cap">📷 '+(s.imgCap||'')+'</div></div>' : '')+
+        '</div>';
+    }).join("");
+    return '<div class="card">'+header+'<div class="card-body">'+scenarios+'</div></div>';
+  }).join("");
+}
+
+function renderSummary(){
+  var counts = {passou:0, falhou:0, bloqueado:0, "nao-testado":0};
+  categoriasGherkin.forEach(function(s){ counts[currentStatus(s)]++; });
+  categoriasAcesso.forEach(function(c){ c.scenarios.forEach(function(s){ counts[currentStatus(s)]++; }); });
+  var el = document.getElementById('summary');
+  el.innerHTML =
+    '<div class="box passou"><div class="n">'+counts.passou+'</div><div class="l">Passou</div></div>'+
+    '<div class="box falhou"><div class="n">'+counts.falhou+'</div><div class="l">Falhou</div></div>'+
+    '<div class="box bloqueado"><div class="n">'+counts.bloqueado+'</div><div class="l">Bloqueado</div></div>'+
+    '<div class="box nao-testado"><div class="n">'+counts["nao-testado"]+'</div><div class="l">Não testado</div></div>';
+}
+
+renderSummary();
+renderGherkin();
+renderAcesso();
+</script>
+</body>
+</html>
