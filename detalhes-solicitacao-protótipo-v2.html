@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Detalhes da Solicitação (redesenho v2)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+:root{
+  --bg:#eef4ff; --surface:#ffffff; --surface-raised:#ffffff; --sidebar:#f7faff;
+  --text:#172033; --text-muted:#687386;
+  --border:#dce4f0; --border-strong:#c8d4e5;
+  --primary:#015af2; --primary-hover:#014acb; --primary-soft:#eaf2ff; --primary-softer:#f3f7ff;
+  --success:#28a745; --success-action:#147a46; --success-soft:#e6f7ec;
+  --danger:#c73545; --danger-action:#b42332; --danger-soft:#fde8eb;
+  --warning:#ffd36a; --on-warning:#0a0a0b; --warning-soft:#fff8e6;
+  --neutral-soft:#edf0f4; --hover:#edf3fc;
+  --shadow:0 12px 32px rgba(37,65,108,.08);
+}
+html[data-theme="dark"]{
+  --bg:#070d25; --surface:#111d3b; --surface-raised:#18284b; --sidebar:#0a1430;
+  --text:#f0f6fc; --text-muted:#c1cce0;
+  --border:#344b73; --border-strong:#4e6896;
+  --primary:#015af2; --primary-hover:#a4ccff; --primary-soft:#173c73; --primary-softer:#18284b;
+  --success:#72e3aa; --success-action:#72e3aa; --success-soft:#123d35;
+  --danger:#ff9aa5; --danger-action:#ff9aa5; --danger-soft:#5a2133;
+  --warning:#ffd36a; --on-warning:#0a0a0b; --warning-soft:#4a3a12;
+  --neutral-soft:#263858; --hover:#203861;
+  --shadow:0 18px 42px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);transition:background .15s,color .15s}
+.wrapper{display:flex;min-height:100vh}
+.main-sidebar{width:250px;flex-shrink:0;background:var(--sidebar);border-right:1px solid var(--border);color:var(--text)}
+.brand{padding:16px 20px;display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;border-bottom:1px solid var(--border)}
+.brand .logo{width:32px;height:32px;border-radius:9px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+.sidebar-nav{padding:12px 10px}
+.nav-group-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;padding:14px 12px 6px}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:2px;border-radius:9px;color:var(--text-muted);text-decoration:none;font-size:13.5px}
+.sidebar-nav a i{width:16px;text-align:center;font-size:13px}
+.sidebar-nav a.active{background:var(--primary-soft);color:var(--primary);font-weight:700}
+.sidebar-nav a:not(.active):hover{background:var(--hover)}
+.sidebar-nav a.parent{font-weight:700;color:var(--text)}
+.sidebar-nav a.parent i.chev{margin-left:auto;font-size:11px}
+.sidebar-nav .sub{padding-left:14px}
+
+.content-wrapper{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{background:var(--surface);padding:12px 26px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.topbar .burger{font-size:17px;color:var(--text-muted);cursor:pointer}
+.theme-toggle{display:inline-flex;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px}
+.theme-toggle button{border:none;background:transparent;padding:6px 14px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:6px}
+.theme-toggle button.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.topbar-right{display:flex;align-items:center;gap:18px}
+.user-menu{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:var(--text)}
+.user-menu .avatar{width:28px;height:28px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center}
+
+.content-header{padding:22px 30px 0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
+.content-header h1{font-size:25px;font-weight:700;color:var(--text);margin:0}
+.breadcrumb{font-size:13px;color:var(--text-muted)}
+.breadcrumb a{color:var(--primary);text-decoration:none}
+
+.content{padding:16px 30px 90px;max-width:1000px}
+.banner{background:var(--primary-softer);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:12.5px;color:var(--text);margin-bottom:18px;line-height:1.6}
+.banner b{color:var(--primary)}
+.fine{font-size:11px;color:var(--text-muted)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:18px;overflow:hidden}
+.card-header{background:var(--primary-softer);color:var(--text);padding:11px 20px;font-weight:750;font-size:15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:between;gap:8px}
+.card-header .muted{font-weight:400;font-size:12px;color:var(--text-muted);margin-left:6px}
+.card-header.icon{display:flex;align-items:center;gap:12px;background:var(--surface);padding:16px 20px 12px}
+.section-icon{width:34px;height:34px;border-radius:9px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.card-header.icon .htext h3{margin:0;font-size:15px;font-weight:750}
+.card-header.icon .htext p{margin:2px 0 0;font-size:12px;color:var(--text-muted)}
+.card-body{padding:18px 20px}
+
+/* Faixa protocolo */
+.protoline{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.protonum small{display:block;font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+.protonum b{font-size:20px;font-weight:800;color:var(--text)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;padding:6px 12px;border-radius:999px;text-transform:none}
+.pill-info{background:var(--primary-soft);color:var(--primary)}
+.pill-danger{background:var(--danger-soft);color:var(--danger)}
+.pill-neutral{background:var(--neutral-soft);color:var(--text)}
+.spacer{flex:1}
+.btn{border-radius:9px;padding:8px 16px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid transparent}
+.btn-outline-danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.btn-outline-primary{background:transparent;border-color:var(--primary);color:var(--primary)}
+.btn-outline-muted{background:var(--surface);border-color:var(--border-strong);color:var(--text)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-sm{padding:5px 12px;font-size:12px}
+
+.subrow{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:16px 0;border-top:1px solid var(--border)}
+.subrow .who b{font-size:14.5px}
+.subrow .when{font-size:12.5px;color:var(--text-muted)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.readpair .k{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.readpair .v{font-size:14px;color:var(--text)}
+.infoblock{padding:16px 0;border-top:1px solid var(--border)}
+.infoblock:first-child{border-top:none;padding-top:0}
+
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.chip{background:var(--neutral-soft);color:var(--text);font-size:12.5px;padding:6px 14px;border-radius:9px;border:1px solid var(--border)}
+
+label{display:block;font-size:13px;font-weight:700;color:var(--text);margin:0 0 7px}
+select,textarea,input[type=text],input[type=file]{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-size:13.5px;font-family:inherit;color:var(--text);background:var(--surface)}
+textarea{min-height:78px;resize:vertical}
+.field{margin-bottom:16px}
+.notice{font-size:11.5px;border-radius:8px;padding:8px 11px;margin-bottom:8px;display:flex;gap:7px;align-items:flex-start}
+.notice.public{background:var(--primary-softer);color:var(--primary)}
+.notice.internal{background:var(--warning-soft);color:#8A6D00}
+html[data-theme="dark"] .notice.internal{color:var(--warning)}
+.filerow{display:flex;gap:10px;align-items:center}
+.filerow input[type=text]{flex:1}
+
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:'';position:absolute;left:5px;top:2px;bottom:2px;width:2px;background:var(--border)}
+.tl-item{position:relative;padding:0 0 18px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:'';position:absolute;left:-20px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--primary);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--primary)}
+.tl-item .status{font-weight:700;font-size:13px;color:var(--text)}
+.tl-item .status .evtag{font-family:'Courier New',monospace;font-size:10.5px;font-weight:700;background:var(--neutral-soft);color:var(--text-muted);padding:2px 6px;border-radius:5px;margin-right:6px}
+.tl-item .txt{font-size:12.5px;color:var(--text);margin-top:3px;line-height:1.5}
+.tl-item .who{font-size:11.5px;color:var(--text-muted);margin-top:3px}
+
+.footerbar{display:flex;justify-content:flex-start}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <div class="brand"><span class="logo">L</span> Serviço ao Cidadão</div>
+    <div class="sidebar-nav">
+      <a href="#"><i class="fas fa-home"></i> Visão geral</a>
+      <a href="#" class="parent"><i class="fas fa-headset"></i> Atendimento <i class="fas fa-chevron-up chev"></i></a>
+      <div class="sub">
+        <a href="#" class="active"><i class="fas fa-ticket-alt"></i> Solicitações</a>
+        <a href="#"><i class="fas fa-edit"></i> Alterações no Protocolo</a>
+        <a href="#"><i class="fas fa-file-alt"></i> Pedidos de informação</a>
+        <a href="#"><i class="fas fa-user-friends"></i> Cidadãos</a>
+        <a href="#"><i class="fas fa-phone-slash"></i> Não Atendimento</a>
+      </div>
+      <a href="#" class="parent"><i class="fas fa-sliders-h"></i> Configuração do atendimento <i class="fas fa-chevron-down chev"></i></a>
+      <a href="#" class="parent"><i class="fas fa-sitemap"></i> Estrutura municipal <i class="fas fa-chevron-down chev"></i></a>
+      <a href="#" class="parent"><i class="fas fa-user-shield"></i> Administração <i class="fas fa-chevron-down chev"></i></a>
+    </div>
+  </aside>
+
+  <div class="content-wrapper">
+    <div class="topbar">
+      <span class="burger"><i class="fas fa-bars"></i></span>
+      <div class="topbar-right">
+        <div class="theme-toggle">
+          <button id="btnClaro" onclick="setTheme('light')"><i class="far fa-sun"></i> Claro</button>
+          <button id="btnEscuro" onclick="setTheme('dark')"><i class="far fa-moon"></i> Escuro</button>
+        </div>
+        <div class="user-menu"><span class="avatar"><i class="far fa-user"></i></span> Administrator <i class="fas fa-chevron-down" style="font-size:10px;color:var(--text-muted)"></i></div>
+      </div>
+    </div>
+
+    <div class="content-header">
+      <h1>Detalhes da Solicitação</h1>
+      <div class="breadcrumb"><a href="#">Home</a> / <a href="#">Solicitações</a> / Detalhes</div>
+    </div>
+
+    <div class="content">
+      <div class="banner">
+        <b>Sobre esta atualização:</b> este protótipo substitui a versão anterior para refletir o que já está implementado em DEV (cores, ícones e formato de card do design system real — bordas de 14px, cabeçalho suave em vez de gradiente, badges arredondadas, botões com raio de 9px). Estrutura mantida em cards separados por função — <b>Perguntas e respostas</b> e <b>Endereço de referência</b> ganham ícone + subtítulo explicativo; <b>Ações do atendimento</b>, <b>Anexos</b> e <b>Histórico</b> continuam como cards próprios, sequenciais. Alterna entre os temas Claro/Escuro no canto superior direito — os dois já usam a paleta real do sistema.
+      </div>
+      <span class="fine">Protótipo — tela "Detalhes da Solicitação" · protocolo 1412331</span>
+
+      <!-- Card protocolo -->
+      <div class="card">
+        <div class="card-body">
+          <div class="protoline">
+            <div class="protonum"><small>Protocolo</small><b>1412331</b></div>
+            <span class="pill pill-info">Em análise</span>
+            <span class="pill pill-danger">URGENTE</span>
+            <div class="spacer"></div>
+            <button class="btn btn-outline-danger btn-sm">Solicitar cancelamento</button>
+            <button class="btn btn-outline-primary btn-sm">Solicitar alteração</button>
+          </div>
+
+          <div class="subrow">
+            <div class="who">
+              <div class="readpair"><div class="k">Cidadão <span class="pill pill-info" style="margin-left:4px">SIGILOSO</span></div>
+              <b>Vivian Regina Prudenciano do Carmo</b></div>
+              <button class="btn btn-outline-danger btn-sm" style="margin-top:8px">Retirar sigilo</button>
+            </div>
+            <div class="when">Criado em<br><b style="color:var(--text)">19/08/2026 00:30</b></div>
+          </div>
+
+          <div class="infoblock" style="border-top:1px solid var(--border)">
+            <div class="grid3">
+              <div class="readpair"><div class="k">Assunto-SubAssunto</div><div class="v">assunto 1 / QA Teste CT001</div></div>
+              <div class="readpair"><div class="k">Grupo</div><div class="v">AE - ACAO_EMERGENCIAL</div></div>
+              <div class="readpair"><div class="k">Tipo de Solicitação</div><div class="v">Sugestão</div></div>
+            </div>
+          </div>
+
+          <div class="infoblock">
+            <div class="readpair"><div class="k">Descrição</div>
+            <div class="v">Solicita informações sobre o formato de crédito. Solicita informações sob Solicita informações sobre o formato de crédito.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Perguntas e respostas -->
+      <div class="card">
+        <div class="card-header icon">
+          <span class="section-icon"><i class="fas fa-clipboard-list"></i></span>
+          <div class="htext"><h3>Perguntas e respostas</h3><p>Informações complementares respondidas durante a abertura.</p></div>
+        </div>
+        <div class="card-body">
+          <div class="readpair" style="margin-bottom:14px">
+            <div class="k">Genero</div>
+            <div class="chip-row">
+              <span class="chip">Masculino</span><span class="chip">Feminino</span><span class="chip">Prefiro não informar</span>
+            </div>
+          </div>
+          <div class="readpair" style="margin-bottom:0"><div class="k">Idade</div><div class="v">35</div></div>
+        </div>
+      </div>
+
+      <!-- Endereço de referência -->
+      <div class="card">
+        <div class="card-header icon">
+          <span class="section-icon"><i class="fas fa-map-marker-alt"></i></span>
+          <div class="htext"><h3>Endereço de referência</h3><p>Local informado para contextualizar o pedido.</p></div>
+        </div>
+        <div class="card-body">
+          <div class="readpair" style="margin-bottom:14px"><div class="k">Logradouro</div><div class="v">Rua Doutor Mario Sampaio Martins</div></div>
+          <div class="grid3" style="margin-bottom:14px">
+            <div class="readpair"><div class="k">Número</div><div class="v">520</div></div>
+            <div class="readpair"><div class="k">Complemento</div><div class="v">Casa 2B</div></div>
+            <div class="readpair"><div class="k">Bairro</div><div class="v">Jardim Vale Paraíso</div></div>
+          </div>
+          <div class="grid3" style="margin-bottom:0">
+            <div class="readpair"><div class="k">CEP</div><div class="v">12245-100</div></div>
+            <div class="readpair"><div class="k">Cidade</div><div class="v">São José dos Campos</div></div>
+            <div class="readpair"><div class="k">Estado</div><div class="v">SP</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anexos -->
+      <div class="card">
+        <div class="card-header">Anexos <span class="muted">(nenhum anexo)</span></div>
+        <div class="card-body">
+          <div class="filerow">
+            <input type="text" placeholder="Escolher arquivo (máx. 8 MB)" readonly>
+            <button class="btn btn-primary btn-sm">Enviar anexo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ações do atendimento -->
+      <div class="card">
+        <div class="card-header">Ações do atendimento</div>
+        <div class="card-body">
+          <div class="grid2">
+            <div class="field">
+              <label>Status</label>
+              <select><option>Recebida</option><option>Em análise</option><option>Em execução</option><option selected>Concluído</option><option>Cancelado</option></select>
+            </div>
+            <div class="field">
+              <label>Reatribuir grupo</label>
+              <select><option selected>Limpeza e Manutenção de Áreas Públicas</option><option>Educação</option><option>Saúde</option><option>Urbanismo</option></select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Resposta para o cidadão</label>
+            <div class="notice public"><i class="fas fa-globe" style="margin-top:2px"></i> Visível para o cidadão no acompanhamento do protocolo</div>
+            <textarea>teste 3</textarea>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Observação (histórico)</label>
+            <div class="notice internal"><i class="fas fa-lock" style="margin-top:2px"></i> Uso interno — o cidadão não vê isso</div>
+            <textarea placeholder="Anotação interna para a equipe"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Histórico -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">Histórico</div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="status"><span class="evtag">SOLICITACAO_ALTERACAO_REJEITADA</span>Em análise — Vivian RSO solicitou alteração do Campo Subassunto</div>
+              <div class="txt">Alteração recusada por Vivian RSO - 19/08/2026 03:58</div>
+              <div class="who">Por: Vivian RSO · 19/08/2026 00:58</div>
+            </div>
+            <div class="tl-item">
+              <div class="status"><span class="evtag">SOLICITACAO_ALTERACAO_APROVADA</span>Em análise — Vivian RSO solicitou alteração do Campo Assunto</div>
+              <div class="txt">Alteração aprovada por Vivian RSO - 19/08/2026 03:58</div>
+              <div class="who">Por: Vivian RSO · 19/08/2026 00:58</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footerbar">
+        <button class="btn btn-outline-muted">Voltar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function setTheme(mode){
+  document.documentElement.setAttribute('data-theme', mode);
+  document.getElementById('btnClaro').classList.toggle('active', mode==='light');
+  document.getElementById('btnEscuro').classList.toggle('active', mode==='dark');
+  try{ localStorage.setItem('proto-theme', mode); }catch(e){}
+}
+setTheme((function(){ try{ return localStorage.getItem('proto-theme') || 'light'; }catch(e){ return 'light'; } })());
+</script>
+</body>
+</html>
