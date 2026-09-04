@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Tela Pendências + Detalhes (LConnect)</title>
+<style>
+  :root{
+    --bg-page: #0C1630;
+    --bg-card: #111D3B;
+    --bg-card-header: #18284B;
+    --bg-input: #0F1A36;
+    --border: #344B73;
+    --text: #F0F6FC;
+    --text-muted: #9AAAC7;
+    --primary: #015AF2;
+    --green: #22C55E;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --purple: #A855F7;
+    --radius-card: 14px;
+    --radius-header: 4px;
+    --radius-btn: 9px;
+    --font: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:var(--font); background:var(--bg-page); color:var(--text);
+    font-size:14px; padding:24px 32px 60px;
+  }
+  .hidden{display:none !important;}
+  .crumb{color:var(--text-muted); font-size:13px; margin-bottom:6px;}
+  .crumb a{color:var(--text-muted); text-decoration:none; cursor:pointer;}
+  .crumb a:hover{color:var(--text);}
+  .crumb b{color:var(--text); font-weight:600;}
+  h1{font-size:22px; margin:0 0 2px;}
+  .subtitle{color:var(--text-muted); margin:0 0 20px; font-size:13px;}
+  .card{
+    background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-card);
+    margin-bottom:18px; overflow:hidden;
+  }
+  .card-header{
+    background:var(--bg-card-header); padding:12px 18px; font-weight:600; font-size:13px;
+    letter-spacing:.03em; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center;
+    border-radius:var(--radius-header) var(--radius-header) 0 0;
+  }
+  .card-header .hint{font-weight:400; text-transform:none; color:var(--text-muted); font-size:12px;}
+  .card-body{padding:18px;}
+  .grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .grid.cols-3{grid-template-columns:repeat(3,1fr);}
+  .field label{display:block; font-size:12px; color:var(--text-muted); margin-bottom:5px;}
+  .field label .new-badge{
+    background:rgba(245,158,11,.15); color:var(--amber); border:1px solid rgba(245,158,11,.4);
+    font-size:10px; padding:1px 6px; border-radius:20px; margin-left:6px; text-transform:none; letter-spacing:0;
+  }
+  select, input[type=text], input[type=date], textarea{
+    width:100%; background:var(--bg-input); border:1px solid var(--border); color:var(--text);
+    padding:8px 10px; border-radius:8px; font-size:13px; font-family:var(--font);
+  }
+  textarea{resize:vertical; min-height:70px;}
+  select:disabled, input:disabled{opacity:.4; cursor:not-allowed;}
+  select[multiple]{padding:4px;}
+  select[multiple] option{padding:6px 8px; border-radius:5px;}
+  .actions-row{display:flex; justify-content:flex-end; gap:10px; margin-top:16px;}
+  .btn{
+    border-radius:var(--radius-btn); padding:8px 16px; font-size:13px; border:1px solid var(--primary);
+    background:var(--primary); color:#fff; cursor:pointer; font-family:var(--font); font-weight:500;
+  }
+  .btn.secondary{background:transparent; color:var(--text); border-color:var(--border);}
+  .btn.ghost{background:transparent; color:var(--text-muted); border:none; text-decoration:underline; padding:8px 4px;}
+  .totals{display:flex; gap:10px; padding:12px 18px; border-top:1px solid var(--border); flex-wrap:wrap;}
+  .pill{border-radius:20px; padding:5px 12px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;}
+  .pill.urgent{background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.4);}
+  .pill.total{background:rgba(148,163,184,.15); color:#CBD5E1; border:1px solid var(--border);}
+  .pill.analise{background:rgba(1,90,242,.15); color:#8FB6FF; border:1px solid rgba(1,90,242,.4);}
+  .pill.progress{background:rgba(34,197,94,.12); color:var(--green); border:1px solid rgba(34,197,94,.35);}
+  .pill.rejected{background:rgba(239,68,68,.15); color:#FCA5A5; border:1px solid rgba(239,68,68,.35);}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  thead th{
+    background:var(--bg-card-header); text-align:left; padding:10px 14px; font-size:11.5px;
+    text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); font-weight:600;
+  }
+  tbody td{padding:11px 14px; border-top:1px solid var(--border); vertical-align:middle;}
+  tbody tr:hover{background:rgba(255,255,255,.03);}
+  .proto-link{display:flex; align-items:center; gap:8px; font-weight:600; color:#8FB6FF; cursor:pointer; background:none; border:none; font-size:13px; font-family:var(--font); padding:0;}
+  .proto-link:hover{text-decoration:underline;}
+  .tri{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid var(--red);}
+  .badge{display:inline-block; padding:4px 10px; border-radius:20px; font-size:11.5px; font-weight:600;}
+  .badge.analise{background:rgba(1,90,242,.15); color:#8FB6FF;}
+  .badge.respondido{background:rgba(148,163,184,.18); color:#CBD5E1;}
+  .badge.naoaceita{background:rgba(239,68,68,.15); color:var(--red);}
+  .badge.reenc{background:rgba(168,85,247,.15); color:var(--purple);}
+  .badge.faltadados{background:rgba(245,158,11,.15); color:var(--amber);}
+  .badge.urgent-tag{background:rgba(239,68,68,.18); color:var(--red); border:1px solid rgba(239,68,68,.4);}
+  .badge.anon{background:rgba(1,90,242,.15); color:#8FB6FF; border:1px solid rgba(1,90,242,.35); font-size:10.5px;}
+  .toolbar{display:flex; justify-content:space-between; align-items:center; padding:14px 18px;}
+  .toolbar .left{color:var(--text-muted); font-size:12.5px;}
+  .footer-pag{display:flex; justify-content:space-between; align-items:center; padding:14px 18px; color:var(--text-muted); font-size:12.5px;}
+  .section-note{
+    background:rgba(1,90,242,.08); border:1px dashed var(--border); border-radius:10px; padding:12px 16px;
+    font-size:12.5px; color:var(--text-muted); margin-bottom:18px; line-height:1.6;
+  }
+  .section-note b{color:var(--text);}
+  .modal-mock{border:1px solid var(--border); border-radius:var(--radius-card); background:var(--bg-card); max-width:480px; margin-top:10px;}
+  .modal-mock .card-header{font-size:13px;}
+
+  /* Detalhes screen */
+  .det-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;}
+  .det-header .label{font-size:11px; color:var(--text-muted); letter-spacing:.05em; text-transform:uppercase;}
+  .det-header .proto-num{font-size:22px; font-weight:700; margin-right:10px;}
+  .info-card .card-body{padding:16px 18px;}
+  .info-row{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);}
+  .info-row:last-of-type{border-bottom:none;}
+  .info-row .item{flex:1;}
+  .info-row .item label{display:block; font-size:10.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px;}
+  .info-row .item .val{font-size:13px;}
+  .desc-block{margin-top:10px;}
+  .desc-block label{display:block; font-size:10.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px;}
+  .section-icon-row{display:flex; gap:10px; align-items:flex-start; padding:14px 18px 10px;}
+  .section-icon{width:30px; height:30px; border-radius:8px; background:rgba(1,90,242,.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#8FB6FF; font-size:14px;}
+  .section-icon-row .titles .t{font-weight:600; font-size:13.5px;}
+  .section-icon-row .titles .s{font-size:11.5px; color:var(--text-muted);}
+  .qa-item{padding:10px 18px; border-top:1px solid var(--border);}
+  .qa-item .q{font-weight:600; font-size:13px; margin-bottom:4px;}
+  .qa-item .a{font-size:12.5px; color:var(--text-muted);}
+  .addr-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; padding:4px 18px 16px;}
+  .addr-grid .item label{display:block; font-size:10.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px;}
+  .upload-row{display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap;}
+  .upload-btn{background:var(--bg-input); border:1px solid var(--border); border-radius:8px; padding:7px 12px; font-size:12.5px; color:var(--text-muted);}
+  .radio-group{display:flex; gap:28px; padding:14px 18px 4px; flex-wrap:wrap;}
+  .radio-opt{display:flex; align-items:center; gap:8px; font-size:13px;}
+  .history-item{padding:12px 18px; border-top:1px solid var(--border); font-size:12.5px;}
+  .history-item .t b{color:#8FB6FF;}
+  .history-item .meta{font-size:11px; color:var(--text-muted); margin-top:3px;}
+  .btn-voltar{margin-top:6px;}
+</style>
+</head>
+<body>
+
+<!-- ===================== PASSO 1 — Home Pendências ===================== -->
+<section id="view-pendencias">
+  <div class="crumb">Home &nbsp;/&nbsp; <b>Pendências</b></div>
+  <h1>Pendências</h1>
+  <p class="subtitle">Fila de protocolos sob responsabilidade do Grupo selecionado — devolução, resposta e resposta simultânea.</p>
+
+  <div class="section-note">
+    <b>Nota de protótipo (rev. 3, 04/09/2026):</b> ajustado conforme os 3 passos enviados pela Vivi. O número do
+    protocolo agora é o link que abre a tela de Detalhes (reaproveitando a tela real já existente). A impressão do
+    formulário saiu da lista e passou para dentro de Detalhes — imprime o protocolo inteiro, sem seleção de campos,
+    usando a caixa de diálogo nativa de impressão/salvar PDF do navegador.
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      Filtro de pesquisa
+      <span class="hint">Selecione um Grupo para habilitar os demais filtros</span>
+    </div>
+    <div class="card-body">
+      <div class="grid">
+        <div class="field">
+          <label>Grupo *</label>
+          <select><option>Selecione...</option><option>DFPM - Departamento de Fiscalização e Posturas</option><option>Todos os grupos</option></select>
+        </div>
+        <div class="field">
+          <label>Tipo de Pessoa</label>
+          <select disabled><option>Todos</option><option>Pessoa Física</option><option>Pessoa Jurídica</option><option>Vereador</option></select>
+        </div>
+        <div class="field">
+          <label>Assunto</label>
+          <select disabled><option>Todos</option></select>
+        </div>
+        <div class="field">
+          <label>SubAssunto</label>
+          <select disabled><option>Selecione um assunto</option></select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:16px; max-width:360px;">
+        <label>Filtros rápidos <span class="hint">(seleção múltipla)</span></label>
+        <select multiple size="4">
+          <option selected>Atrasado</option>
+          <option>Não lido</option>
+          <option>Urgente</option>
+          <option>Resposta não aceita</option>
+          <option>Reencaminhados</option>
+          <option>Falta de dados – Contatar cidadão</option>
+          <option>Falta de dados – Retorno</option>
+        </select>
+      </div>
+
+      <div class="grid cols-3" style="margin-top:16px;">
+        <div class="field">
+          <label>Região <span class="new-badge">novo cadastro</span></label>
+          <select disabled><option>Selecione...</option></select>
+        </div>
+        <div class="field">
+          <label>Bairro <span class="new-badge">novo cadastro</span></label>
+          <select disabled><option>Selecione...</option></select>
+        </div>
+        <div class="field">
+          <label>Logradouro <span class="new-badge">novo cadastro</span></label>
+          <input type="text" disabled placeholder="Nome do logradouro">
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn ghost">Limpar filtros</button>
+        <button class="btn secondary">Exportar Excel</button>
+        <button class="btn">Filtrar</button>
+      </div>
+    </div>
+    <div class="totals">
+      <div class="pill urgent">▲ Urgentes: 3</div>
+      <div class="pill total">Total: 128</div>
+      <div class="pill analise">Em análise: 74</div>
+      <div class="pill progress">Respondido: 46</div>
+      <div class="pill rejected">Resposta não aceita: 8</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="toolbar">
+      <div class="left"><input type="checkbox"> Selecionar todos &nbsp;·&nbsp; 2 selecionados (mesmo Assunto/SubAssunto)</div>
+      <button class="btn">Resposta simultânea</button>
+    </div>
+    <table>
+      <thead>
+        <tr><th></th><th>Protocolo</th><th>Data cadastro</th><th>Prazo de resposta</th><th>Assunto</th><th>SubAssunto</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox" checked></td>
+          <td><button class="proto-link" onclick="openDetalhes()"><span class="tri"></span>1412366</button></td>
+          <td>20/07/2026</td><td>18/10/2026</td><td>Drenagem</td><td>Sarjetão - Manutenção</td>
+          <td><span class="badge analise">Em análise</span></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" checked></td>
+          <td><button class="proto-link" onclick="openDetalhes()">1412365</button></td>
+          <td>20/07/2026</td><td>18/10/2026</td><td>Drenagem</td><td>Sarjetão - Manutenção</td>
+          <td><span class="badge analise">Em análise</span></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><button class="proto-link" onclick="openDetalhes()">1412364</button></td>
+          <td>19/07/2026</td><td>17/10/2026</td><td>Praças</td><td>Pintura</td>
+          <td><span class="badge naoaceita">Resposta não aceita</span></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><button class="proto-link" onclick="openDetalhes()">1412363</button></td>
+          <td>18/07/2026</td><td>16/10/2026</td><td>Passeio</td><td>Recomposição</td>
+          <td><span class="badge faltadados">Falta de dados – Contatar cidadão</span></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><button class="proto-link" onclick="openDetalhes()">1412362</button></td>
+          <td>17/07/2026</td><td>15/10/2026</td><td>Mureta</td><td>Manutenção</td>
+          <td><span class="badge reenc">Reencaminhado</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="footer-pag">
+      <span>Mostrando de 1 até 5 de 128 registros</span>
+      <span>Anterior &nbsp; 1 &nbsp; 2 &nbsp; 3 &nbsp; … &nbsp; 26 &nbsp; Próximo</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Modal — Resposta simultânea</div>
+    <div class="card-body">
+      <div class="modal-mock">
+        <div class="card-header">Resposta simultânea</div>
+        <div class="card-body">
+          <p style="color:var(--text-muted); font-size:12.5px; margin-top:0;">A resposta será aplicada a todos os protocolos selecionados (mesmo Assunto/SubAssunto).</p>
+          <div class="field" style="margin-bottom:12px;">
+            <label>Resposta padrão</label>
+            <select disabled><option>Selecione...</option></select>
+          </div>
+          <div class="field">
+            <label>Parecer</label>
+            <input type="text" disabled placeholder="Texto da resposta">
+          </div>
+          <div class="actions-row"><button class="btn">Responder</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PASSO 2/3 — Detalhes ===================== -->
+<section id="view-detalhes" class="hidden">
+  <div class="crumb">Home &nbsp;/&nbsp; <a onclick="voltarPendencias()">Pendências</a> &nbsp;/&nbsp; Detalhes</div>
+
+  <div class="det-header">
+    <div>
+      <span class="label">Protocolo</span><br>
+      <span class="proto-num">1412366</span>
+      <span class="badge respondido">Respondido</span>
+      <span class="badge urgent-tag">URGENTE</span>
+    </div>
+    <div style="text-align:right;">
+      <div class="label">Criado em</div>
+      <div style="margin-bottom:8px;">03/09/2026 19:33</div>
+      <button class="btn" onclick="window.print()">Imprimir</button>
+    </div>
+  </div>
+
+  <div class="card info-card">
+    <div class="card-body">
+      <div class="info-row">
+        <div class="item">
+          <label>Cidadão <span class="badge anon" style="margin-left:4px;">ANÔNIMO</span></label>
+          <div class="val">Registro em Anônimo</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="item"><label>Assunto-Subassunto</label><div class="val">Acesso Já / Solicita Agenda</div></div>
+        <div class="item"><label>Grupo</label><div class="val">DFPM - Departamento de Fiscalização e Posturas</div></div>
+        <div class="item"><label>Tipo de Solicitação</label><div class="val">Solicitação</div></div>
+      </div>
+      <div class="info-row">
+        <div class="item"><label>Tipo de Pessoa</label><div class="val">Pessoa Física</div></div>
+        <div class="item"><label>Meio de Resposta</label><div class="val">Nenhum</div></div>
+        <div class="item"></div>
+      </div>
+      <div class="desc-block">
+        <label>Descrição</label>
+        <div class="val">Teste QA - retest card 0068 - protocolo anonimo com Meio de resposta Telefone</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-icon-row">
+      <div class="section-icon">?</div>
+      <div class="titles"><div class="t">Perguntas e respostas</div><div class="s">Informações complementares respondidas durante a abertura.</div></div>
+    </div>
+    <div class="qa-item"><div class="q">árvore é velha 3?</div><div class="a">• teste 2</div></div>
+    <div class="qa-item"><div class="q">qual o nome da sua rua?</div><div class="a">Rua Teste QA</div></div>
+    <div class="qa-item"><div class="q">quanta folhas tem?</div><div class="a">Sem resposta</div></div>
+  </div>
+
+  <div class="card">
+    <div class="section-icon-row">
+      <div class="section-icon">📍</div>
+      <div class="titles"><div class="t">Endereço de referência</div><div class="s">Local informado para contextualizar o pedido.</div></div>
+    </div>
+    <div class="addr-grid">
+      <div class="item"><label>Logradouro</label><div class="val">—</div></div>
+      <div class="item"><label>Número</label><div class="val">—</div></div>
+      <div class="item"><label>Complemento</label><div class="val">—</div></div>
+      <div class="item"><label>Bairro</label><div class="val">—</div></div>
+      <div class="item"><label>CEP</label><div class="val">—</div></div>
+      <div class="item"><label>Cidade</label><div class="val">—</div></div>
+      <div class="item"><label>Estado</label><div class="val">—</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Anexos</div>
+    <div class="card-body">
+      <p style="color:var(--text-muted); font-size:12.5px; margin:0 0 4px;">Nenhum anexo.</p>
+      <label style="display:block; font-size:11px; color:var(--text-muted); margin-top:10px;">Arquivo</label>
+      <div class="upload-row">
+        <span class="upload-btn">Escolher arquivo</span>
+        <span style="color:var(--text-muted); font-size:12.5px;">Nenhum arquivo escolhido</span>
+        <button class="btn secondary" style="margin-left:auto;">Enviar anexo</button>
+      </div>
+      <p style="color:var(--text-muted); font-size:11px; margin:6px 0 0;">Tamanho máximo: 8 MB.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Ações do atendimento</div>
+    <div class="radio-group">
+      <label class="radio-opt"><input type="radio" name="acao" id="acao-responder" checked onchange="toggleAcao()"> Responder</label>
+      <label class="radio-opt"><input type="radio" name="acao" id="acao-complementar" onchange="toggleAcao()"> Complementar dados</label>
+      <label class="radio-opt"><input type="radio" name="acao" id="acao-reatribuir" onchange="toggleAcao()"> Reatribuir grupo</label>
+    </div>
+    <div class="card-body" style="padding-top:8px;">
+      <div id="grupo-select-wrap" class="field hidden" style="margin-bottom:12px;">
+        <select>
+          <option>cgd - cadastro de grupo com diretoria</option>
+          <option>DFPM - Departamento de Fiscalização e Posturas</option>
+        </select>
+      </div>
+      <textarea placeholder="Observação"></textarea>
+      <div class="actions-row"><button class="btn">Adicionar ao histórico</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Histórico</div>
+    <div class="history-item">
+      <div class="t"><b>Respondido</b> — Grupo alterado de [cgd - cadastro de grupo com diretoria] para [DFPM - Departamento de Fiscalização e Posturas]</div>
+      <div class="meta">Por: 05939641-6fae-437c-ac5d-2b8d3a52108e · 03/09/2026 20:38</div>
+    </div>
+    <div class="history-item">
+      <div class="t"><b>Respondido</b> — Status alterado de Em análise para Respondido — Motivo: Alteração realizada conforme o fluxo da solicitação.</div>
+      <div class="meta">Por: 05939641-6fae-437c-ac5d-2b8d3a52108e · 03/09/2026 20:36</div>
+    </div>
+    <div class="history-item">
+      <div class="t"><b>Em análise</b> — Status alterado de Recebida para Em análise — Motivo: primeiro acesso aos detalhes pelo responsável.</div>
+      <div class="meta">Por: 18ecda55-750d-490a-9a9e-95bf6a451cb4 · 03/09/2026 19:34</div>
+    </div>
+    <div class="history-item">
+      <div class="t"><b>Recebida</b> — Solicitação criada sem vínculo após revisão das sugestões.</div>
+      <div class="meta">Por: 18ecda55-750d-490a-9a9e-95bf6a451cb4 · 03/09/2026 19:33</div>
+    </div>
+  </div>
+
+  <button class="btn secondary btn-voltar" onclick="voltarPendencias()">Voltar</button>
+</section>
+
+<script>
+  function openDetalhes(){
+    document.getElementById('view-pendencias').classList.add('hidden');
+    document.getElementById('view-detalhes').classList.remove('hidden');
+    window.scrollTo(0,0);
+  }
+  function voltarPendencias(){
+    document.getElementById('view-detalhes').classList.add('hidden');
+    document.getElementById('view-pendencias').classList.remove('hidden');
+    window.scrollTo(0,0);
+  }
+  function toggleAcao(){
+    const reatribuir = document.getElementById('acao-reatribuir').checked;
+    document.getElementById('grupo-select-wrap').classList.toggle('hidden', !reatribuir);
+  }
+</script>
+
+</body>
+</html>
