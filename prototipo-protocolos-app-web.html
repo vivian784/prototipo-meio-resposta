@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo — Recebimento de Protocolos App/Web (cards 0081-0084)</title>
+<style>
+:root{
+  --bg:#0d1420; --sidebar:#0f1830; --card:#141c30; --card2:#182238;
+  --border:#25304a; --text:#e7ecf5; --muted:#8a93ab; --muted2:#647089;
+  --blue:#2f7bf5; --blue-deep:#0142b0; --blue-soft:#173154;
+  --green:#33c17a; --orange:#f5a742; --red:#f0555c; --purple:#8b6df0;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+a{color:var(--blue);text-decoration:none;cursor:pointer}
+a:hover{text-decoration:underline}
+
+.app{display:flex;min-height:100vh}
+.sidebar{width:230px;flex-shrink:0;background:var(--sidebar);padding:18px 14px;border-right:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+.brand .logo{width:30px;height:30px;border-radius:8px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+.brand b{font-size:14px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--muted);font-size:13px;margin-bottom:2px;cursor:pointer}
+.nav-item .ic{width:16px;text-align:center;opacity:.8}
+.nav-item.active{background:var(--blue-soft);color:#fff}
+.nav-item:hover:not(.active){background:#141d33;color:var(--text)}
+.nav-item.new{position:relative}
+.nav-badge{margin-left:auto;background:var(--orange);color:#231400;font-size:10px;font-weight:700;border-radius:10px;padding:1px 7px}
+.nav-new-tag{font-size:9px;font-weight:700;background:var(--purple);color:#fff;border-radius:6px;padding:1px 5px;margin-left:6px}
+
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--border)}
+.topbar .crumbs{font-size:12px;color:var(--muted)}
+.topbar .user{display:flex;align-items:center;gap:8px;font-size:13px}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff}
+
+.content{flex:1;padding:22px 26px 90px;overflow:auto}
+.page{display:none}
+.page.active{display:block}
+
+h1{font-size:20px;margin:0 0 4px;font-weight:600}
+.subtitle{color:var(--muted);font-size:12.5px;margin-bottom:18px}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11px;color:var(--muted)}
+select,input,textarea{background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:7px 10px;font-size:12.5px;font-family:inherit}
+select:focus,input:focus,textarea:focus{outline:1px solid var(--blue)}
+.btn{border:1px solid var(--border);background:var(--card2);color:var(--text);border-radius:7px;padding:8px 14px;font-size:12.5px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--muted2)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:#2569d6}
+.btn.ghost{background:transparent}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;padding:12px 14px;border-bottom:1px solid var(--border)}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#111a2d}
+
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.badge.web{background:#12253f;color:#6fa8ff}
+.badge.app{background:#1f1738;color:#b79bff}
+.badge.pendente{background:#3a2a12;color:var(--orange)}
+.badge.vinculado{background:#0f2c1e;color:var(--green)}
+.badge.ep{background:var(--blue-soft);color:#a9c8ff;font-weight:700}
+
+.pill-tabs{display:flex;gap:6px;background:var(--card2);padding:4px;border-radius:9px;width:max-content;margin-bottom:16px}
+.pill-tabs button{border:none;background:transparent;color:var(--muted);padding:6px 14px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer}
+.pill-tabs button.active{background:var(--blue);color:#fff}
+
+/* Tela 2 — autopreenchimento */
+.split{display:grid;grid-template-columns:1fr 40px 1fr;gap:0;align-items:start}
+.origin-col,.form-col{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.origin-col{background:#101a2d}
+.col-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:14px}
+.orow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px dashed var(--border)}
+.orow:last-child{border-bottom:none}
+.orow .k{font-size:11px;color:var(--muted);margin-bottom:3px}
+.orow .v{font-size:13px}
+.arrows{display:flex;flex-direction:column;gap:10px;padding-top:34px;align-items:center}
+.arrow-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--blue);background:var(--blue-soft);color:#bcd4ff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
+.arrow-btn:hover{background:var(--blue);color:#fff}
+.arrow-btn.done{background:var(--green);border-color:var(--green);color:#06331b}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.formgrid .full{grid-column:1/-1}
+.filled{border-color:var(--green) !important;background:#0f2216 !important}
+
+.banner{background:var(--blue-soft);border:1px solid #2c4a7c;border-radius:10px;padding:12px 16px;font-size:12.5px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.banner b{color:#cfe0ff}
+
+.detail-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.proto-nums{display:flex;gap:26px;flex-wrap:wrap}
+.pn{display:flex;flex-direction:column;gap:4px}
+.pn .k{font-size:11px;color:var(--muted)}
+.pn .v{font-size:16px;font-weight:700}
+.pn .v a{font-size:16px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:18px}
+.kv{padding:14px 16px}
+.kv .row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.kv .row:last-child{border-bottom:none}
+.kv .row .k{color:var(--muted)}
+
+.modal-bg{position:fixed;inset:0;background:rgba(4,7,14,.65);display:none;align-items:center;justify-content:center;z-index:50;padding:30px}
+.modal-bg.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:14px;max-width:640px;width:100%;max-height:85vh;overflow:auto;padding:22px 24px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.modal-head h2{font-size:16px;margin:0}
+.close-x{cursor:pointer;color:var(--muted);font-size:18px;border:none;background:none}
+.qa{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.qa .q{font-size:12px;color:var(--muted);margin-bottom:4px}
+.qa .a{font-size:13px}
+
+.protohud{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#050914;border:1px solid var(--border);border-radius:30px;padding:8px 10px 8px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(0,0,0,.5);z-index:60;font-size:12px}
+.protohud .step{color:var(--muted)}
+.protohud button{border:none;background:var(--blue-soft);color:#cfe0ff;border-radius:20px;padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer}
+.protohud button:disabled{opacity:.35;cursor:default}
+.protohud button.reset{background:transparent;border:1px solid var(--border);color:var(--muted)}
+
+.hint{font-size:11px;color:var(--muted2);margin-top:2px}
+.click-hint{font-size:11.5px;color:var(--blue);margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><div class="logo">L</div><b>Serviço ao Cidadão</b></div>
+    <div class="nav-item">🏠 Visão geral</div>
+    <div class="nav-item active new">📥 Protocolos App e Web <span class="nav-new-tag">NOVO</span> <span class="nav-badge" id="pendCount">3</span></div>
+    <div class="nav-item">🗂️ Atendimento</div>
+    <div class="nav-item">⚙️ Configuração do atendimento</div>
+    <div class="nav-item">🏛️ Estrutura municipal</div>
+    <div class="nav-item">👤 Administração</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs" id="crumbs">Home / Protocolos App e Web</div>
+      <div class="user"><div class="avatar">A</div> Administrator</div>
+    </div>
+
+    <div class="content">
+
+      <!-- PÁGINA 1 — FILA -->
+      <div class="page active" id="page1">
+        <h1>Protocolos App e Web</h1>
+        <div class="subtitle">Protocolos registrados pelo cidadão no Portal do Cidadão (web) ou no App, aguardando transposição para o sistema 156. · Card 0082</div>
+
+        <div class="toolbar">
+          <div class="field"><label>Canal</label><select><option>Todos</option><option>Web</option><option>App</option></select></div>
+          <div class="field"><label>Tipo de solicitação</label><select><option>Todos</option><option>Reclamação</option><option>Solicitação</option><option>Denúncia</option></select></div>
+          <div class="field"><label>Status</label><select><option>Todos</option><option>Pendente</option><option>Vinculado</option></select></div>
+          <div class="field"><label>Período</label><input type="text" placeholder="dd/mm - dd/mm" style="width:130px"></div>
+          <div class="field" style="justify-content:flex-end"><button class="btn primary" style="margin-top:16px">Filtrar</button></div>
+        </div>
+
+        <div class="click-hint">→ clique no nº do protocolo de origem (Pendente) pra abrir a Nova Solicitação já autopreenchida</div>
+
+        <div class="card">
+          <table>
+            <thead><tr><th>Nº protocolo origem</th><th>Canal</th><th>Data/hora</th><th>Cidadão</th><th>Tipo de solicitação</th><th>Status</th><th>Nº protocolo 156</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><a onclick="goTo(2)">WEB-2026-004821</a></td>
+                <td><span class="badge web">🌐 Web</span></td>
+                <td>08/09/2026 09:14</td>
+                <td>Vivian Regina Prudenciano do Carmo</td>
+                <td>Reclamação</td>
+                <td><span class="badge pendente">Pendente</span></td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><span style="color:var(--muted)">APP-2026-001190</span></td>
+                <td><span class="badge app">📱 App</span></td>
+                <td>07/09/2026 18:02</td>
+                <td>Camilly Silva</td>
+                <td>Solicitação</td>
+                <td><span class="badge vinculado">Vinculado</span></td>
+                <td><a onclick="goTo(4)">1412402</a></td>
+              </tr>
+              <tr>
+                <td><a style="color:var(--muted);cursor:default">WEB-2026-004799</a></td>
+                <td><span class="badge web">🌐 Web</span></td>
+                <td>07/09/2026 11:37</td>
+                <td>João Batista Ferreira</td>
+                <td>Denúncia</td>
+                <td><span class="badge pendente">Pendente</span></td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><a style="color:var(--muted);cursor:default">APP-2026-001188</td>
+                <td><span class="badge app">📱 App</span></td>
+                <td>06/09/2026 08:50</td>
+                <td>Maria Ap. Souza</td>
+                <td>Reclamação</td>
+                <td><span class="badge pendente">Pendente</span></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PÁGINA 2 — NOVA SOLICITAÇÃO COM AUTOPREENCHIMENTO -->
+      <div class="page" id="page2">
+        <h1>Nova Solicitação</h1>
+        <div class="banner">
+          <span>🔗 Vinculando ao protocolo de origem <b>WEB-2026-004821</b> (Web) — clique nas setinhas pra autopreencher cada campo</span>
+          <button class="btn ghost" onclick="fillAll()">Autopreencher tudo</button>
+        </div>
+
+        <div class="split">
+          <div class="origin-col">
+            <div class="col-title">Dados enviados pelo cidadão</div>
+            <div class="orow"><div><div class="k">Tipo de solicitação</div><div class="v">Reclamação</div></div><div></div></div>
+            <div class="orow"><div><div class="k">Assunto / Subassunto</div><div class="v">Iluminação Pública / Lâmpada apagada</div></div><div></div></div>
+            <div class="orow"><div><div class="k">Cidadão</div><div class="v">Vivian Regina Prudenciano do Carmo</div></div><div></div></div>
+            <div class="orow"><div><div class="k">Meio de resposta</div><div class="v">E-mail</div></div><div></div></div>
+            <div class="orow"><div><div class="k">Endereço</div><div class="v">Rua das Palmeiras, 245 — Centro, Cajamar/SP</div></div><div></div></div>
+            <div class="orow"><div><div class="k">Descrição</div><div class="v">Poste em frente ao nº 245 está apagado há 5 dias, deixando a rua bem escura à noite.</div></div><div></div></div>
+            <div class="orow"><div><div class="k">Anexos</div><div class="v">📎 foto-poste.jpg</div></div><div></div></div>
+            <div class="orow"><div><div class="k">Formulário (perguntas e respostas)</div><div class="v"><a onclick="openQA()">Ver 3 respostas</a></div></div><div></div></div>
+          </div>
+
+          <div class="arrows">
+            <button class="arrow-btn" id="arrow0" onclick="fillField(0)" title="Autopreencher">→</button>
+            <button class="arrow-btn" id="arrow1" onclick="fillField(1)" title="Autopreencher">→</button>
+            <button class="arrow-btn" id="arrow2" onclick="fillField(2)" title="Autopreencher">→</button>
+            <button class="arrow-btn" id="arrow3" onclick="fillField(3)" title="Autopreencher">→</button>
+            <button class="arrow-btn" id="arrow4" onclick="fillField(4)" title="Autopreencher">→</button>
+            <button class="arrow-btn" id="arrow5" onclick="fillField(5)" title="Autopreencher">→</button>
+            <button class="arrow-btn" id="arrow6" onclick="fillField(6)" title="Autopreencher">→</button>
+          </div>
+
+          <div class="form-col">
+            <div class="col-title">Formulário — Nova Solicitação</div>
+            <div class="formgrid">
+              <div class="field full"><label>Tipo de solicitação</label><select id="f0"><option value="">Selecione...</option><option>Reclamação</option><option>Solicitação</option><option>Denúncia</option></select></div>
+              <div class="field full"><label>Assunto / Subassunto</label><input id="f1" placeholder="Selecione..."></div>
+              <div class="field full"><label>Cidadão</label><input id="f2" placeholder="Buscar cidadão..."></div>
+              <div class="field"><label>Meio de resposta</label><select id="f3"><option value="">Selecione...</option><option>Nenhum</option><option>Telefone</option><option>E-mail</option></select></div>
+              <div class="field"><label>CEP</label><input placeholder="00000-000"></div>
+              <div class="field full"><label>Endereço</label><input id="f4" placeholder="Rua, número, bairro, cidade"></div>
+              <div class="field full"><label>Descrição</label><textarea id="f5" rows="3" placeholder="Descreva a solicitação..."></textarea></div>
+              <div class="field full"><label>Anexos</label><input id="f6" placeholder="Nenhum arquivo"></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+              <button class="btn" onclick="goTo(1)">Cancelar</button>
+              <button class="btn primary" onclick="saveSolicitacao()">💾 Salvar Solicitação</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PÁGINA 3 — SOLICITAÇÕES (LISTA COM TAG EP) -->
+      <div class="page" id="page3">
+        <h1>Solicitações</h1>
+        <div class="subtitle">Lista de solicitações do sistema 156 — solicitações vinculadas a um protocolo de origem (App/Web) mostram a tag <span class="badge ep">EP</span>.</div>
+
+        <div class="pill-tabs">
+          <button class="active">Todas</button>
+          <button>Em atendimento</button>
+          <button>Concluídas</button>
+        </div>
+
+        <div class="click-hint">→ clique no nº da solicitação pra ver os Detalhes</div>
+
+        <div class="card">
+          <table>
+            <thead><tr><th>Nº</th><th>Cidadão</th><th>Assunto</th><th>Status</th><th>Vínculo</th><th>Criado em</th></tr></thead>
+            <tbody id="solRows">
+              <tr>
+                <td><a onclick="goTo(4)">1412402</a></td>
+                <td>Camilly Silva</td>
+                <td>Solicitação — Poda de árvore</td>
+                <td><span class="badge vinculado">Em atendimento</span></td>
+                <td><span class="badge ep">EP</span></td>
+                <td>07/09/2026</td>
+              </tr>
+              <tr>
+                <td><a>1412398</a></td>
+                <td>Roberto Alves</td>
+                <td>Reclamação — Ruído</td>
+                <td><span class="badge vinculado">Concluída</span></td>
+                <td>—</td>
+                <td>06/09/2026</td>
+              </tr>
+              <tr id="newSolRow" style="display:none">
+                <td><a onclick="goTo(4)">1412410</a></td>
+                <td>Vivian Regina Prudenciano do Carmo</td>
+                <td>Reclamação — Iluminação Pública</td>
+                <td><span class="badge pendente">Em atendimento</span></td>
+                <td><span class="badge ep">EP</span></td>
+                <td>08/09/2026</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PÁGINA 4 — DETALHES DA SOLICITAÇÃO -->
+      <div class="page" id="page4">
+        <h1>Detalhes da Solicitação</h1>
+        <div class="click-hint">→ clique no nº do protocolo de origem pra ver os detalhes registrados pelo cidadão (somente leitura)</div>
+
+        <div class="card" style="padding:20px 22px">
+          <div class="detail-top">
+            <div class="proto-nums">
+              <div class="pn"><div class="k">Protocolo do sistema (156)</div><div class="v">1412410</div></div>
+              <div class="pn"><div class="k">Vínculo</div><div class="v"><span class="badge ep">EP</span></div></div>
+              <div class="pn"><div class="k">Protocolo de origem</div><div class="v"><a onclick="openOrigin()">WEB-2026-004821</a></div></div>
+            </div>
+            <div><span class="badge vinculado">Em atendimento</span></div>
+          </div>
+
+          <div class="grid2">
+            <div class="kv">
+              <div class="col-title">Dados da solicitação</div>
+              <div class="row"><span class="k">Tipo</span><span>Reclamação</span></div>
+              <div class="row"><span class="k">Assunto</span><span>Iluminação Pública</span></div>
+              <div class="row"><span class="k">Subassunto</span><span>Lâmpada apagada</span></div>
+              <div class="row"><span class="k">Cidadão</span><span>Vivian Regina Prudenciano do Carmo</span></div>
+              <div class="row"><span class="k">Meio de resposta</span><span>E-mail</span></div>
+              <div class="row"><span class="k">Endereço</span><span>Rua das Palmeiras, 245 — Centro</span></div>
+            </div>
+            <div class="kv">
+              <div class="col-title">Origem</div>
+              <div class="row"><span class="k">Canal</span><span class="badge web">🌐 Web</span></div>
+              <div class="row"><span class="k">Registrado em</span><span>08/09/2026 09:14</span></div>
+              <div class="row"><span class="k">Vinculado por</span><span>Administrator</span></div>
+              <div class="row"><span class="k">Vinculado em</span><span>08/09/2026 09:20</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal: perguntas e respostas do formulário de origem -->
+<div class="modal-bg" id="qaModal">
+  <div class="modal">
+    <div class="modal-head"><h2>Formulário — respostas do cidadão</h2><button class="close-x" onclick="closeModal('qaModal')">✕</button></div>
+    <div class="qa"><div class="q">O poste chegou a funcionar em algum momento nos últimos dias?</div><div class="a">Não, está apagado desde sábado.</div></div>
+    <div class="qa"><div class="q">Há outros pontos da rua também sem iluminação?</div><div class="a">Não, só esse poste em frente ao nº 245.</div></div>
+    <div class="qa"><div class="q">Deseja receber atualizações por e-mail?</div><div class="a">Sim</div></div>
+  </div>
+</div>
+
+<!-- Modal: detalhes do protocolo de origem (somente leitura) -->
+<div class="modal-bg" id="originModal">
+  <div class="modal">
+    <div class="modal-head"><h2>Protocolo de origem — WEB-2026-004821 (somente leitura)</h2><button class="close-x" onclick="closeModal('originModal')">✕</button></div>
+    <div class="kv" style="padding:0">
+      <div class="row"><span class="k">Canal</span><span class="badge web">🌐 Portal do Cidadão (Web)</span></div>
+      <div class="row"><span class="k">Registrado em</span><span>08/09/2026 09:14</span></div>
+      <div class="row"><span class="k">Cidadão</span><span>Vivian Regina Prudenciano do Carmo</span></div>
+      <div class="row"><span class="k">Tipo de solicitação</span><span>Reclamação</span></div>
+      <div class="row"><span class="k">Assunto / Subassunto</span><span>Iluminação Pública / Lâmpada apagada</span></div>
+      <div class="row"><span class="k">Meio de resposta</span><span>E-mail</span></div>
+      <div class="row"><span class="k">Endereço</span><span>Rua das Palmeiras, 245 — Centro, Cajamar/SP</span></div>
+      <div class="row"><span class="k">Descrição</span><span style="max-width:320px;text-align:right">Poste em frente ao nº 245 está apagado há 5 dias.</span></div>
+      <div class="row"><span class="k">Anexos</span><span>📎 foto-poste.jpg</span></div>
+      <div class="row"><span class="k">Vinculado ao protocolo 156</span><span><a onclick="closeModal('originModal');goTo(4)">1412410</a></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="protohud">
+  <span class="step">Protótipo — tela <b id="stepLabel">1</b>/4</span>
+  <button onclick="goTo(currentPage()-1)" id="prevBtn">‹ Anterior</button>
+  <button onclick="goTo(currentPage()+1)" id="nextBtn">Próxima ›</button>
+  <button class="reset" onclick="location.reload()">↺ Reiniciar</button>
+</div>
+
+<script>
+var crumbsMap = {1:"Home / Protocolos App e Web",2:"Home / Protocolos App e Web / Nova Solicitação",3:"Home / Solicitações",4:"Home / Solicitações / Detalhes"};
+var origin = ["Reclamação","Iluminação Pública / Lâmpada apagada","Vivian Regina Prudenciano do Carmo","E-mail","Rua das Palmeiras, 245 — Centro, Cajamar/SP","Poste em frente ao nº 245 está apagado há 5 dias, deixando a rua bem escura à noite.","📎 foto-poste.jpg"];
+
+function currentPage(){
+  for(var i=1;i<=4;i++){ if(document.getElementById('page'+i).classList.contains('active')) return i; }
+  return 1;
+}
+function goTo(n){
+  if(n<1) n=1; if(n>4) n=4;
+  for(var i=1;i<=4;i++){ document.getElementById('page'+i).classList.remove('active'); }
+  document.getElementById('page'+n).classList.add('active');
+  document.getElementById('crumbs').textContent = crumbsMap[n];
+  document.getElementById('stepLabel').textContent = n;
+  document.getElementById('prevBtn').disabled = (n===1);
+  document.getElementById('nextBtn').disabled = (n===4);
+  window.scrollTo(0,0);
+}
+function fillField(i){
+  var el = document.getElementById('f'+i);
+  if(el.tagName==='SELECT'){
+    var opt = Array.from(el.options).find(function(o){return o.text===origin[i] || origin[i].indexOf(o.text)===0;});
+    el.value = opt ? opt.value : origin[i];
+  } else {
+    el.value = origin[i];
+  }
+  el.classList.add('filled');
+  document.getElementById('arrow'+i).classList.add('done');
+  document.getElementById('arrow'+i).textContent = '✓';
+}
+function fillAll(){ for(var i=0;i<7;i++){ fillField(i); } }
+function openQA(){ document.getElementById('qaModal').classList.add('show'); }
+function openOrigin(){ document.getElementById('originModal').classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+function saveSolicitacao(){
+  document.getElementById('newSolRow').style.display = '';
+  var pend = document.getElementById('pendCount');
+  pend.textContent = Math.max(0, parseInt(pend.textContent)-1);
+  goTo(3);
+}
+goTo(1);
+</script>
+</body>
+</html>
