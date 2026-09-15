@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cadastro de Moradia — Versão Atualizada (Protótipo)</title>
+<style>
+:root{
+  --navy:#213A73;--navy-dark:#182b57;--navy-tint:#EAEEF6;
+  --muted:#73879C;--text:#555555;--border:#CCCCCC;--danger:#A94442;--danger-bg:#F2DEDE;
+  --success:#3C8DBC22;--green:#28A745;--green-bg:#EAF9EE;--orange:#FD7E14;--orange-bg:#FFF3E6;
+  --page-bg:#ECF0F5;--font:'Helvetica Neue',Roboto,Arial,'Droid Sans',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);background:var(--page-bg);color:var(--text);font-size:14px}
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:20px;color:var(--navy);margin:0 0 4px;font-weight:600}
+.subtitle{color:var(--muted);font-size:12.5px;margin-bottom:18px}
+
+.changelog{background:#fff;border:1px solid var(--border);margin-bottom:20px;overflow:hidden}
+.changelog summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:13px;color:var(--navy);display:flex;align-items:center;gap:8px;list-style:none}
+.changelog summary::-webkit-details-marker{display:none}
+.changelog summary .chev{transition:transform .15s;margin-left:auto;color:var(--muted)}
+.changelog[open] summary .chev{transform:rotate(90deg)}
+.changelog .body{padding:0 16px 14px;font-size:12.5px;line-height:1.7}
+.changelog .row{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start}
+.tag{flex:0 0 auto;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.02em}
+.tag.rm{background:var(--danger-bg);color:var(--danger)}
+.tag.add{background:var(--green-bg);color:#1e7e34}
+.tag.chg{background:var(--orange-bg);color:#b35900}
+
+.pend{background:#FCF8E3;border:1px solid #FAEBCC;padding:12px 16px;margin-bottom:20px;font-size:12.5px;color:#8A6D3B;line-height:1.7}
+.pend b{display:block;margin-bottom:4px;color:#66512C}
+
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden}
+.card-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-head .ico{width:26px;height:26px;border-radius:7px;background:var(--navy-tint);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto}
+.card-head h2{font-size:15px;margin:0;color:#333;font-weight:600}
+
+.card-body{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.card-body.single{grid-template-columns:1fr}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12.5px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px}
+.field label .req{color:var(--danger);font-weight:700}
+.field label .opt{font-weight:400;color:var(--muted);font-size:11px}
+.field input[type=text],.field input[type=tel],.field select,.field textarea{
+  border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-size:13.5px;font-family:inherit;color:var(--text);background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--navy);outline-offset:1px;border-color:var(--navy)}
+.field textarea{resize:vertical;min-height:64px}
+.hint{font-size:11px;color:var(--muted)}
+.badge-new{display:inline-block;font-size:9.5px;font-weight:700;background:var(--orange);color:#fff;padding:1px 6px;border-radius:10px;letter-spacing:.03em}
+
+/* autocomplete */
+.ac-wrap{position:relative}
+.ac-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:7px;margin-top:3px;box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:5;max-height:180px;overflow:auto;display:none}
+.ac-list.show{display:block}
+.ac-item{padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f2f2f2}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover,.ac-item.active{background:var(--navy-tint)}
+.ac-item b{color:var(--navy)}
+
+/* toggle */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.toggle-row .lbl{font-size:13px;font-weight:600;color:#333}
+.switch{position:relative;width:42px;height:23px;flex:0 0 auto}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#CBD5E0;border-radius:20px;cursor:pointer;transition:.15s}
+.slider::before{content:"";position:absolute;height:17px;width:17px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}
+input:checked + .slider{background:var(--green)}
+input:checked + .slider::before{transform:translateX(19px)}
+
+/* map mock */
+.map-box{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:#e8edf3}
+.map-box .canvas{height:180px;position:relative;background:
+   linear-gradient(0deg, rgba(0,0,0,0.03) 1px, transparent 1px) 0 0/28px 28px,
+   linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px) 0 0/28px 28px,
+   #dfe6ee;
+  display:flex;align-items:center;justify-content:center}
+.map-box .canvas .pin{width:26px;height:26px;color:var(--danger);filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+.map-box .canvas .empty{font-size:12px;color:var(--muted);text-align:center;padding:0 20px}
+.coords-row{display:flex;gap:18px;padding:10px 12px;background:#fff;border-top:1px solid var(--border);font-size:12px}
+.coords-row .c{color:var(--muted)}
+.coords-row .c b{color:#333;font-family:'Courier New',monospace}
+
+/* chips for nomes especiais */
+.chip-add{display:flex;gap:8px}
+.chip-add input{flex:1}
+.chip-add button{border:1px solid var(--navy);background:var(--navy);color:#fff;border-radius:7px;padding:0 14px;font-size:13px;font-weight:600;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.chip{display:flex;align-items:center;gap:6px;background:var(--navy-tint);color:var(--navy);border-radius:20px;padding:5px 6px 5px 12px;font-size:12.5px;font-weight:600}
+.chip button{border:none;background:rgba(33,58,115,.15);color:var(--navy);width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:11px;line-height:1}
+
+.checks{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.checks label{display:flex;align-items:center;gap:6px;font-size:13px;color:#333;font-weight:600}
+
+.condicional{border-left:3px solid var(--navy);padding-left:14px;margin-top:4px;display:none}
+.condicional.show{display:block}
+
+.footer-actions{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -2px 8px rgba(0,0,0,.05);border-radius:0 0 10px 10px}
+.btn{border:none;border-radius:7px;padding:10px 22px;font-size:13.5px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-dark)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.result{margin-top:18px;background:#0f172a;color:#c8facc;border-radius:10px;padding:16px 20px;font-family:'Courier New',monospace;font-size:12px;white-space:pre-wrap;display:none}
+.result.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🏠 Cadastro de Moradia</h1>
+  <div class="subtitle">Protótipo navegável — versão com as alterações solicitadas · defesacivilsjc-hml</div>
+
+  <details class="changelog" open>
+    <summary>📋 O que mudou nesta versão <span class="chev">▸</span></summary>
+    <div class="body">
+      <div class="row"><span class="tag rm">Removido</span> Descrição e Renda Familiar (Informações Gerais)</div>
+      <div class="row"><span class="tag add">Adicionado</span> Nome, Telefone (1) e Telefone (2) em Informações Gerais</div>
+      <div class="row"><span class="tag chg">Alterado</span> Número, Complemento e Bairro deixaram de ser obrigatórios</div>
+      <div class="row"><span class="tag rm">Removido</span> Toggle "Área de Risco" (mantido só o campo Área de Risco, sem o sufixo "Kml")</div>
+      <div class="row"><span class="tag add">Adicionado</span> Opções em "Área de Risco": Setor de Monitoramento (R1 ou R2), R3, R4</div>
+      <div class="row"><span class="tag rm">Removido</span> Campo "Interditado"</div>
+      <div class="row"><span class="tag chg">Alterado</span> Ficha NUPDEC: quando "Tem pessoas com necessidades especiais" = Sim, digitação livre do nome direto na tela (sem depender da aba Pessoa, que só existe após salvar)</div>
+      <div class="row"><span class="tag add">Adicionado</span> Mapa com pino e coordenadas exibidas automaticamente após o endereço ser confirmado</div>
+    </div>
+  </details>
+
+  <div class="pend">
+    <b>⚠️ Pendências para confirmar antes de ir pra desenvolvimento</b>
+    O item 2 do PDF não tinha verbo, então tratei Número/Complemento/Bairro como campos que deixam de ser obrigatórios — confirma se é isso mesmo. Os campos Nome/Telefone(1)/Telefone(2) do item 7 entram em "Informações Gerais" (no lugar de Descrição/Renda Familiar) — se a intenção era outra aba, me avisa que eu ajusto rapidinho.
+  </div>
+
+  <form id="frm">
+    <!-- INFORMAÇÕES GERAIS -->
+    <div class="card">
+      <div class="card-head"><div class="ico">📝</div><h2>Informações Gerais</h2></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Nome <span class="badge-new">NOVO</span></label>
+          <input type="text" name="nome_geral" placeholder="Nome do responsável pela moradia">
+        </div>
+        <div class="field"></div>
+        <div class="field">
+          <label>Telefone (1) <span class="badge-new">NOVO</span></label>
+          <input type="tel" name="telefone1" placeholder="(12) 90000-0000" maxlength="15">
+        </div>
+        <div class="field">
+          <label>Telefone (2) <span class="opt">opcional</span> <span class="badge-new">NOVO</span></label>
+          <input type="tel" name="telefone2" placeholder="(12) 90000-0000" maxlength="15">
+        </div>
+      </div>
+    </div>
+
+    <!-- ENDEREÇO -->
+    <div class="card">
+      <div class="card-head"><div class="ico">📍</div><h2>Endereço</h2></div>
+      <div class="card-body">
+        <div class="field full ac-wrap">
+          <label>Endereço <span class="opt">opcional</span></label>
+          <input type="text" id="endereco" autocomplete="off" placeholder="Digite a rua/avenida...">
+          <div class="ac-list" id="acList"></div>
+          <div class="hint" id="cepHint"></div>
+        </div>
+        <div class="field">
+          <label>Número <span class="opt">opcional</span></label>
+          <input type="text" id="numero" placeholder="Ex: 120">
+        </div>
+        <div class="field">
+          <label>Complemento <span class="opt">opcional</span></label>
+          <input type="text" placeholder="Ex: fundos, casa 2...">
+        </div>
+        <div class="field full">
+          <label>Bairro <span class="opt">opcional · preenchido automaticamente</span></label>
+          <input type="text" id="bairro" placeholder="Selecione o endereço para preencher">
+        </div>
+
+        <div class="field full">
+          <label>Mapa e coordenadas <span class="badge-new">NOVO</span></label>
+          <div class="map-box">
+            <div class="canvas" id="mapCanvas">
+              <div class="empty">O mapa e as coordenadas aparecem aqui assim que você escolher o endereço acima.</div>
+            </div>
+            <div class="coords-row" id="coordsRow" style="display:none">
+              <div class="c">Latitude: <b id="latVal">—</b></div>
+              <div class="c">Longitude: <b id="lonVal">—</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>Área de Risco</label>
+          <select id="riscoSelect">
+            <option value="">Nenhum</option>
+            <option value="r12">Setor de Monitoramento (R1 ou R2)</option>
+            <option value="r3">R3</option>
+            <option value="r4">R4</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- FICHA NUPDEC -->
+    <div class="card">
+      <div class="card-head"><div class="ico">🧑‍🤝‍🧑</div><h2>Ficha NUPDEC</h2></div>
+      <div class="card-body">
+        <div class="field full">
+          <label>Buscar pessoa cadastrada</label>
+          <input type="text" placeholder="Digite o CPF, Nome ou RG da pessoa">
+        </div>
+        <div class="field">
+          <label>Número de moradores</label>
+          <input type="text" inputmode="numeric" placeholder="Ex: 4">
+        </div>
+        <div class="field">
+          <div class="toggle-row" style="margin-top:22px">
+            <span class="lbl">Autoriza grupo WhatsApp NUPDEC?</span>
+            <label class="switch"><input type="checkbox" id="whatsToggle"><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <div class="field full">
+          <div class="toggle-row">
+            <span class="lbl">Tem pessoas com necessidades especiais, ou que necessitam de cuidados especiais ou de suporte adicional em caso de emergência?</span>
+            <label class="switch"><input type="checkbox" id="especiaisToggle"><span class="slider"></span></label>
+          </div>
+
+          <div class="condicional" id="especiaisBox">
+            <label style="font-size:13px;font-weight:700;color:var(--muted);display:block;margin:12px 0 6px">
+              Nome da(s) pessoa(s) <span class="badge-new">NOVO — digitação direta</span>
+            </label>
+            <div class="chip-add">
+              <input type="text" id="nomeEspecialInput" placeholder="Digite o nome e clique em Adicionar">
+              <button type="button" id="addNomeBtn">+ Adicionar</button>
+            </div>
+            <div class="chips" id="nomesChips"></div>
+
+            <label style="font-size:13px;font-weight:700;color:var(--muted);display:block;margin:16px 0 6px">Condições</label>
+            <div class="checks">
+              <label><input type="checkbox"> Cadeirante</label>
+              <label><input type="checkbox"> Acamado</label>
+              <input type="text" placeholder="Outras condições" style="flex:1;min-width:160px;border:1px solid var(--border);padding:7px 10px;font-size:13px">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>A residência é</label>
+          <select>
+            <option value="">Selecione</option>
+            <option>Própria</option>
+            <option>Alugada</option>
+            <option>Cedida</option>
+            <option>Ocupação/Irregular</option>
+            <option>Outra</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="toggle-row" style="margin-top:22px">
+            <span class="lbl">Tem animais de estimação?</span>
+            <label class="switch"><input type="checkbox" id="animaisToggle"><span class="slider"></span></label>
+          </div>
+        </div>
+        <div class="condicional field full" id="animaisBox">
+          <label style="font-size:12.5px;font-weight:700;color:var(--muted);display:block;margin:0 0 6px">Tipo de animal</label>
+          <div class="chip-add">
+            <input type="text" id="animalInput" placeholder="Ex: Cachorro, Gato... e clique em Adicionar">
+            <button type="button" id="addAnimalBtn">+ Adicionar</button>
+          </div>
+          <div class="chips" id="animaisChips"></div>
+        </div>
+
+        <div class="field full">
+          <label>Observação</label>
+          <textarea placeholder="Observações gerais sobre a moradia..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-actions">
+      <button type="button" class="btn btn-ghost" onclick="document.getElementById('frm').reset(); document.getElementById('result').classList.remove('show')">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Salvar cadastro</button>
+    </div>
+  </form>
+
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+// ---- Autocomplete de endereço (mock) ----
+var enderecos = [
+  {nome:"AVENIDA UM", cep:"12200-000", bairro:"Chácara Santa Helena", lat:-23.25859, lon:-45.94253},
+  {nome:"RUA DUBLIN", cep:"12231-280", bairro:"Jardim Aeroporto", lat:-23.21656, lon:-45.88566},
+  {nome:"AVENIDA MÁRIO COVAS", cep:"12230-680", bairro:"Vila Luchetti", lat:-23.22683, lon:-45.87752},
+  {nome:"RUA GLADIOLO", cep:"12215-450", bairro:"Jardim Jussara", lat:-23.18746, lon:-45.86543},
+  {nome:"AVENIDA EUGENIA DA SILVA", cep:"12234-862", bairro:"Jardim Nova República", lat:-23.28943, lon:-45.89496}
+];
+
+var encInput = document.getElementById('endereco');
+var acList = document.getElementById('acList');
+
+encInput.addEventListener('input', function(){
+  var q = this.value.trim().toUpperCase();
+  if(!q){ acList.classList.remove('show'); return; }
+  var matches = enderecos.filter(function(e){ return e.nome.indexOf(q) === 0; });
+  if(!matches.length){ acList.classList.remove('show'); return; }
+  acList.innerHTML = matches.map(function(e,i){
+    return '<div class="ac-item" data-i="'+i+'"><b>'+e.nome+'</b> — CEP: '+e.cep+' · '+e.bairro+'</div>';
+  }).join('');
+  acList.classList.add('show');
+  acList.querySelectorAll('.ac-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      var e = matches[parseInt(item.dataset.i,10)];
+      selectEndereco(e);
+    });
+  });
+});
+
+function selectEndereco(e){
+  encInput.value = e.nome + ' - CEP: ' + e.cep;
+  document.getElementById('bairro').value = e.bairro;
+  acList.classList.remove('show');
+  document.getElementById('cepHint').textContent = 'Endereço confirmado — bairro preenchido automaticamente.';
+
+  var canvas = document.getElementById('mapCanvas');
+  canvas.innerHTML = '<svg class="pin" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8zm0 11a3 3 0 110-6 3 3 0 010 6z"/></svg>';
+  document.getElementById('coordsRow').style.display = 'flex';
+  document.getElementById('latVal').textContent = e.lat.toFixed(5);
+  document.getElementById('lonVal').textContent = e.lon.toFixed(5);
+}
+
+document.addEventListener('click', function(ev){
+  if(!ev.target.closest('.ac-wrap')) acList.classList.remove('show');
+});
+
+// ---- Toggle: necessidades especiais ----
+var especiaisToggle = document.getElementById('especiaisToggle');
+var especiaisBox = document.getElementById('especiaisBox');
+especiaisToggle.addEventListener('change', function(){
+  especiaisBox.classList.toggle('show', this.checked);
+});
+
+var nomes = [];
+function renderChips(){
+  document.getElementById('nomesChips').innerHTML = nomes.map(function(n,i){
+    return '<span class="chip">'+n+'<button type="button" data-i="'+i+'">✕</button></span>';
+  }).join('');
+  document.querySelectorAll('#nomesChips button').forEach(function(b){
+    b.addEventListener('click', function(){ nomes.splice(parseInt(b.dataset.i,10),1); renderChips(); });
+  });
+}
+document.getElementById('addNomeBtn').addEventListener('click', function(){
+  var inp = document.getElementById('nomeEspecialInput');
+  if(inp.value.trim()){ nomes.push(inp.value.trim()); inp.value=''; renderChips(); }
+});
+document.getElementById('nomeEspecialInput').addEventListener('keydown', function(e){
+  if(e.key==='Enter'){ e.preventDefault(); document.getElementById('addNomeBtn').click(); }
+});
+
+// ---- Toggle: animais ----
+var animaisToggle = document.getElementById('animaisToggle');
+var animaisBox = document.getElementById('animaisBox');
+animaisToggle.addEventListener('change', function(){
+  animaisBox.classList.toggle('show', this.checked);
+});
+
+var animais = [];
+function renderAnimaisChips(){
+  document.getElementById('animaisChips').innerHTML = animais.map(function(n,i){
+    return '<span class="chip">'+n+'<button type="button" data-i="'+i+'">✕</button></span>';
+  }).join('');
+  document.querySelectorAll('#animaisChips button').forEach(function(b){
+    b.addEventListener('click', function(){ animais.splice(parseInt(b.dataset.i,10),1); renderAnimaisChips(); });
+  });
+}
+document.getElementById('addAnimalBtn').addEventListener('click', function(){
+  var inp = document.getElementById('animalInput');
+  if(inp.value.trim()){ animais.push(inp.value.trim()); inp.value=''; renderAnimaisChips(); }
+});
+document.getElementById('animalInput').addEventListener('keydown', function(e){
+  if(e.key==='Enter'){ e.preventDefault(); document.getElementById('addAnimalBtn').click(); }
+});
+
+// ---- Submit mock ----
+document.getElementById('frm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var risco = document.getElementById('riscoSelect').value || '(nenhum)';
+  var data = {
+    informacoes_gerais: {
+      nome: document.querySelector('[name=nome_geral]').value || '(vazio)',
+      telefone1: document.querySelector('[name=telefone1]').value || '(vazio)',
+      telefone2: document.querySelector('[name=telefone2]').value || '(vazio)'
+    },
+    endereco: {
+      endereco: encInput.value || '(vazio)',
+      numero: document.getElementById('numero').value || '(vazio)',
+      bairro: document.getElementById('bairro').value || '(vazio)',
+      coordenadas: document.getElementById('latVal').textContent !== '—' ?
+        (document.getElementById('latVal').textContent+', '+document.getElementById('lonVal').textContent) : '(não confirmado no mapa)',
+      area_risco: risco
+    },
+    nupdec: {
+      necessidades_especiais: especiaisToggle.checked,
+      nomes_pessoas: nomes.length ? nomes : '(nenhum)',
+      tem_animais: animaisToggle.checked,
+      animais: animais.length ? animais : '(nenhum)'
+    }
+  };
+  var result = document.getElementById('result');
+  result.textContent = '// Prévia do envio (protótipo — nada é salvo de verdade)\n' + JSON.stringify(data, null, 2);
+  result.classList.add('show');
+  result.scrollIntoView({behavior:'smooth', block:'nearest'});
+});
+</script>
+</body>
+</html>
