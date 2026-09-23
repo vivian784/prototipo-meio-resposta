@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App — Cadastro de Moradia (Protótipo)</title>
+<style>
+:root{
+  --navy:#213A73;--navy-dark:#182b57;--navy-tint:#EAEEF6;--slate:#3E5C8A;
+  --muted:#73879C;--text:#555555;--border:#CCCCCC;--danger:#A94442;--danger-bg:#F2DEDE;--red:#DC2626;
+  --green:#28A745;--green-bg:#EAF9EE;--orange:#FD7E14;--orange-bg:#FFF3E6;
+  --page-bg:#ECF0F5;--font:'Helvetica Neue',Roboto,Arial,'Droid Sans',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);background:#DDE2E9;color:var(--text);font-size:14px}
+.device{max-width:430px;margin:0 auto;background:var(--page-bg);min-height:100vh;box-shadow:0 0 30px rgba(0,0,0,.15)}
+.wrap{padding:0 16px 90px}
+
+/* app bar (mobile) */
+.appbar{position:sticky;top:0;z-index:40;background:var(--navy);color:#fff;display:flex;align-items:center;gap:10px;padding:14px 6px;font-size:16px;font-weight:600}
+.appbar button.back{background:none;border:none;color:#fff;font-size:22px;padding:2px 10px;cursor:pointer;line-height:1}
+.appbar .sub{display:block;font-size:11px;font-weight:400;color:#C9D4E6;margin-top:1px}
+
+/* changelog / pendências */
+.changelog{background:#fff;border:1px solid var(--border);margin:14px 0;overflow:hidden;border-radius:6px}
+.changelog summary{cursor:pointer;padding:12px 14px;font-weight:700;font-size:12.5px;color:var(--navy);display:flex;align-items:center;gap:8px;list-style:none}
+.changelog summary::-webkit-details-marker{display:none}
+.changelog summary .chev{transition:transform .15s;margin-left:auto;color:var(--muted)}
+.changelog[open] summary .chev{transform:rotate(90deg)}
+.changelog .body{padding:0 14px 12px;font-size:12px;line-height:1.65}
+.changelog .row{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start}
+.tag{flex:0 0 auto;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.02em}
+.tag.rm{background:var(--danger-bg);color:var(--danger)}
+.tag.add{background:var(--green-bg);color:#1e7e34}
+.tag.chg{background:var(--orange-bg);color:#b35900}
+.tag.keep{background:var(--navy-tint);color:var(--navy)}
+.pend{background:#FCF8E3;border:1px solid #FAEBCC;padding:12px 14px;margin:14px 0;font-size:12px;color:#8A6D3B;line-height:1.65;border-radius:6px}
+.pend b{display:block;margin-bottom:4px;color:#66512C}
+.pend ol{margin:0;padding-left:16px}
+
+/* cards — sempre em coluna única (mobile) */
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);margin-bottom:16px}
+.card-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-head .ico{width:26px;height:26px;border-radius:7px;background:var(--navy-tint);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto}
+.card-head h2{font-size:14.5px;margin:0;color:#333;font-weight:600}
+.card-body{padding:16px;display:flex;flex-direction:column;gap:14px}
+
+.field{display:flex;flex-direction:column;gap:5px}
+.field label,.lbl-sm{font-size:12.5px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.req{color:var(--danger);font-weight:700}
+.opt{font-weight:400;color:var(--muted);font-size:11px}
+input[type=text],input[type=tel],input[type=number],select,textarea{
+  border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-size:14px;font-family:inherit;color:var(--text);background:#fff;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--navy);outline-offset:1px;border-color:var(--navy)}
+input:disabled,select:disabled,textarea:disabled{background:#F1F3F5;color:#9AA5B1;cursor:not-allowed}
+textarea{resize:vertical;min-height:64px}
+.hint{font-size:11px;color:var(--muted);min-height:14px}
+.err{font-size:11.5px;color:var(--danger);font-weight:700;display:none}
+.field.has-error input{border-color:var(--danger)}
+.field.has-error .err{display:block}
+.badge-new{display:inline-block;font-size:9.5px;font-weight:700;background:var(--orange);color:#fff;padding:1px 6px;border-radius:10px;letter-spacing:.03em}
+
+.is-disabled{opacity:.55}
+.is-disabled,.is-disabled *{cursor:not-allowed}
+
+/* autocomplete */
+.ac-wrap{position:relative}
+.ac-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:7px;margin-top:3px;box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:30;max-height:220px;overflow:auto;display:none}
+.ac-list.show{display:block}
+.ac-item{padding:10px 12px;font-size:13.5px;cursor:pointer;border-bottom:1px solid #f2f2f2}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover,.ac-item.active{background:var(--navy-tint)}
+.ac-item b{color:var(--navy)}
+.ac-item mark{background:none;color:#1a73e8;font-weight:700;padding:0}
+.ac-item small{display:block;color:var(--muted);margin-top:2px;font-size:11px}
+
+/* toggle */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.toggle-row .lbl{font-size:13.5px;font-weight:600;color:#333}
+.switch{position:relative;width:42px;height:23px;flex:0 0 auto}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.slider{position:absolute;inset:0;background:#CBD5E0;border-radius:20px;cursor:pointer;transition:.15s}
+.slider::before{content:"";position:absolute;height:17px;width:17px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}
+input:checked + .slider{background:var(--green)}
+input:checked + .slider::before{transform:translateX(19px)}
+input:focus-visible + .slider{outline:2px solid var(--navy);outline-offset:2px}
+input:disabled + .slider{cursor:not-allowed}
+
+/* mapa */
+.map-box{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:#e8edf3}
+.map-box .canvas{height:150px;position:relative;background:
+   linear-gradient(0deg, rgba(0,0,0,0.03) 1px, transparent 1px) 0 0/26px 26px,
+   linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px) 0 0/26px 26px,
+   #dfe6ee;
+  display:flex;align-items:center;justify-content:center}
+.map-box .canvas .pin{width:24px;height:24px;color:var(--danger);filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+.map-box .canvas .empty{font-size:12px;color:var(--muted);text-align:center;padding:0 20px}
+.coords-row{display:flex;flex-direction:column;gap:3px;padding:9px 12px;background:#fff;border-top:1px solid var(--border);font-size:12px}
+.coords-row .c{color:var(--muted)}
+.coords-row .c b{color:#333;font-family:'Courier New',monospace}
+
+/* tabela de pessoas com necessidades especiais */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:520px}
+.tbl th{font-size:11px;font-weight:700;color:var(--muted);text-align:left;padding:7px;border-bottom:1px solid var(--border)}
+.tbl td{padding:6px 7px;border-bottom:1px solid #eee;vertical-align:middle}
+.tbl .act{width:50px;text-align:center}
+.tbl .ck{width:80px;text-align:center}
+.tbl input[type=text]{padding:6px 8px;font-size:12.5px;border-radius:5px}
+.tbl input.ro{background:#EEF0F3;color:#444}
+.tbl input[type=checkbox]{width:16px;height:16px;accent-color:var(--navy)}
+.tbl .vazio{text-align:center;color:var(--muted);font-size:12px;padding:14px}
+.btn-del{width:26px;height:26px;border:none;border-radius:4px;background:var(--red);color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.btn-sm{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:6px;background:var(--slate);color:#fff;font-size:12.5px;font-weight:700;padding:9px 14px;cursor:pointer;width:100%;justify-content:center}
+.btn-sm:disabled{background:#AAB6C8;cursor:not-allowed}
+
+/* animais */
+.animais-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.animais-row .tipo{flex:1 1 140px}
+.animais-row .qtde{width:70px}
+.btn-navy{border:1px solid var(--navy);background:var(--navy);color:#fff;border-radius:7px;padding:0 14px;height:38px;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+.btn-navy:disabled{background:#AAB6C8;border-color:#AAB6C8;cursor:not-allowed}
+.chips{display:flex;flex-wrap:wrap;gap:7px;border-left:3px solid var(--navy);padding-left:12px;min-height:30px;align-items:center}
+.chips:empty::before{content:"Nenhum animal adicionado";font-size:12px;color:var(--muted)}
+.chip{display:flex;align-items:center;gap:6px;background:var(--navy-tint);color:var(--navy);border-radius:20px;padding:5px 6px 5px 12px;font-size:12.5px;font-weight:600}
+.chip .q{background:#fff;border-radius:10px;padding:0 7px;font-size:11.5px}
+.chip button{border:none;background:rgba(33,58,115,.15);color:var(--navy);width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:11px;line-height:1;padding:0}
+
+/* rodapé */
+.footer-actions{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:10px;z-index:20}
+.btn{border:none;border-radius:7px;padding:11px 16px;font-size:13.5px;font-weight:700;cursor:pointer;flex:1}
+.btn-primary{background:var(--navy);color:#fff;flex:2}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.result{margin:14px 0 90px;background:#0f172a;color:#c8facc;border-radius:10px;padding:14px 16px;font-family:'Courier New',monospace;font-size:11px;white-space:pre-wrap;display:none}
+.result.show{display:block}
+
+/* modal Adicionar Pessoa */
+.backdrop{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:flex-end;justify-content:center;z-index:100}
+.backdrop.show{display:flex}
+.modal{background:#fff;border-radius:12px 12px 0 0;box-shadow:0 -6px 30px rgba(0,0,0,.3);width:100%;max-width:430px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #eee}
+.modal-head h3{margin:0;font-size:14.5px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:8px}
+.modal-x{border:none;background:none;font-size:22px;line-height:1;color:#999;cursor:pointer;padding:0 4px}
+.modal-body{padding:16px}
+.modal-row{display:flex;flex-direction:column;gap:10px}
+.mbtn-row{display:flex;gap:8px;flex-wrap:wrap}
+.mbtn{border:none;border-radius:6px;color:#fff;font-size:12px;font-weight:700;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;flex:1;justify-content:center}
+.mbtn.nova{background:var(--navy)}
+.mbtn.fechar{background:var(--red);flex:0 0 auto;padding:10px 16px}
+.mbtn.add{background:var(--slate)}
+.mbtn:disabled{background:#AAB6C8;cursor:not-allowed}
+.mbtn[hidden]{display:none}
+.modal-msg{margin-top:4px;font-size:12px;color:var(--muted);min-height:16px}
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="appbar"><span>Nova Moradia<span class="sub">Protótipo navegável do app · versão readequada</span></span></div>
+
+  <div class="wrap">
+    <details class="changelog" open>
+      <summary>📋 Como esta tela foi montada <span class="chev">▸</span></summary>
+      <div class="body">
+        <div class="row"><span class="tag keep">Mantido</span> O mesmo padrão de telas do app atual: busca de Logradouro com autocompletar, mapa com pino e coordenadas, Ficha NUPDEC na mesma tela e "Adicionar pessoa" para quem tem necessidade especial.</div>
+        <div class="row"><span class="tag chg">Alterado</span> Layout e campos seguem exatamente a versão web já aprovada: Logradouro é o único campo obrigatório; Número, Complemento e Bairro ficaram opcionais.</div>
+        <div class="row"><span class="tag chg">Alterado</span> "Descrição" e "Renda Familiar" (que existiam no app atual) foram removidos; Nome, Telefone (1) e Telefone (2) entraram na Ficha NUPDEC, logo após "Morador encontrado?", com busca de pessoa cadastrada.</div>
+        <div class="row"><span class="tag chg">Alterado</span> "Área de Risco" virou uma única lista: Nenhum, Setor de Monitoramento (R1 ou R2), R3, R4.</div>
+        <div class="row"><span class="tag chg">Alterado</span> Pessoas com necessidade especial agora ficam em uma tabela, incluídas pelo botão "Adicionar pessoa" (busca por nome/CPF/RG ou cadastro de pessoa nova).</div>
+        <div class="row"><span class="tag add">Adicionado</span> Cada tipo de animal tem sua própria Quantidade e entra como um chip (ex.: Cachorro · 02).</div>
+      </div>
+    </details>
+
+    <div class="pend">
+      <b>⚠️ Pontos para confirmar nesta versão do app</b>
+      <ol>
+        <li>A busca de Logradouro ficou como um campo com sugestões (igual ao app atual), em vez da tela cheia de resultados. Prefere manter assim, ou volta a ser uma tela própria de busca?</li>
+        <li>"Tipo de Residência" e "Número de moradores" foram mantidos como no app atual — não faziam parte da lista de mudanças da versão web.</li>
+        <li>O botão de rodapé ficou "Salvar cadastro" — confirma que o cadastro de moradia continua sendo feito em uma única tela, sem etapa de revisão antes de salvar?</li>
+      </ol>
+    </div>
+
+    <form id="frm" novalidate>
+      <!-- ENDEREÇO -->
+      <div class="card">
+        <div class="card-head"><div class="ico">📍</div><h2>Endereço</h2></div>
+        <div class="card-body">
+          <div class="field ac-wrap" id="logradouroField">
+            <label for="logradouro">Logradouro <span class="opt" style="color:var(--danger)">obrigatório</span></label>
+            <input type="text" id="logradouro" autocomplete="off" placeholder="Digite a rua/avenida...">
+            <div class="ac-list" id="acList"></div>
+            <div class="err" id="logradouroErr">Informe o logradouro para salvar o cadastro.</div>
+            <div class="hint" id="cepHint"></div>
+          </div>
+          <div class="field">
+            <label for="numero">Número <span class="opt">opcional</span></label>
+            <input type="text" id="numero" placeholder="Ex: 120">
+          </div>
+          <div class="field">
+            <label for="complemento">Complemento <span class="opt">opcional</span></label>
+            <input type="text" id="complemento" placeholder="Ex: fundos, casa 2...">
+          </div>
+          <div class="field">
+            <label for="bairro">Bairro <span class="opt">opcional · preenchido automaticamente</span></label>
+            <input type="text" id="bairro" placeholder="Selecione o endereço para preencher">
+          </div>
+          <div class="field">
+            <label>Mapa e coordenadas</label>
+            <div class="map-box">
+              <div class="canvas" id="mapCanvas">
+                <div class="empty">O mapa e as coordenadas aparecem aqui assim que você escolher o endereço acima.</div>
+              </div>
+              <div class="coords-row" id="coordsRow" style="display:none">
+                <div class="c">Latitude: <b id="latVal">—</b></div>
+                <div class="c">Longitude: <b id="lonVal">—</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FICHA NUPDEC -->
+      <div class="card">
+        <div class="card-head"><div class="ico">🧑‍🤝‍🧑</div><h2>Ficha NUPDEC</h2></div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <span class="lbl">Morador encontrado?</span>
+            <label class="switch"><input type="checkbox" id="moradorToggle" aria-label="Morador encontrado?"><span class="slider"></span></label>
+          </div>
+
+          <div class="field ac-wrap" id="nomeField" data-requires="moradorToggle">
+            <label for="nome">Nome <span class="st" id="nomeStatus" style="font-weight:400;color:var(--muted);font-size:11px"></span></label>
+            <input type="text" id="nome" autocomplete="off" placeholder="Digite o CPF, Nome ou RG da pessoa">
+            <div class="ac-list" id="nomeList"></div>
+          </div>
+          <div class="field" data-requires="moradorToggle">
+            <label for="tel1">Telefone (1)</label>
+            <input type="tel" id="tel1" placeholder="(12) 90000-0000" maxlength="15">
+          </div>
+          <div class="field" data-requires="moradorToggle">
+            <label for="tel2">Telefone (2) <span class="opt">opcional</span></label>
+            <input type="tel" id="tel2" placeholder="(12) 90000-0000" maxlength="15">
+          </div>
+
+          <div class="field" data-requires="moradorToggle">
+            <label for="qtdMoradores">Número de moradores</label>
+            <input type="text" id="qtdMoradores" inputmode="numeric" placeholder="Ex: 4">
+          </div>
+          <div class="toggle-row" data-requires="moradorToggle">
+            <span class="lbl">Autoriza grupo WhatsApp NUPDEC?</span>
+            <label class="switch"><input type="checkbox" id="whatsToggle" aria-label="Autoriza grupo WhatsApp NUPDEC?"><span class="slider"></span></label>
+          </div>
+
+          <div class="toggle-row" data-requires="moradorToggle">
+            <span class="lbl">Tem pessoas com necessidades especiais, ou que necessitam de cuidados especiais ou de suporte adicional em caso de emergência?</span>
+            <label class="switch"><input type="checkbox" id="especiaisToggle" aria-label="Tem pessoas com necessidades especiais?"><span class="slider"></span></label>
+          </div>
+
+          <div data-requires="moradorToggle especiaisToggle">
+            <div class="lbl-sm" style="margin-bottom:6px">Pessoas com necessidade especial</div>
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th class="act">Ações</th>
+                    <th>Pessoa<span class="req">*</span></th>
+                    <th class="ck">Cadeirante</th>
+                    <th class="ck">Acamado</th>
+                    <th>Outras condições</th>
+                  </tr>
+                </thead>
+                <tbody id="especiaisBody"></tbody>
+              </table>
+            </div>
+            <div style="margin-top:10px">
+              <button type="button" class="btn-sm" id="abrirModalBtn">Adicionar pessoa
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="riscoSelect">Área de Risco</label>
+            <select id="riscoSelect">
+              <option value="">Nenhum</option>
+              <option value="r12">Setor de Monitoramento (R1 ou R2)</option>
+              <option value="r3">R3</option>
+              <option value="r4">R4</option>
+            </select>
+          </div>
+
+          <div class="field" data-requires="moradorToggle">
+            <label for="residencia">A residência é</label>
+            <select id="residencia">
+              <option value="">Selecione</option>
+              <option>Própria</option>
+              <option>Alugada</option>
+              <option>Cedida</option>
+              <option>Ocupação/Irregular</option>
+              <option>Outra</option>
+            </select>
+          </div>
+
+          <div class="toggle-row" data-requires="moradorToggle">
+            <span class="lbl">Tem animais de estimação?</span>
+            <label class="switch"><input type="checkbox" id="animaisToggle" aria-label="Tem animais de estimação?"><span class="slider"></span></label>
+          </div>
+          <div class="animais-row">
+            <div class="field tipo" data-requires="moradorToggle animaisToggle">
+              <label for="animalTipo">Tipo de animal</label>
+              <input type="text" id="animalTipo" placeholder="Ex: Cachorro, Gato...">
+            </div>
+            <div class="field qtde" data-requires="moradorToggle animaisToggle">
+              <label for="animalQtde">Qtde</label>
+              <input type="number" id="animalQtde" min="1" max="99" placeholder="1">
+            </div>
+            <button type="button" class="btn-navy" id="addAnimalBtn" data-requires="moradorToggle animaisToggle" style="width:auto;padding:0 16px">+ Adicionar</button>
+          </div>
+          <div class="chips" id="animaisChips" data-requires="moradorToggle animaisToggle"></div>
+
+          <div class="field">
+            <label for="obs">Observação</label>
+            <textarea id="obs" placeholder="Observações gerais sobre a moradia..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="result" id="result"></div>
+
+      <div class="footer-actions">
+        <button type="button" class="btn btn-ghost" id="cancelBtn">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar cadastro</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: Adicionar Pessoa -->
+<div class="backdrop" id="pessoaModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pessoaModalTitle">
+    <div class="modal-head">
+      <h3 id="pessoaModalTitle">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="8" r="4"/><path d="M1 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5z"/><path d="M19 5v6M16 8h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        Adicionar Pessoa
+      </h3>
+      <button type="button" class="modal-x" id="modalX" aria-label="Fechar">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row">
+        <label class="lbl-sm" for="pessoaBusca">Pessoa<span class="req">*</span></label>
+        <div class="ac-wrap">
+          <input type="text" id="pessoaBusca" autocomplete="off" placeholder="Digite nome, CPF ou RG para buscar">
+          <div class="ac-list" id="pessoaList"></div>
+        </div>
+        <div class="mbtn-row">
+          <button type="button" class="mbtn nova" id="novaBtn" hidden></button>
+          <button type="button" class="mbtn add" id="adicionarBtn" disabled>Adicionar</button>
+          <button type="button" class="mbtn fechar" id="fecharBtn">Fechar</button>
+        </div>
+      </div>
+      <div class="modal-msg" id="modalMsg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- utilidades ----------
+function esc(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function norm(s){ return String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+function $(id){ return document.getElementById(id); }
+
+// ---------- toggles que liberam/bloqueiam partes do formulário ----------
+function isOn(id){ return $(id).checked; }
+function applyGates(){
+  document.querySelectorAll('[data-requires]').forEach(function(el){
+    var ok = el.dataset.requires.split(' ').every(isOn);
+    el.classList.toggle('is-disabled', !ok);
+    var ctrls = el.matches('input,select,textarea,button')
+      ? [el]
+      : Array.prototype.slice.call(el.querySelectorAll('input,select,textarea,button'));
+    ctrls.forEach(function(c){ c.disabled = !ok; });
+  });
+}
+['moradorToggle','especiaisToggle','animaisToggle'].forEach(function(id){
+  $(id).addEventListener('change', applyGates);
+});
+
+// ---------- Logradouro: autocomplete (mock) ----------
+var enderecos = [
+  {nome:"AVENIDA UM", cep:"12200-000", bairro:"Chácara Santa Helena", lat:-23.25859, lon:-45.94253},
+  {nome:"RUA DUBLIN", cep:"12231-280", bairro:"Jardim Aeroporto", lat:-23.21656, lon:-45.88566},
+  {nome:"AVENIDA MÁRIO COVAS", cep:"12230-680", bairro:"Vila Luchetti", lat:-23.22683, lon:-45.87752},
+  {nome:"RUA GLADIOLO", cep:"12215-450", bairro:"Jardim Jussara", lat:-23.18746, lon:-45.86543},
+  {nome:"MADRE PAULA DE SÃO JOSÉ", cep:"12243-010", bairro:"Jardim Pararangaba", lat:-23.20307, lon:-45.89957},
+  {nome:"AVENIDA EUGENIA DA SILVA", cep:"12234-862", bairro:"Jardim Nova República", lat:-23.28943, lon:-45.89496}
+];
+var logInput = $('logradouro'), acList = $('acList');
+
+logInput.addEventListener('input', function(){
+  $('logradouroField').classList.remove('has-error');
+  var q = norm(this.value.trim());
+  if(!q){ acList.classList.remove('show'); return; }
+  var matches = enderecos.filter(function(e){ return norm(e.nome).indexOf(q) === 0; });
+  if(!matches.length){ acList.classList.remove('show'); return; }
+  acList.innerHTML = matches.map(function(e,i){
+    return '<div class="ac-item" data-i="'+i+'"><b>'+esc(e.nome)+'</b><small>CEP: '+e.cep+' · '+esc(e.bairro)+'</small></div>';
+  }).join('');
+  acList.classList.add('show');
+  acList.querySelectorAll('.ac-item').forEach(function(item){
+    item.addEventListener('click', function(){ selectEndereco(matches[parseInt(item.dataset.i,10)]); });
+  });
+});
+
+function selectEndereco(e){
+  logInput.value = e.nome;
+  $('bairro').value = e.bairro;
+  acList.classList.remove('show');
+  $('cepHint').textContent = 'CEP ' + e.cep + ' — endereço confirmado, bairro preenchido automaticamente.';
+  $('mapCanvas').innerHTML = '<svg class="pin" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8zm0 11a3 3 0 110-6 3 3 0 010 6z"/></svg>';
+  $('coordsRow').style.display = 'flex';
+  $('latVal').textContent = e.lat.toFixed(5);
+  $('lonVal').textContent = e.lon.toFixed(5);
+}
+document.addEventListener('click', function(ev){
+  if(!ev.target.closest('#logradouroField')) acList.classList.remove('show');
+});
+
+// ---------- Nº de moradores: só dígitos ----------
+$('qtdMoradores').addEventListener('input', function(){ this.value = this.value.replace(/\D/g,''); });
+
+// ---------- Pessoas com necessidades especiais (tabela) ----------
+var especiais = [];   // {id, nome, cadeirante, acamado, outras}
+var trashSvg = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>';
+
+function renderEspeciais(){
+  var body = $('especiaisBody');
+  if(!especiais.length){
+    body.innerHTML = '<tr><td colspan="5" class="vazio">Nenhuma pessoa adicionada.</td></tr>';
+  } else {
+    body.innerHTML = especiais.map(function(p,i){
+      return '<tr data-i="'+i+'">'+
+        '<td class="act"><button type="button" class="btn-del" data-act="del" aria-label="Remover '+esc(p.nome)+'">'+trashSvg+'</button></td>'+
+        '<td><input type="text" class="ro" readonly value="'+esc(p.nome)+'"></td>'+
+        '<td class="ck"><input type="checkbox" data-f="cadeirante"'+(p.cadeirante?' checked':'')+' aria-label="Cadeirante"></td>'+
+        '<td class="ck"><input type="checkbox" data-f="acamado"'+(p.acamado?' checked':'')+' aria-label="Acamado"></td>'+
+        '<td><input type="text" data-f="outras" placeholder="Ex.: mobilidade reduzida" value="'+esc(p.outras)+'"></td>'+
+      '</tr>';
+    }).join('');
+  }
+  applyGates();
+}
+$('especiaisBody').addEventListener('click', function(ev){
+  var btn = ev.target.closest('[data-act=del]');
+  if(!btn) return;
+  especiais.splice(parseInt(btn.closest('tr').dataset.i,10), 1);
+  renderEspeciais();
+});
+$('especiaisBody').addEventListener('input', function(ev){
+  var f = ev.target.dataset.f; if(!f) return;
+  var p = especiais[parseInt(ev.target.closest('tr').dataset.i,10)];
+  p[f] = ev.target.type === 'checkbox' ? ev.target.checked : ev.target.value;
+});
+
+// ---------- Modal "Adicionar Pessoa" ----------
+var pessoasCadastradas = [
+  {id:1, nome:"Marker",             cpf:"000.000.001-01", rg:"11.111.111-1", tel1:"(12) 98111-0001", tel2:"(12) 3922-0001"},
+  {id:2, nome:"Larker",             cpf:"000.000.002-02", rg:"22.222.222-2"},
+  {id:3, nome:"Peter Parker",       cpf:"000.000.003-03", rg:"33.333.333-3", tel1:"(12) 98222-0003"},
+  {id:4, nome:"Vivian Carmo",       cpf:"000.000.004-04", rg:"44.444.444-4", tel1:"(12) 4554-5454", tel2:"(12) 4545-4545"},
+  {id:5, nome:"Mariana Souza Lima", cpf:"000.000.005-05", rg:"55.555.555-5", tel1:"(12) 97333-0005", tel2:"(12) 3933-0005"},
+  {id:6, nome:"José Marcos Andrade",cpf:"000.000.006-06", rg:"66.666.666-6", tel1:"(12) 96444-0006"}
+];
+var nextId = 100;
+var modal = $('pessoaModal'), busca = $('pessoaBusca'), pList = $('pessoaList');
+var novaBtn = $('novaBtn'), addBtn = $('adicionarBtn'), msg = $('modalMsg');
+var sel = null;          // pessoa selecionada
+var modo = 'busca';      // 'busca' | 'nova' | 'cadastrada'
+
+function novaBtnHtml(label){
+  return '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="8" r="4"/><path d="M1 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5z"/><path d="M19 5v6M16 8h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg> '+label;
+}
+function resetModal(){
+  sel = null; modo = 'busca';
+  busca.value = ''; busca.readOnly = false;
+  pList.classList.remove('show'); pList.innerHTML = '';
+  novaBtn.hidden = true; addBtn.disabled = true; msg.textContent = '';
+}
+function openModal(){
+  resetModal();
+  modal.classList.add('show');
+  busca.focus();
+}
+function closeModal(){
+  modal.classList.remove('show');
+  $('abrirModalBtn').focus();
+}
+function highlight(text, q){
+  var i = norm(text).indexOf(q);
+  if(i < 0 || !q) return esc(text);
+  return esc(text.slice(0,i)) + '<mark>' + esc(text.slice(i, i+q.length)) + '</mark>' + esc(text.slice(i+q.length));
+}
+function buscarPessoas(raw, incluirAdicionadas){
+  var q = norm(raw.trim());
+  var digits = raw.replace(/\D/g,'');
+  var jaAdicionadas = incluirAdicionadas ? [] : especiais.map(function(p){ return p.id; });
+  return pessoasCadastradas.filter(function(p){
+    if(jaAdicionadas.indexOf(p.id) >= 0) return false;
+    if(norm(p.nome).indexOf(q) >= 0) return true;
+    return digits.length >= 3 && (p.cpf.replace(/\D/g,'').indexOf(digits) >= 0 || p.rg.replace(/\D/g,'').indexOf(digits) >= 0);
+  });
+}
+
+busca.addEventListener('input', function(){
+  sel = null; addBtn.disabled = true;
+  var raw = this.value;
+  if(modo === 'nova'){
+    novaBtn.disabled = !raw.trim();
+    return;
+  }
+  modo = 'busca';
+  var q = norm(raw.trim());
+  if(!q){ pList.classList.remove('show'); novaBtn.hidden = true; msg.textContent = ''; return; }
+  var matches = buscarPessoas(raw);
+  if(matches.length){
+    pList.innerHTML = matches.map(function(p){
+      return '<div class="ac-item" data-id="'+p.id+'"><b>'+highlight(p.nome,q)+'</b><small>CPF '+p.cpf+' · RG '+p.rg+'</small></div>';
+    }).join('');
+    pList.classList.add('show');
+    novaBtn.hidden = true; msg.textContent = 'Toque no nome e depois em "Adicionar".';
+  } else {
+    pList.classList.remove('show');
+    novaBtn.hidden = false; novaBtn.disabled = false; novaBtn.innerHTML = novaBtnHtml('Nova Pessoa');
+    msg.textContent = 'Nenhuma pessoa encontrada. Toque em "Nova Pessoa" para cadastrar.';
+  }
+});
+pList.addEventListener('click', function(ev){
+  var item = ev.target.closest('.ac-item'); if(!item) return;
+  sel = pessoasCadastradas.filter(function(p){ return p.id === parseInt(item.dataset.id,10); })[0];
+  busca.value = sel.nome;
+  pList.classList.remove('show');
+  addBtn.disabled = false; msg.textContent = 'Pessoa selecionada. Toque em "Adicionar".';
+});
+novaBtn.addEventListener('click', function(){
+  if(modo === 'busca'){
+    modo = 'nova';
+    novaBtn.innerHTML = novaBtnHtml('Cadastrar pessoa');
+    novaBtn.disabled = !busca.value.trim();
+    msg.textContent = 'Digite o nome no campo, toque em "Cadastrar pessoa" e depois em "Adicionar".';
+    busca.focus();
+  } else if(modo === 'nova' && busca.value.trim()){
+    var p = {id: nextId++, nome: busca.value.trim(), cpf:'—', rg:'—'};
+    pessoasCadastradas.push(p);
+    sel = p; modo = 'cadastrada';
+    busca.readOnly = true; novaBtn.hidden = true; addBtn.disabled = false;
+    msg.textContent = 'Pessoa cadastrada. Toque em "Adicionar".';
+  }
+});
+addBtn.addEventListener('click', function(){
+  if(!sel) return;
+  especiais.push({id: sel.id, nome: sel.nome, cadeirante:false, acamado:false, outras:''});
+  renderEspeciais();
+  closeModal();
+});
+$('abrirModalBtn').addEventListener('click', openModal);
+$('fecharBtn').addEventListener('click', closeModal);
+$('modalX').addEventListener('click', closeModal);
+modal.addEventListener('mousedown', function(ev){ if(ev.target === modal) closeModal(); });
+document.addEventListener('keydown', function(ev){
+  if(ev.key === 'Escape' && modal.classList.contains('show')) closeModal();
+});
+document.addEventListener('click', function(ev){
+  if(!ev.target.closest('#pessoaModal .ac-wrap')) pList.classList.remove('show');
+});
+
+// ---------- Nome (Ficha NUPDEC): busca de pessoa cadastrada + digitação livre ----------
+var nomeInput = $('nome'), nomeList = $('nomeList'), nomeStatus = $('nomeStatus');
+var nomeSel = null;
+function setNomeStatus(txt, ok){
+  nomeStatus.textContent = txt ? '· ' + txt : '';
+  nomeStatus.style.color = ok ? '#1e7e34' : 'var(--muted)';
+  nomeStatus.style.fontWeight = ok ? '700' : '400';
+}
+nomeInput.addEventListener('input', function(){
+  nomeSel = null;
+  var raw = this.value, q = norm(raw.trim());
+  if(!q){ nomeList.classList.remove('show'); setNomeStatus(''); return; }
+  var matches = buscarPessoas(raw, true);
+  if(matches.length){
+    nomeList.innerHTML = matches.map(function(p){
+      return '<div class="ac-item" data-id="'+p.id+'"><b>'+highlight(p.nome,q)+'</b><small>CPF '+p.cpf+' · RG '+p.rg+'</small></div>';
+    }).join('');
+    nomeList.classList.add('show');
+    setNomeStatus('escolha o nome ou continue digitando');
+  } else {
+    nomeList.classList.remove('show');
+    setNomeStatus('sem cadastro — digitação livre');
+  }
+});
+nomeList.addEventListener('click', function(ev){
+  var item = ev.target.closest('.ac-item'); if(!item) return;
+  var p = pessoasCadastradas.filter(function(x){ return x.id === parseInt(item.dataset.id,10); })[0];
+  nomeSel = p;
+  nomeInput.value = p.nome;
+  if(p.tel1) $('tel1').value = p.tel1;
+  if(p.tel2) $('tel2').value = p.tel2;
+  nomeList.classList.remove('show');
+  setNomeStatus('pessoa cadastrada' + ((p.tel1 || p.tel2) ? ' · telefones preenchidos' : ' · sem telefone cadastrado'), true);
+});
+document.addEventListener('click', function(ev){
+  if(!ev.target.closest('#nomeField')) nomeList.classList.remove('show');
+});
+
+// ---------- Teclado nas listas de sugestão ----------
+function bindListKeys(input, list){
+  input.addEventListener('keydown', function(ev){
+    if(!list.classList.contains('show')) return;
+    var items = Array.prototype.slice.call(list.querySelectorAll('.ac-item'));
+    var i = items.findIndex(function(x){ return x.classList.contains('active'); });
+    if(ev.key === 'ArrowDown' || ev.key === 'ArrowUp'){
+      ev.preventDefault();
+      if(i >= 0) items[i].classList.remove('active');
+      i = ev.key === 'ArrowDown' ? (i + 1) % items.length : (i <= 0 ? items.length - 1 : i - 1);
+      items[i].classList.add('active'); items[i].scrollIntoView({block:'nearest'});
+    } else if(ev.key === 'Enter'){
+      ev.preventDefault();
+      if(i >= 0) items[i].click();
+    } else if(ev.key === 'Escape'){
+      list.classList.remove('show'); ev.stopPropagation();
+    }
+  });
+}
+bindListKeys(logInput, acList); bindListKeys(nomeInput, nomeList); bindListKeys(busca, pList);
+
+// ---------- Animais (tipo + quantidade) ----------
+var animais = [];
+function renderAnimais(){
+  $('animaisChips').innerHTML = animais.map(function(a,i){
+    var q = a.qtde < 10 ? '0'+a.qtde : String(a.qtde);
+    return '<span class="chip">'+esc(a.tipo)+' <span class="q">'+q+'</span><button type="button" data-i="'+i+'" aria-label="Remover '+esc(a.tipo)+'">✕</button></span>';
+  }).join('');
+  applyGates();
+}
+$('animaisChips').addEventListener('click', function(ev){
+  var b = ev.target.closest('button[data-i]'); if(!b) return;
+  animais.splice(parseInt(b.dataset.i,10), 1); renderAnimais();
+});
+function addAnimal(){
+  var tipo = $('animalTipo').value.trim();
+  if(!tipo){ $('animalTipo').focus(); return; }
+  var q = parseInt($('animalQtde').value,10);
+  animais.push({tipo: tipo, qtde: (q > 0 ? Math.min(q,99) : 1)});
+  $('animalTipo').value = ''; $('animalQtde').value = '';
+  renderAnimais(); $('animalTipo').focus();
+}
+$('addAnimalBtn').addEventListener('click', addAnimal);
+['animalTipo','animalQtde'].forEach(function(id){
+  $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); addAnimal(); } });
+});
+
+// ---------- Cancelar ----------
+$('cancelBtn').addEventListener('click', function(){
+  $('frm').reset();
+  especiais = []; animais = [];
+  renderEspeciais(); renderAnimais();
+  $('mapCanvas').innerHTML = '<div class="empty">O mapa e as coordenadas aparecem aqui assim que você escolher o endereço acima.</div>';
+  $('coordsRow').style.display = 'none';
+  $('cepHint').textContent = '';
+  $('logradouroField').classList.remove('has-error');
+  nomeSel = null; setNomeStatus(''); nomeList.classList.remove('show');
+  $('result').classList.remove('show');
+  applyGates();
+});
+
+// ---------- Salvar (mock) ----------
+$('frm').addEventListener('submit', function(e){
+  e.preventDefault();
+  if(!logInput.value.trim()){
+    $('logradouroField').classList.add('has-error');
+    logInput.focus();
+    logInput.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  var data = {
+    endereco: {
+      logradouro: logInput.value.trim(),
+      numero: $('numero').value || null,
+      complemento: $('complemento').value || null,
+      bairro: $('bairro').value || null,
+      coordenadas: $('latVal').textContent !== '—' ? { lat: $('latVal').textContent, lon: $('lonVal').textContent } : null
+    },
+    nupdec: {
+      morador_encontrado: isOn('moradorToggle'),
+      nome: $('nome').value || null,
+      pessoa_cadastrada_id: nomeSel ? nomeSel.id : null,
+      telefone1: $('tel1').value || null,
+      telefone2: $('tel2').value || null,
+      numero_moradores: $('qtdMoradores').value || null,
+      autoriza_whatsapp: isOn('whatsToggle'),
+      necessidades_especiais: isOn('especiaisToggle'),
+      pessoas_necessidades_especiais: isOn('especiaisToggle') ? especiais.map(function(p){
+        return {nome:p.nome, cadeirante:p.cadeirante, acamado:p.acamado, outras_condicoes:p.outras || null};
+      }) : [],
+      area_risco: $('riscoSelect').value || 'nenhum',
+      residencia: $('residencia').value || null,
+      tem_animais: isOn('animaisToggle'),
+      animais: isOn('animaisToggle') ? animais : [],
+      observacao: $('obs').value || null
+    }
+  };
+  var result = $('result');
+  result.textContent = '// Prévia do envio (protótipo — nada é salvo de verdade)\n' + JSON.stringify(data, null, 2);
+  result.classList.add('show');
+  result.scrollIntoView({behavior:'smooth', block:'nearest'});
+});
+
+// estado inicial
+renderEspeciais(); renderAnimais(); applyGates();
+</script>
+</body>
+</html>
