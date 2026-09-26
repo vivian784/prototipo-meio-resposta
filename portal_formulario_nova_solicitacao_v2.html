@@ -1,0 +1,356 @@
+<div style="background: #f4f6f9; padding: 1.5rem; font-family: var(--font-sans); font-size: 13px;">
+  <div style="max-width: 620px; margin: 0 auto; background: #fff; border: 1px solid #dfe3ea;">
+
+    <div style="display: flex; align-items: stretch; border-bottom: 1px solid #dfe3ea;">
+      <div style="display: flex; gap: 8px; padding: 12px; align-items: flex-start;">
+        <button id="tab-pf" style="padding: 8px 14px; background: #2f6fed; color: #fff; border: none; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;">Pessoa Física</button>
+        <button style="padding: 8px 14px; background: #c9cdd4; color: #6b7280; border: none; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: not-allowed;">Pessoa Jurídica</button>
+      </div>
+      <div style="flex: 1; background: #eef2fb; margin: 8px 8px 8px 0; padding: 10px 14px; border-radius: 4px;">
+        <div style="font-size: 12px; font-weight: 600; color: #1f2937;">Sigilo</div>
+        <div style="font-size: 11px; color: #6b7280; margin: 2px 0 6px;">Protege a identificação do cidadão enquanto o sigilo estiver ativo.</div>
+        <label style="margin-right: 14px; font-size: 12px; color: #1f2937; cursor: pointer;"><input type="radio" name="sigilo" style="margin-right: 4px; vertical-align: -1px;" />Sim</label>
+        <label style="font-size: 12px; color: #1f2937; cursor: pointer;"><input type="radio" name="sigilo" checked style="margin-right: 4px; vertical-align: -1px;" />Não</label>
+      </div>
+    </div>
+
+    <div style="padding: 14px 16px 4px;">
+      <h2 style="margin: 0 0 12px; font-size: 15px; font-weight: 600; color: #1f2937;">Nova Solicitação</h2>
+    </div>
+
+    <form id="form-solicitacao">
+
+      <div style="margin: 0 16px 14px; background: #f7f9fc; border: 1px solid #e5e9f0; border-radius: 4px; padding: 12px 14px;">
+        <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px;">
+          <span style="width: 18px; height: 18px; background: #2f6fed; color: #fff; border-radius: 50%; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">1</span>
+          <div>
+            <div style="font-weight: 600; font-size: 12px; color: #1f2937;">Classificação</div>
+            <div style="font-size: 11px; color: #6b7280;">Defina o tipo e o assunto para direcionar o atendimento.</div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Tipo de Solicitação</label>
+            <select id="tipo" style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; background: #fff; color: #1f2937;">
+              <option value="">— Selecione —</option>
+              <option value="reclamacao">Reclamação</option>
+              <option value="solicitacao">Solicitação</option>
+              <option value="denuncia">Denúncia</option>
+              <option value="elogio">Elogio</option>
+              <option value="sugestao">Sugestão</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Assunto</label>
+            <select id="assunto" disabled style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; background: #f3f4f6; color: #1f2937;">
+              <option value="">— Selecione —</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">SubAssunto</label>
+            <select id="subassunto" disabled style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; background: #f3f4f6; color: #1f2937;">
+              <option value="">— Selecione —</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-size: 10px; color: #9ca3af; margin-top: 6px;">O formulário vinculado será carregado automaticamente.</div>
+      </div>
+
+      <div style="margin: 0 16px 14px; background: #f7f9fc; border: 1px solid #e5e9f0; border-radius: 4px; padding: 12px 14px;">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+          <div style="display: flex; align-items: flex-start; gap: 8px;">
+            <span style="width: 18px; height: 18px; background: #2f6fed; color: #fff; border-radius: 50%; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">3</span>
+            <div>
+              <div style="font-weight: 600; font-size: 12px; color: #1f2937;">Formulário do atendimento</div>
+              <div style="font-size: 11px; color: #6b7280;">As perguntas são definidas pelo SubAssunto selecionado.</div>
+            </div>
+          </div>
+          <span id="badge-formulario" style="font-size: 10px; color: #6b7280; background: #eceff3; padding: 3px 8px; border-radius: 10px; white-space: nowrap;">Nenhum vinculado</span>
+        </div>
+        <div id="formulario-vazio" style="margin-top: 10px; background: #eceff3; border-radius: 4px; padding: 10px 12px; font-size: 11px; color: #6b7280;">
+          Selecione um SubAssunto para verificar o formulário vinculado.
+        </div>
+        <div id="formulario-dinamico" style="display: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Qual é a sua reclamação específica?</label>
+            <input type="text" style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Qual local ou período foi afetado?</label>
+            <input type="text" style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="margin: 0 16px 14px; background: #f7f9fc; border: 1px solid #e5e9f0; border-radius: 4px; padding: 12px 14px;">
+        <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px;">
+          <span style="width: 18px; height: 18px; background: #2f6fed; color: #fff; border-radius: 50%; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">4</span>
+          <div>
+            <div style="font-weight: 600; font-size: 12px; color: #1f2937;">Detalhes da solicitação</div>
+            <div style="font-size: 11px; color: #6b7280;">Descreva de forma objetiva o que precisa ser atendido.</div>
+          </div>
+        </div>
+        <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Descrição</label>
+        <textarea id="descricao" placeholder="Descreva a solicitação" style="width: 100%; min-height: 60px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; font-family: var(--font-sans); resize: vertical; margin-bottom: 10px;"></textarea>
+        <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Orientação do SubAssunto</label>
+        <div id="orientacao" style="background: #eceff3; border-radius: 4px; padding: 10px 12px; font-size: 11px; color: #6b7280;">
+          Selecione um SubAssunto para visualizar a orientação.
+        </div>
+      </div>
+
+      <div style="margin: 0 16px 14px; background: #f7f9fc; border: 1px solid #e5e9f0; border-radius: 4px; padding: 12px 14px;">
+        <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px;">
+          <span style="width: 18px; height: 18px; background: #2f6fed; color: #fff; border-radius: 50%; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">5</span>
+          <div>
+            <div style="font-weight: 600; font-size: 12px; color: #1f2937;">Endereço <span style="font-weight: 400; color: #9ca3af;">opcional</span></div>
+            <div style="font-size: 11px; color: #6b7280;">Informe o local da ocorrência quando for relevante.</div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 10px; margin-bottom: 10px;">
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">CEP</label>
+            <div style="display: flex; gap: 4px;">
+              <input type="text" id="cep" placeholder="00000-000" style="flex: 1; min-width: 0; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+              <button type="button" id="btn-cep" aria-label="Pesquisar CEP" style="flex-shrink: 0; width: 30px; padding: 0; border: 1px solid #d1d5db; border-radius: 4px; background: #f3f4f6; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <i class="ti ti-search" style="font-size: 14px; pointer-events: none;" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Logradouro</label>
+            <input type="text" id="logradouro" style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Número</label>
+            <input type="text" style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+          </div>
+        </div>
+        <div id="cep-erro" style="display: none; font-size: 10px; color: var(--text-danger); margin: -6px 0 10px;">Digite um CEP válido com 8 dígitos.</div>
+        <div id="linha-endereco-extra" style="display: none; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Complemento</label>
+            <input type="text" style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Bairro</label>
+            <input type="text" id="bairro" style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Cidade</label>
+            <input type="text" id="cidade" style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Estado</label>
+            <input type="text" id="estado" style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="margin: 0 16px 14px;">
+        <div style="font-weight: 600; font-size: 12px; color: #1f2937; margin-bottom: 2px;">Localização da solicitação</div>
+        <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Confira o local da ocorrência. GPS é opcional. Sem ponto escolhido, o endereço será consultado ao salvar.</div>
+        <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Use "Localizar endereço" para encontrar e virar no mapa. Clique no ponto da ocorrência ou arraste o marcador para corrigir a posição antes de salvar o protocolo.</div>
+        <div style="font-size: 10px; color: #9ca3af; margin-bottom: 10px;">A busca envia somente o endereço ao Google Maps. O mapa utiliza OpenStreetMap.</div>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+          <button type="button" id="btn-endereco" style="padding: 7px 12px; background: #fff; border: 1px solid #2f6fed; color: #2f6fed; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;">Localizar endereço</button>
+          <button type="button" id="btn-gps" style="padding: 7px 12px; background: #fff; border: 1px solid #2f6fed; color: #2f6fed; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;">Usar minha localização</button>
+        </div>
+
+        <div style="font-size: 10px; color: #9ca3af; margin-bottom: 8px;">Localize pelo endereço ou clique no mapa. Arraste o marcador para ajustar antes de salvar.</div>
+
+        <div id="mapa" style="position: relative; height: 210px; background: #d5e8ee; border: 1px solid #d1d5db; border-radius: 4px; overflow: hidden;">
+          <div style="position: absolute; top: 8px; left: 8px; background: #fff; border: 1px solid #ccc; border-radius: 3px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.15);">
+            <div style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #ccc; font-size: 14px; color: #444;">+</div>
+            <div style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #444;">−</div>
+          </div>
+          <div id="mapa-conteudo" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #6f9aab; font-size: 11px; text-align: center; padding: 0 20px;">
+            Nenhum ponto selecionado. Pesquise um endereço ou use sua localização.
+          </div>
+          <div style="position: absolute; bottom: 4px; right: 8px; font-size: 9px; color: #7a8a90; background: rgba(255,255,255,0.7); padding: 1px 4px;">Leaflet | © OpenStreetMap contributors</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Latitude</label>
+            <input type="text" id="latitude" readonly style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; background: #f9fafb; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 3px;">Longitude</label>
+            <input type="text" id="longitude" readonly style="width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; background: #f9fafb; box-sizing: border-box;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="margin: 0 16px 14px; padding-top: 10px; border-top: 1px solid #e5e9f0;">
+        <div style="font-weight: 600; font-size: 12px; color: #1f2937; margin-bottom: 6px;">Anexos</div>
+        <div style="font-size: 11px; color: #9ca3af; margin-bottom: 10px;">Nenhum anexo.</div>
+        <label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 4px;">Arquivo</label>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <label style="padding: 6px 10px; background: #eceff3; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11px; cursor: pointer; white-space: nowrap;">
+            Escolher arquivo<input type="file" id="arquivo" style="display: none;" />
+          </label>
+          <span id="nome-arquivo" style="font-size: 11px; color: #6b7280;">Nenhum arquivo escolhido</span>
+          <button type="button" id="btn-anexo" style="margin-left: auto; padding: 6px 12px; background: #2f6fed; color: #fff; border: none; border-radius: 4px; font-size: 11px; font-weight: 500; cursor: pointer;">Enviar anexo</button>
+        </div>
+        <div style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Tamanho máximo: 8 MB.</div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid #e5e9f0; background: #fafbfc;">
+        <button type="button" style="padding: 7px 14px; background: #fff; border: 1px solid #d1d5db; color: #374151; border-radius: 4px; font-size: 12px; cursor: pointer;">Cancelar</button>
+        <button type="submit" style="padding: 7px 14px; background: #2f6fed; color: #fff; border: none; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;">
+          <i class="ti ti-check" style="margin-right: 4px; vertical-align: -1px;" aria-hidden="true"></i>Salvar solicitação
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const dados = {
+  reclamacao: { name: "Reclamação", assuntos: { infraestrutura: { name: "Infraestrutura", subassuntos: ["Buraco na rua", "Iluminação pública", "Saneamento"] }, transito: { name: "Trânsito", subassuntos: ["Semáforo quebrado", "Sinalização", "Poste na via"] } } },
+  solicitacao: { name: "Solicitação", assuntos: { documentos: { name: "Documentos", subassuntos: ["Certidão de nascimento", "Alvarás", "Licenças"] }, servicos: { name: "Serviços", subassuntos: ["Limpeza de via", "Poda de árvore", "Conserto de guia"] } } },
+  denuncia: { name: "Denúncia", assuntos: { ambiental: { name: "Ambiental", subassuntos: ["Queimada ilegal", "Despejo de lixo", "Poluição sonora"] } } },
+  elogio: { name: "Elogio", assuntos: { geral: { name: "Geral", subassuntos: ["Atendimento excelente", "Obra bem executada"] } } },
+  sugestao: { name: "Sugestão", assuntos: { melhorias: { name: "Melhorias", subassuntos: ["Novo equipamento", "Mudança de serviço", "Inovação"] } } }
+};
+
+const orientacoes = {
+  "Buraco na rua": "Informe o ponto de referência mais próximo. Equipes de manutenção viária priorizam vias de maior fluxo.",
+  "Iluminação pública": "Indique o número do poste, se visível, para agilizar o reparo.",
+  "Semáforo quebrado": "Situações de risco iminente devem ser reportadas também à Guarda Municipal (153).",
+};
+
+const tipoSelect = document.getElementById('tipo');
+const assuntoSelect = document.getElementById('assunto');
+const subassuntoSelect = document.getElementById('subassunto');
+const formularioDinamico = document.getElementById('formulario-dinamico');
+const formularioVazio = document.getElementById('formulario-vazio');
+const badgeFormulario = document.getElementById('badge-formulario');
+const orientacaoDiv = document.getElementById('orientacao');
+
+tipoSelect.addEventListener('change', (e) => {
+  const tipo = e.target.value;
+  assuntoSelect.disabled = !tipo;
+  assuntoSelect.style.background = tipo ? '#fff' : '#f3f4f6';
+  subassuntoSelect.disabled = true;
+  subassuntoSelect.style.background = '#f3f4f6';
+  formularioDinamico.style.display = 'none';
+  formularioVazio.style.display = 'block';
+  badgeFormulario.textContent = 'Nenhum vinculado';
+  orientacaoDiv.textContent = 'Selecione um SubAssunto para visualizar a orientação.';
+
+  assuntoSelect.innerHTML = '<option value="">— Selecione —</option>';
+  if (tipo && dados[tipo]) {
+    Object.keys(dados[tipo].assuntos).forEach(key => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = dados[tipo].assuntos[key].name;
+      assuntoSelect.appendChild(opt);
+    });
+  }
+});
+
+assuntoSelect.addEventListener('change', (e) => {
+  const tipo = tipoSelect.value;
+  const assunto = e.target.value;
+  subassuntoSelect.disabled = !assunto;
+  subassuntoSelect.style.background = assunto ? '#fff' : '#f3f4f6';
+  formularioDinamico.style.display = 'none';
+  formularioVazio.style.display = 'block';
+  badgeFormulario.textContent = 'Nenhum vinculado';
+
+  subassuntoSelect.innerHTML = '<option value="">— Selecione —</option>';
+  if (assunto && dados[tipo].assuntos[assunto]) {
+    dados[tipo].assuntos[assunto].subassuntos.forEach(sub => {
+      const opt = document.createElement('option');
+      opt.value = sub;
+      opt.textContent = sub;
+      subassuntoSelect.appendChild(opt);
+    });
+  }
+});
+
+subassuntoSelect.addEventListener('change', () => {
+  const sub = subassuntoSelect.value;
+  if (sub) {
+    formularioDinamico.style.display = 'flex';
+    formularioVazio.style.display = 'none';
+    badgeFormulario.textContent = 'Vinculado';
+    orientacaoDiv.textContent = orientacoes[sub] || 'Nenhuma orientação específica cadastrada para este subassunto.';
+  } else {
+    formularioDinamico.style.display = 'none';
+    formularioVazio.style.display = 'block';
+    badgeFormulario.textContent = 'Nenhum vinculado';
+    orientacaoDiv.textContent = 'Selecione um SubAssunto para visualizar a orientação.';
+  }
+});
+
+const cepInput = document.getElementById('cep');
+const linhaExtra = document.getElementById('linha-endereco-extra');
+const cepErro = document.getElementById('cep-erro');
+const mockCeps = {
+  '01310100': { logradouro: 'Av. Paulista', bairro: 'Bela Vista', cidade: 'São Paulo', estado: 'SP', lat: -23.5505, lon: -46.6333 },
+  '11660000': { logradouro: 'Av. Rio Branco', bairro: 'Centro', cidade: 'Caraguatatuba', estado: 'SP', lat: -23.6167, lon: -45.4139 },
+};
+
+function buscarCep() {
+  const cep = cepInput.value.replace(/\D/g, '');
+  if (cep.length !== 8) {
+    cepErro.style.display = 'block';
+    linhaExtra.style.display = 'none';
+    return;
+  }
+  cepErro.style.display = 'none';
+  const data = mockCeps[cep] || { logradouro: 'Rua ' + cep, bairro: 'Centro', cidade: 'Caraguatatuba', estado: 'SP', lat: -23.6167 + (Math.random()-0.5)*0.05, lon: -45.4139 + (Math.random()-0.5)*0.05 };
+  document.getElementById('logradouro').value = data.logradouro;
+  document.getElementById('bairro').value = data.bairro;
+  document.getElementById('cidade').value = data.cidade;
+  document.getElementById('estado').value = data.estado;
+  linhaExtra.style.display = 'grid';
+  cepInput.dataset.lat = data.lat;
+  cepInput.dataset.lon = data.lon;
+  cepInput.dataset.local = data.logradouro + ', ' + data.bairro + ' - ' + data.cidade + '/' + data.estado;
+}
+
+document.getElementById('btn-cep').addEventListener('click', buscarCep);
+cepInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); buscarCep(); } });
+cepInput.addEventListener('input', () => { cepErro.style.display = 'none'; });
+
+function pintarMapa(lat, lon, label) {
+  document.getElementById('mapa-conteudo').innerHTML = '<div style="text-align:center;color:#2f6fed;"><i class="ti ti-map-pin-filled" style="font-size:22px;display:block;margin-bottom:4px;" aria-hidden="true"></i><div style="font-size:11px;font-weight:600;">' + label + '</div></div>';
+  document.getElementById('latitude').value = lat.toFixed(6);
+  document.getElementById('longitude').value = lon.toFixed(6);
+}
+
+document.getElementById('btn-endereco').addEventListener('click', () => {
+  if (!cepInput.dataset.lat) { alert('Pesquise um CEP primeiro para localizar o endereço no mapa.'); return; }
+  pintarMapa(parseFloat(cepInput.dataset.lat), parseFloat(cepInput.dataset.lon), cepInput.dataset.local);
+});
+
+document.getElementById('btn-gps').addEventListener('click', () => {
+  if (!navigator.geolocation) { alert('Geolocalização não suportada neste navegador.'); return; }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => pintarMapa(pos.coords.latitude, pos.coords.longitude, 'Localização atual do dispositivo'),
+    () => alert('Não foi possível obter sua localização. Tente pesquisar por CEP.')
+  );
+});
+
+document.getElementById('arquivo').addEventListener('change', (e) => {
+  document.getElementById('nome-arquivo').textContent = e.target.files[0] ? e.target.files[0].name : 'Nenhum arquivo escolhido';
+});
+document.getElementById('btn-anexo').addEventListener('click', () => {
+  const f = document.getElementById('arquivo').files[0];
+  if (!f) { alert('Escolha um arquivo antes de enviar.'); return; }
+  alert('Anexo "' + f.name + '" enviado.');
+});
+
+document.getElementById('form-solicitacao').addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!tipoSelect.value || !assuntoSelect.value || !subassuntoSelect.value) {
+    alert('Preencha Tipo, Assunto e SubAssunto antes de salvar.');
+    return;
+  }
+  alert('✅ Solicitação salva!\nProtocolo: SC-' + Math.random().toString(36).substr(2, 9).toUpperCase());
+});
+</script>
