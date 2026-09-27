@@ -1,0 +1,232 @@
+<div style="background:var(--surface-1);border-radius:12px;padding:20px">
+<div id="app" style="background:#0e1420;border-radius:10px;padding:24px;font-family:system-ui,Segoe UI,Arial;color:#e9eef7;font-size:13px;line-height:1.55;max-width:760px;margin:0 auto">
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+  <div style="font-size:19px;font-weight:500;display:flex;align-items:center;gap:10px">Detalhes da Solicitação
+    <span style="font-size:11px;font-weight:400;border:1px solid #2b3b53;border-radius:6px;padding:3px 8px;color:#9aabc0;display:inline-flex;align-items:center;gap:4px"><i class="ti ti-printer" style="font-size:13px" aria-hidden="true"></i>Imprimir</span>
+  </div>
+  <div style="font-size:12px;color:#9aabc0">Home / Solicitações / Detalhes</div>
+</div>
+
+<div style="border:1px solid #2b3b53;background:#151e2d;border-radius:10px;padding:16px;margin-bottom:14px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+    <div>
+      <div style="font-size:11px;color:#9aabc0;letter-spacing:.03em">PROTOCOLO</div>
+      <div style="font-size:19px;font-weight:500;display:flex;align-items:center;gap:8px">1412356
+        <span id="statusBadge" style="font-size:11px;font-weight:500;border:1px solid #3a618c;background:#16263a;color:#b9ddff;border-radius:99px;padding:4px 11px">Respondido</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button style="background:transparent;border:1px solid #7a3535;color:#ff9b9b;border-radius:7px;padding:7px 12px;font-size:12px;cursor:pointer">Solicitar cancelamento</button>
+      <button style="background:transparent;border:1px solid #3a618c;color:#b9ddff;border-radius:7px;padding:7px 12px;font-size:12px;cursor:pointer">Solicitar alteração</button>
+    </div>
+  </div>
+
+  <div id="multiBanner" style="display:none;border:1px solid #6b5312;border-left:4px solid #f5bd50;background:#2a2313;padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:12px;color:#f0dca6">Este cidadão possui outros protocolos elegíveis na fila de Alocação.</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+    <div><div style="font-size:11px;color:#9aabc0">CIDADÃO</div><div>Vivian Regina Prudenciano do Carmo</div></div>
+    <div style="text-align:right"><div style="font-size:11px;color:#9aabc0">CRIADO EM</div><div>10/09/2026 09:12</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;border-top:1px solid #2b3b53;padding-top:12px">
+    <div><div style="font-size:11px;color:#9aabc0">ASSUNTO-SUBASSUNTO</div><div>Banco do Povo Paulista / Solicitação de crédito</div></div>
+    <div><div style="font-size:11px;color:#9aabc0">GRUPO</div><div>DFPM - Departamento de Fiscalização e Posturas</div></div>
+    <div><div style="font-size:11px;color:#9aabc0">TIPO DE SOLICITAÇÃO</div><div>Reclamação</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid #2b3b53;padding-top:12px">
+    <div><div style="font-size:11px;color:#9aabc0">TIPO DE PESSOA</div><div>Pessoa Física</div></div>
+    <div><div style="font-size:11px;color:#9aabc0">MEIO DE RESPOSTA</div><div>Telefone</div></div>
+  </div>
+</div>
+
+<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#9aabc0;margin-bottom:10px;cursor:pointer">
+  <input type="checkbox" id="hasMore" style="accent-color:#4f8ef7;width:15px;height:15px">
+  Simular: cidadão possui outro protocolo elegível na fila
+</label>
+
+<div style="border:1px solid #2b3b53;background:#151e2d;border-radius:10px;overflow:hidden;margin-bottom:14px">
+  <div style="background:#1b283b;padding:12px 16px;font-weight:500">Ações do atendimento</div>
+  <div style="padding:16px" id="formArea">
+
+    <div style="font-weight:500;margin-bottom:10px">Resultado do contato</div>
+    <div style="display:flex;gap:24px;margin-bottom:14px">
+      <label style="display:flex;align-items:center;gap:7px;cursor:pointer">
+        <input type="radio" name="resultado" value="encontrado" style="accent-color:#4f8ef7;width:16px;height:16px">
+        Encontrado
+      </label>
+      <label style="display:flex;align-items:center;gap:7px;cursor:pointer">
+        <input type="radio" name="resultado" value="naoencontrado" checked style="accent-color:#4f8ef7;width:16px;height:16px">
+        Não encontrado
+      </label>
+    </div>
+
+    <div id="motivoWrap" style="margin-bottom:14px">
+      <div style="font-weight:500;margin-bottom:6px">Motivo</div>
+      <select id="motivo" style="width:100%;max-width:280px;background:#0e1420;border:1px solid #2b3b53;color:#e9eef7;border-radius:7px;padding:8px 10px;font-size:13px">
+        <option value="">Selecione...</option>
+        <option>Só chama</option>
+        <option>Telefone incorreto</option>
+        <option>Mensagem eletrônica</option>
+        <option>Telefone ocupado</option>
+        <option>Solicitante ausente</option>
+        <option>Solicitante falecido</option>
+      </select>
+    </div>
+
+    <div id="respostaWrap" style="display:none;margin-bottom:14px">
+      <div style="font-weight:500;margin-bottom:6px">Resultado da resposta</div>
+      <select id="resposta" style="width:100%;max-width:280px;background:#0e1420;border:1px solid #2b3b53;color:#e9eef7;border-radius:7px;padding:8px 10px;font-size:13px">
+        <option value="">Selecione...</option>
+        <option value="aceita">Resposta aceita</option>
+        <option value="naoaceita">Resposta não aceita</option>
+      </select>
+    </div>
+
+    <div id="obsWrap">
+      <div style="font-weight:500;margin-bottom:6px">Observação (histórico) <span id="obsReq" style="color:#ff8080">*</span></div>
+      <div style="border:1px solid #6b5312;border-left:4px solid #f5bd50;background:#2a2313;color:#f0dca6;padding:8px 12px;border-radius:7px 7px 0 0;font-size:12px;display:flex;align-items:center;gap:6px">
+        <i class="ti ti-lock" style="font-size:14px" aria-hidden="true"></i> Uso interno — o cidadão não vê esta observação.
+      </div>
+      <textarea id="obs" rows="3" style="width:100%;background:#0e1420;border:1px solid #2b3b53;border-top:none;border-radius:0 0 7px 7px;color:#e9eef7;padding:10px 12px;font-size:13px;resize:vertical;font-family:inherit"></textarea>
+    </div>
+    <div id="errMsg" style="display:none;color:#ff8080;font-size:12px;margin-top:6px"></div>
+
+    <button id="submitBtn" style="margin-top:14px;background:#2f6fed;color:#fff;border:none;border-radius:7px;padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer">Adicionar ao histórico</button>
+  </div>
+</div>
+
+<div id="resultCard" style="display:none;margin-bottom:14px;border:1px solid #2b3b53;background:#151e2d;border-radius:10px;padding:16px"></div>
+
+<div style="border:1px solid #2b3b53;background:#151e2d;border-radius:10px;padding:16px;margin-bottom:14px">
+  <div style="font-weight:500;margin-bottom:10px">Histórico</div>
+  <div id="historico" style="font-size:12px;color:#9aabc0">
+    <div style="padding:8px 0;border-bottom:1px solid #2b3b53"><b style="color:#e9eef7">Respondido</b> — Status alterado de Em análise para Respondido — Motivo: resposta enviada pelo órgão responsável.<div style="color:#5f7391;font-size:11px;margin-top:2px">Por: Administrator — 10/09/2026 09:40</div></div>
+    <div style="padding:8px 0"><b style="color:#e9eef7">Em análise</b> — Status alterado de Recebida para Em análise — Motivo: primeiro acesso aos detalhes pelo responsável.<div style="color:#5f7391;font-size:11px;margin-top:2px">Por: Administrator — 10/09/2026 09:15</div></div>
+  </div>
+</div>
+
+<button id="voltarBtn" style="background:transparent;border:1px solid #2b3b53;color:#c8d4e6;border-radius:7px;padding:8px 16px;font-size:13px;cursor:pointer">Voltar</button>
+
+</div>
+</div>
+
+<script>
+let tentativas = 0;
+const radios = document.querySelectorAll('input[name="resultado"]');
+const motivoWrap = document.getElementById('motivoWrap');
+const motivo = document.getElementById('motivo');
+const respostaWrap = document.getElementById('respostaWrap');
+const resposta = document.getElementById('resposta');
+const obsWrap = document.getElementById('obsWrap');
+const obsReq = document.getElementById('obsReq');
+const obs = document.getElementById('obs');
+const errMsg = document.getElementById('errMsg');
+const statusBadge = document.getElementById('statusBadge');
+const resultCard = document.getElementById('resultCard');
+const historico = document.getElementById('historico');
+const formArea = document.getElementById('formArea');
+const multiBanner = document.getElementById('multiBanner');
+const hasMore = document.getElementById('hasMore');
+
+function currentResultado(){
+  return document.querySelector('input[name="resultado"]:checked').value;
+}
+
+function syncFields(){
+  const r = currentResultado();
+  motivoWrap.style.display = r === 'naoencontrado' ? 'block' : 'none';
+  respostaWrap.style.display = r === 'encontrado' ? 'block' : 'none';
+  if (r === 'encontrado') {
+    resposta.value = '';
+    obsWrap.style.display = 'none';
+  } else {
+    obsWrap.style.display = 'block';
+    obsReq.style.display = 'inline';
+  }
+  errMsg.style.display = 'none';
+}
+radios.forEach(r => r.addEventListener('change', syncFields));
+
+resposta.addEventListener('change', () => {
+  if (resposta.value === 'naoaceita') {
+    obsWrap.style.display = 'block';
+    obsReq.style.display = 'inline';
+  } else if (resposta.value === 'aceita') {
+    obsWrap.style.display = 'none';
+  } else {
+    obsWrap.style.display = 'none';
+  }
+  errMsg.style.display = 'none';
+});
+
+hasMore.addEventListener('change', () => {
+  multiBanner.style.display = hasMore.checked ? 'block' : 'none';
+});
+
+function addHist(title, text){
+  const row = document.createElement('div');
+  row.style.cssText = 'padding:8px 0;border-bottom:1px solid #2b3b53';
+  row.innerHTML = '<b style="color:#e9eef7">' + title + '</b> — ' + text + '<div style="color:#5f7391;font-size:11px;margin-top:2px">Por: camilly.silva — ' + new Date().toLocaleString('pt-BR') + '</div>';
+  historico.insertBefore(row, historico.firstChild);
+}
+
+function finish(resultTitle, resultBorder, resultBg, histText){
+  let nextStep = hasMore.checked
+    ? '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #2b3b53;font-size:12px;color:#9aabc0">Cidadão possui outro protocolo elegível — apresentando o próximo protocolo da fila...</div>'
+    : '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #2b3b53;font-size:12px;color:#9aabc0">Sem mais protocolos elegíveis para este cidadão — retornando à home de Alocação...</div>';
+  resultCard.style.display = 'block';
+  resultCard.style.borderLeft = '4px solid ' + resultBorder;
+  resultCard.style.background = resultBg;
+  resultCard.innerHTML = '<div style="font-weight:500;margin-bottom:4px">' + resultTitle + '</div><div style="font-size:12px;color:#c8d4e6">' + histText + '</div>' + nextStep;
+  formArea.style.opacity = '0.45';
+  formArea.style.pointerEvents = 'none';
+}
+
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const r = currentResultado();
+
+  if (r === 'naoencontrado') {
+    if (!motivo.value) { errMsg.textContent = 'Selecione um motivo.'; errMsg.style.display = 'block'; return; }
+    if (!obs.value.trim()) { errMsg.textContent = 'Preencha a observação antes de continuar.'; errMsg.style.display = 'block'; return; }
+    errMsg.style.display = 'none';
+    tentativas++;
+    if (tentativas < 2) {
+      const histText = 'Tentativa de contato com o cidadão sem sucesso — Motivo: ' + motivo.value + ' — Observação: ' + obs.value;
+      addHist('Respondido', histText);
+      finish('1ª tentativa registrada — protocolo volta para a fila de Alocação (situação não é alterada)', '#f5bd50', '#2a2313', histText);
+    } else {
+      const histText = 'Conclusão após tentativas de contato para resposta — Motivo: ' + motivo.value + ' — Observação: ' + obs.value;
+      statusBadge.textContent = 'Concluído';
+      addHist('Concluído', histText);
+      finish('2ª tentativa registrada — status alterado para Concluído', '#39c88a', '#132b1f', histText);
+    }
+    obs.value = '';
+    return;
+  }
+
+  if (r === 'encontrado') {
+    if (!resposta.value) { errMsg.textContent = 'Selecione o resultado da resposta.'; errMsg.style.display = 'block'; return; }
+    if (resposta.value === 'naoaceita' && !obs.value.trim()) { errMsg.textContent = 'Preencha a observação antes de continuar.'; errMsg.style.display = 'block'; return; }
+    errMsg.style.display = 'none';
+
+    if (resposta.value === 'aceita') {
+      const histText = 'Conclusão - Resposta aceita';
+      statusBadge.textContent = 'Concluído';
+      addHist('Concluído', histText);
+      finish('Resposta aceita — status alterado para Concluído', '#39c88a', '#132b1f', histText);
+    } else {
+      const histText = 'Resposta não aceita — Observação: ' + obs.value;
+      statusBadge.textContent = 'Cidadão insatisfeito';
+      addHist('Cidadão insatisfeito', histText);
+      finish('Resposta não aceita — status alterado para Cidadão insatisfeito', '#ff8080', '#2b1420', histText);
+    }
+    obs.value = '';
+  }
+});
+
+document.getElementById('voltarBtn').addEventListener('click', () => {
+  resultCard.style.display = 'none';
+  formArea.style.opacity = '1';
+  formArea.style.pointerEvents = 'auto';
+});
+</script>
