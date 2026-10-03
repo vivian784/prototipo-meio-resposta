@@ -1,0 +1,94 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>0090 — Alocação | Falta de Dados - Encontrado</title>
+<style>
+:root{--bg:#071126;--p:#0f1f3f;--p2:#14294f;--ln:#29436d;--tx:#f3f7ff;--mu:#aebbd1;--bl:#087cff}
+*{box-sizing:border-box}body{margin:0;background:#fff;font-family:Arial,sans-serif;color:var(--tx)}.shell{width:min(1120px,94vw);margin:32px auto;background:var(--bg);padding:18px 22px 14px}.top{display:flex;justify-content:space-between;border-bottom:1px solid #18294a;padding-bottom:12px}.top h1{font-size:20px;margin:0}.crumb,.small{font-size:10px;color:var(--mu)}.card{background:var(--p);border:1px solid var(--ln);border-radius:8px;margin:12px 0;overflow:hidden}.head{background:var(--p2);padding:11px 15px;font-size:13px;font-weight:bold}.body{padding:14px 16px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:10px 0}.lab{font-size:9px;font-weight:bold;color:#9eb0ca;text-transform:uppercase;margin-bottom:4px}.val{font-size:12px}.proto{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.proto strong{font-size:18px}.pill{font-size:9px;padding:4px 10px;border-radius:12px;background:#1f5d9e;font-weight:bold}.red{background:#8f2136}.line{height:1px;background:#263b60;margin:12px 0}.field{padding:10px 0;border-bottom:1px solid #263b60}.radio{display:flex;gap:20px;font-size:12px;margin:6px 0 12px}.notice{font-size:11px;color:#ffd15b;background:#5a3d00;border:1px solid #8c6300;padding:7px 9px;border-radius:4px;margin:7px 0}textarea{width:100%;min-height:78px;background:#12264a;border:1px solid #36537f;border-radius:5px;color:white;padding:10px}.btn{border:0;border-radius:5px;background:linear-gradient(#1686ff,#0867dc);color:#fff;padding:8px 13px;font-size:11px;font-weight:bold;cursor:pointer}.sec{background:#23344f;border:1px solid #536783}.hist{font-size:11px;line-height:1.6}.hidden{display:none}.ok{background:#123e2d;border:1px solid #2e855e;color:#bdf5d7;padding:10px;border-radius:6px;margin-top:10px;font-size:12px}@media(max-width:760px){.grid{grid-template-columns:1fr 1fr}.shell{width:100%;margin:0}}
+</style></head><body><main class="shell">
+<div class="top"><h1>Detalhes da Solicitação <span class="small">▣ Imprimir</span></h1><span class="crumb">Home / Solicitações / Detalhes</span></div>
+
+<section class="card"><div class="body"><div class="proto"><div><div class="lab">Protocolo</div><strong>1412378</strong></div><span class="pill" id="status">Respondido</span><span class="pill red">URGENTE</span></div>
+<div class="grid"><div><div class="lab">Cidadão</div><div class="val">Condomínio Flores da Primavera</div></div><div></div><div></div><div><div class="lab">Criado em</div><div class="val">13/09/2026 13:18</div></div></div>
+<div class="grid"><div><div class="lab">Assunto/Subassunto</div><div class="val">Banco de Preço Acessível / Rua Suja</div></div><div><div class="lab">Grupo</div><div class="val">DPM - Departamento de Fiscalização e Posturas</div></div><div><div class="lab">Tipo de solicitação</div><div class="val">Solicitação</div></div></div>
+<div class="grid"><div><div class="lab">Tipo de pessoa</div><div class="val">Pessoa Jurídica</div></div><div><div class="lab">Meio de resposta</div><div class="val">Telefone</div></div></div><div class="line"></div><div class="lab">Descrição</div><div class="val">Não tenho lixeira</div></div></section>
+<section class="card"><div class="head">▣ &nbsp; Perguntas e respostas</div><div class="body"><div class="field"><div class="lab">Motivo do contato</div><div class="val">Retorno de consulta</div></div><div class="field"><div class="lab">Tem processo</div><div class="val">Não</div></div><div class="field"><div class="lab">Aceita retorno por e-mail</div><div class="val">AUTORIZADO</div></div></div></section>
+<section class="card"><div class="head">⌖ &nbsp; Endereço de referência</div><div class="body"><div class="grid"><div><div class="lab">Logradouro</div><div class="val">Avenida Antônio Ferreira Vilas</div></div><div><div class="lab">Complemento</div><div class="val">—</div></div><div><div class="lab">Bairro</div><div class="val">Residencial Colina Branca</div></div></div><div class="grid"><div><div class="lab">Número</div><div class="val">548</div></div><div><div class="lab">CEP</div><div class="val">13247-520</div></div><div><div class="lab">Cidade</div><div class="val">São José dos Campos</div></div><div><div class="lab">Estado</div><div class="val">SP</div></div></div></div></section>
+<section class="card" id="anexosCard"><div class="head">Anexos</div><div class="body"><span class="small">Nenhum anexo.</span><div class="line"></div><input type="file"> <button class="btn">Enviar anexo</button></div></section>
+<section class="card" id="actionsCard"><div class="head">Ações do atendimento</div><div class="body">
+<div class="lab" style="color:white">Resultado do contato</div><div class="radio"><label><input type="radio" name="r" value="e"> Encontrado</label><label><input type="radio" name="r" value="n"> Não encontrado</label></div>
+<div id="rr" class="hidden"><div class="lab" style="color:white">Resultado da resposta *</div><select id="aceite" style="padding:6px;min-width:190px"><option value="">Selecione...</option><option value="aceita">Resposta aceita</option><option value="nao">Resposta não aceita</option></select></div>
+<div style="margin-top:12px"><div class="lab" style="color:white">Observação <span style="color:#ff9cae">(Histórico)</span></div><div class="notice">⚠ Uso interno — o cidadão não vê esta informação.</div><textarea id="obs"></textarea><p><button class="btn" id="save">Adicionar ao histórico</button></p><div id="msg"></div></div></div></section>
+<section class="card"><div class="head">Histórico</div><div class="body"><ul class="hist" id="history"><li><b>Concluído — Impressão</b><br><span class="small">Por Administrador · 12/09/2026 08:05</span></li><li><b>Respondido — Status alterado de Em análise para Respondido</b><br><span class="small">Por Administrador · 12/09/2026 08:03</span></li><li><b>Em análise — Status alterado de Recebida para Em análise</b></li><li><b>Recebida — Solicitação criada sem vínculo após revisão das sugestões.</b></li></ul></div></section>
+<button class="btn sec" onclick="alert('Voltar')">Voltar</button></main>
+<script>
+const K='p0090-cidadao-insatisfeito-v2';
+let raw=localStorage.getItem(K),done=null;
+try{done=raw?JSON.parse(raw):null}catch(e){done=null}
+
+function addHistory(d){
+ const li=document.createElement('li');
+ li.innerHTML='<b>Resposta não aceita</b><br>'+String(d.obs||'').replace(/[<>]/g,'')+
+ '<br><span class="small">Por Teleatendente · '+(d.at||'agora')+'</span>';
+ document.getElementById('history').prepend(li);
+}
+
+if(done){
+ // PASSO 2 — perfil Responsável / Cidadão insatisfeito
+ document.getElementById('status').textContent='Cidadão insatisfeito';
+ addHistory(done);
+
+ // Nesta situação volta SOMENTE "Solicitar cancelamento".
+ const top=document.querySelector('.top');
+ const commands=document.createElement('div');
+ commands.style.cssText='display:flex;justify-content:flex-end;gap:10px;padding:12px 0 2px';
+ commands.innerHTML='<button type="button" id="cancelarBtn" style="background:transparent;color:#ff7189;border:1px solid #ff7189;border-radius:8px;padding:9px 13px;cursor:pointer">Solicitar cancelamento</button>';
+ top.insertAdjacentElement('afterend',commands);
+ document.getElementById('cancelarBtn').onclick=()=>alert('Solicitar cancelamento — simulação');
+
+ // Anexos permanecem habilitados.
+ const anex=document.getElementById('anexosCard');
+ if(anex) anex.querySelectorAll('input,button').forEach(el=>{el.disabled=false;el.style.opacity='1';el.style.cursor='pointer'});
+
+ // Voltam as ações do perfil Responsável + Observação.
+ document.getElementById('actionsCard').innerHTML=
+ '<div class="head">Ações do atendimento</div><div class="body">'+
+ '<div class="lab" style="color:white">Ação</div>'+
+ '<div class="radio"><label><input type="radio" name="acao" value="responder"> Responder</label>'+
+ '<label><input type="radio" name="acao" value="complementar"> Complementar dados</label>'+
+ '<label><input type="radio" name="acao" value="reatribuir"> Reatribuir grupo</label></div>'+
+ '<div class="lab" style="color:white">Resposta para o cidadão</div>'+
+ '<div style="font-size:11px;color:#b9dcff;background:#0e3769;border:1px solid #175697;padding:7px 9px;border-radius:4px;margin:7px 0">ⓘ Visível para o cidadão no acompanhamento do protocolo.</div>'+
+ '<textarea id="respCidadao">Escreva de forma clara e cordial a resposta para o cidadão.</textarea>'+
+ '<div style="margin-top:12px"><div class="lab" style="color:white">Observação (Histórico)</div>'+
+ '<div class="notice">⚠ Uso interno — o cidadão não vê esta informação.</div>'+
+ '<textarea id="obsResp"></textarea><p><button class="btn" id="histResp">Adicionar ao histórico</button></p></div></div>';
+ document.getElementById('histResp').onclick=()=>{
+   const o=document.getElementById('obsResp').value.trim();
+   if(!o){alert('Informe a observação.');return}
+   const li=document.createElement('li');
+   li.innerHTML='<b>Observação</b><br>'+o.replace(/[<>]/g,'')+'<br><span class="small">Registro do Responsável.</span>';
+   document.getElementById('history').prepend(li);
+   document.getElementById('obsResp').value='';
+ };
+}else{
+ // PASSO 1 — Respondido / Teleatendente
+ const rr=document.getElementById('rr');
+ document.querySelectorAll('input[name=r]').forEach(x=>x.onchange=()=>rr.classList.toggle('hidden',x.value!=='e'));
+ document.getElementById('save').onclick=()=>{
+   const r=document.querySelector('input[name=r]:checked');
+   const aceite=document.getElementById('aceite').value;
+   const obs=document.getElementById('obs').value.trim();
+   const m=document.getElementById('msg');
+   if(!r){m.innerHTML='<div class="notice">Selecione o resultado do contato.</div>';return}
+   if(r.value!=='e'){m.innerHTML='<div class="notice">Este protótipo demonstra o fluxo “Encontrado”.</div>';return}
+   if(!aceite){m.innerHTML='<div class="notice">Selecione o resultado da resposta.</div>';return}
+   if(aceite!=='nao'){m.innerHTML='<div class="notice">Este protótipo demonstra “Resposta não aceita”.</div>';return}
+   if(!obs){m.innerHTML='<div class="notice">Informe a observação.</div>';return}
+   localStorage.setItem(K,JSON.stringify({at:new Date().toLocaleString('pt-BR'),obs}));
+   location.reload();
+ };
+}
+
+const reset=document.createElement('button');
+reset.className='btn sec';reset.style.marginLeft='8px';reset.textContent='Reiniciar protótipo';
+reset.onclick=()=>{localStorage.removeItem(K);location.reload()};
+document.querySelector('main.shell').appendChild(reset);
+</script></body></html>
